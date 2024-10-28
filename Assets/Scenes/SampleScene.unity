@@ -2509,6 +2509,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cursor
       objectReference: {fileID: 0}
+    - target: {fileID: 1307614554086083607, guid: ba17e771593cc3f46b7462c61213d2ea, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1997372950930191004, guid: ba17e771593cc3f46b7462c61213d2ea, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.5
@@ -2548,6 +2552,10 @@ PrefabInstance:
     - target: {fileID: 1997372950930191004, guid: ba17e771593cc3f46b7462c61213d2ea, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8508969438813936254, guid: ba17e771593cc3f46b7462c61213d2ea, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
