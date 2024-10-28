@@ -5,17 +5,19 @@ using UnityEngine;
 public class CharacterInfo : MonoBehaviour
 {
     public OverlayTile standingOnTile;
-    
-    
+
+    public bool selected;
+    private GameMaster gm;
+
     //movement atributes
+    public float initiative;
     public float MoveSpeed;
     public bool hasMoved;
+    public int playerNumber;
+    private List<CharacterInfo> enemiesInRange = new List<CharacterInfo>();  //list of enemies in range
 
     //Attack atributes
-    public int playerNumber;
-    public float initiative;
     public int attackRange;
-    private List<CharacterInfo> enemiesInRange = new List<CharacterInfo>();  //list of enemies in range
     public int attackDamage;
     public bool hasAttacked;
 
@@ -23,9 +25,15 @@ public class CharacterInfo : MonoBehaviour
 
     //defense atributes
     public int health;
-    public int defenseDamage;
-    public int armor;
+    public int Defense;
+    public int MagicDefense;
 
-
-    
+    //Magical Damage Types
+    public enum DamageType
+    {
+        Physical,
+        Fire,
+        Ice,
+        Poison
+    }
 }
