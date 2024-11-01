@@ -8,7 +8,7 @@ public class MouseController : MonoBehaviour
     public GameObject cursor;
     public float speed;
     public GameObject characterPrefab;
-    private CharacterInfo character;
+    private Unit character;
 
     private PathFinder pathFinder;
     private RangeFinder rangeFinder;
@@ -63,7 +63,7 @@ public class MouseController : MonoBehaviour
 
                 if (character == null)
                 {
-                    character = Instantiate(characterPrefab).GetComponent<CharacterInfo>();
+                    character = Instantiate(characterPrefab).GetComponent<Unit>();
                     PositionCharacterOnLine(tile);
                     GetInRangeTiles();
                 }
