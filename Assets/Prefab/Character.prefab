@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 395407704494342741}
   - component: {fileID: 7864496208069841305}
   - component: {fileID: 5079016109975902316}
+  - component: {fileID: 173821545207378841}
   m_Layer: 10
   m_Name: Character
   m_TagString: Untagged
@@ -97,16 +98,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 934d180218fa58b439e72f8bf7b21cb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CharacterID: 0
+  characterName: 
+  CharacterLevel: 0
+  AttackRange: 0
+  CharacterDescription: 
+  HasMoved: 0
+  HasAttacked: 0
+  Hasplayed: 0
   standingOnTile: {fileID: 0}
-  selected: 0
-  MoveSpeed: 0
-  hasMoved: 0
-  playerNumber: 0
-  initiative: 0
-  attackRange: 0
-  attackDamage: 0
-  hasAttacked: 0
-  weaponIcon: {fileID: 9129777000168731806, guid: ebb04dc76583b6e4ab0c638d6a04bb63, type: 3}
-  health: 0
-  defenseDamage: 0
-  armor: 0
+--- !u!114 &173821545207378841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2172016502161466268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4088a82e5570ba4bae6c3d7a51ab7ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
