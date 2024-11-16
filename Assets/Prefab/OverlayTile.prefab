@@ -81,7 +81,7 @@ SpriteRenderer:
   m_Size: {x: 0.18, y: 0.11}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &5179766086941088657
@@ -186,21 +186,25 @@ MonoBehaviour:
   G: 0
   H: 0
   isBlocked: 0
+  isLocked: 0
+  activeCharacter: {fileID: 0}
+  tileData: {fileID: 0}
   Previous: {fileID: 0}
   gridLocation: {x: 0, y: 0, z: 0}
   arrows:
-  - {fileID: -1173743122, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: 41181149, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: 961288838, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: 1146528902, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: 1247212373, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: -1674964494, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: -964541216, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: -592119939, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: -1931357190, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: 824384076, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: -815431957, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
-  - {fileID: -1173743122, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: 618819722, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: 983428285, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: 1036655219, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: 2141248772, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: 927520202, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: 611823466, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: -1093527311, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: 1730538750, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: -954559476, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: -556378454, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: 1069703043, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: -86817941, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+  - {fileID: 618819722, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
 --- !u!60 &-5369681318251634404
 PolygonCollider2D:
   m_ObjectHideFlags: 0

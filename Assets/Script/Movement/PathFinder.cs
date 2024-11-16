@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using TacticsToolkit;
 using UnityEngine;
 
 public class PathFinder
 {
+    public MapManager MapManager;
     private Dictionary<Vector2Int, OverlayTile> searchableTiles;
 
     public List<OverlayTile> FindPath(OverlayTile start, OverlayTile end, List<OverlayTile> inRangeTiles)

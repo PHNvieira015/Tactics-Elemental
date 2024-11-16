@@ -2,13 +2,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using static ArrowTranslator;
+using TacticsToolkit;
 
 public class MouseController : MonoBehaviour
 {
+    public MapManager mapManager;
     public GameObject cursor;
     public float speed;
-    public GameObject characterPrefab;
-    private Unit character;
+    public GameObject characterPrefab;  // Character prefab that should instantiate a Unit object
+    private Unit unit;  // Now we're working with the Unit class
 
     private PathFinder pathFinder;
     private RangeFinder rangeFinder;
@@ -16,6 +18,8 @@ public class MouseController : MonoBehaviour
     private List<OverlayTile> path;
     private List<OverlayTile> rangeFinderTiles;
     private bool isMoving;
+
+    public Color color = Color.green;  // Default color for the tiles (you can change this)
 
     private void Start()
     {
@@ -40,7 +44,7 @@ public class MouseController : MonoBehaviour
 
             if (rangeFinderTiles.Contains(tile) && !isMoving)
             {
-                path = pathFinder.FindPath(character.standingOnTile, tile, rangeFinderTiles);
+                path = pathFinder.FindPath(unit.standingOnTile, tile, rangeFinderTiles);
 
                 foreach (var item in rangeFinderTiles)
                 {
@@ -49,7 +53,7 @@ public class MouseController : MonoBehaviour
 
                 for (int i = 0; i < path.Count; i++)
                 {
-                    var previousTile = i > 0 ? path[i - 1] : character.standingOnTile;
+                    var previousTile = i > 0 ? path[i - 1] : unit.standingOnTile;
                     var futureTile = i < path.Count - 1 ? path[i + 1] : null;
 
                     var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
@@ -59,11 +63,12 @@ public class MouseController : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                tile.ShowTile();
+                // Ensure ShowTile receives the correct TileType (use TileType instead of TileTypes)
+                tile.ShowTile(color, TileType.Movement);  // Assuming TileType is the correct enum type
 
-                if (character == null)
+                if (unit == null)  // Instantiate the unit
                 {
-                    character = Instantiate(characterPrefab).GetComponent<Unit>();
+                    unit = Instantiate(characterPrefab).GetComponent<Unit>();
                     PositionCharacterOnLine(tile);
                     GetInRangeTiles();
                 }
@@ -86,10 +91,10 @@ public class MouseController : MonoBehaviour
         var step = speed * Time.deltaTime;
 
         float zIndex = path[0].transform.position.z;
-        character.transform.position = Vector2.MoveTowards(character.transform.position, path[0].transform.position, step);
-        character.transform.position = new Vector3(character.transform.position.x, character.transform.position.y, zIndex);
+        unit.transform.position = Vector2.MoveTowards(unit.transform.position, path[0].transform.position, step);
+        unit.transform.position = new Vector3(unit.transform.position.x, unit.transform.position.y, zIndex);
 
-        if (Vector2.Distance(character.transform.position, path[0].transform.position) < 0.00001f)
+        if (Vector2.Distance(unit.transform.position, path[0].transform.position) < 0.00001f)
         {
             PositionCharacterOnLine(path[0]);
             path.RemoveAt(0);
@@ -100,14 +105,13 @@ public class MouseController : MonoBehaviour
             GetInRangeTiles();
             isMoving = false;
         }
-
     }
 
     private void PositionCharacterOnLine(OverlayTile tile)
     {
-        character.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
-        character.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
-        character.standingOnTile = tile;
+        unit.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
+        unit.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
+        unit.standingOnTile = tile;  // Set the unit's standing tile
     }
 
     private static RaycastHit2D? GetFocusedOnTile()
@@ -127,11 +131,12 @@ public class MouseController : MonoBehaviour
 
     private void GetInRangeTiles()
     {
-        rangeFinderTiles = rangeFinder.GetTilesInRange(new Vector2Int(character.standingOnTile.gridLocation.x, character.standingOnTile.gridLocation.y), 3);
+        rangeFinderTiles = rangeFinder.GetTilesInRange(new Vector2Int(unit.standingOnTile.gridLocation.x, unit.standingOnTile.gridLocation.y), 3);
 
         foreach (var item in rangeFinderTiles)
         {
-            item.ShowTile();
+            // Ensure you're passing the correct TileType here
+            item.ShowTile(color, TileType.Movement);  // TileType instead of TileTypes
         }
     }
 }
