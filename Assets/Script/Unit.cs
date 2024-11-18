@@ -18,7 +18,7 @@ public class Unit : MonoBehaviour
     }
 
     // Control player properties
-    public int teamID;
+    public int teamID; //team 1 or 2
     public int playerOwner; // 1 for Player 1, 2 for Player 2
     public int Mitigation; // Damage mitigation
     public bool isAlive = true; // Default value for isAlive
@@ -27,9 +27,9 @@ public class Unit : MonoBehaviour
     public bool hasAttacked; // Whether the unit has attacked in this turn
     public bool selected; // Add this to track if the unit is selected
     public GameObject weaponIcon; //icon over unit if it's attackable
-    //AttackRange
+    // AttackRange
     public int attackRange;
-    List<Unit> enemiesInRange = new List<Unit>();  //enemies in range
+    List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range
     public List<Ability> abilities;
 
 
@@ -40,8 +40,40 @@ public class Unit : MonoBehaviour
     public List<Buff> buffs = new List<Buff>(); // List of buffs currently affecting the unit
     public List<Debuff> debuffs = new List<Debuff>(); // List of debuffs currently affecting the unit
 
-    // Track current turn
+    // Track current turn for buffs
     private int currentTurn = 0;
+
+    // Turn State
+    public enum TurnState { Move, Attack, Skill, Idle }
+
+    public void SetState(TurnState state)
+    {
+        switch (state)
+        {
+            case TurnState.Move:
+                if (hasMoved == false)
+                {
+                    // EnableMovementUI();
+                }
+                break;
+
+            case TurnState.Attack:
+                if (hasAttacked == false)
+                {
+                    // EnableAttackUI();
+                }
+                break;
+
+            case TurnState.Skill:
+                // EnableSkillUI();
+                break;
+
+            case TurnState.Idle:
+                // At the end of the turn, we set the faceDirection.
+                SetFaceDirectionAtTurnEnd();
+                break;
+        }
+    }
 
     private void Start()
     {
@@ -144,12 +176,41 @@ public class Unit : MonoBehaviour
         Debug.Log($"Start of turn {currentTurn} - Refreshing buffs and debuffs.");
         UpdateTurnBasedEffects();
     }
-        //void getenemies()
-        //{
-        //    enemiesinrange.clear();
-        //    foreach (unit unit in findobjectoftype<unit>())
-        //    {
-        //    if (mathf.abs(transform.position.x - tile.findobjectoftype)) ;
-        //    }
-        //}
+
+    // This method sets the character's faceDirection at the end of their turn
+    private void SetFaceDirectionAtTurnEnd()
+    {
+        // Logic to determine face direction at the end of the turn.
+        // Assuming the unit's last action, or input decides the direction.
+
+        if (characterStats.faceDirection == CharacterStat.Direction.North)
+        {
+            Debug.Log("Unit is facing North.");
+        }
+        else if (characterStats.faceDirection == CharacterStat.Direction.East)
+        {
+            Debug.Log("Unit is facing East.");
+        }
+        else if (characterStats.faceDirection == CharacterStat.Direction.South)
+        {
+            Debug.Log("Unit is facing South.");
+        }
+        else if (characterStats.faceDirection == CharacterStat.Direction.West)
+        {
+            Debug.Log("Unit is facing West.");
+        }
     }
+
+    // Placeholder method that might be used to gather enemies
+    //void getenemies()
+    //{
+    //    enemiesInRange.Clear();
+    //    foreach (Unit unit in FindObjectsOfType<Unit>())
+    //    {
+    //        if (Mathf.Abs(transform.position.x - unit.transform.position.x) < attackRange)
+    //        {
+    //            enemiesInRange.Add(unit);
+    //        }
+    //    }
+    //}
+}

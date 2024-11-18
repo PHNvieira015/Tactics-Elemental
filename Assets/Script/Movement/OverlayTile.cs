@@ -14,7 +14,6 @@ public class OverlayTile : MonoBehaviour
     public TileData tileData;
     public int MoveCost => tileData != null ? tileData.MoveCost : 1;
 
-
     public OverlayTile Previous;
     public Vector3Int gridLocation;
     public Vector2Int grid2DLocation { get { return new Vector2Int(gridLocation.x, gridLocation.y); } }
@@ -28,6 +27,7 @@ public class OverlayTile : MonoBehaviour
             HideTile();
         }
     }
+
     public int GetMoveCost()
     {
         if (tileData != null)
@@ -36,6 +36,7 @@ public class OverlayTile : MonoBehaviour
         }
         return 1; // Default move cost if no data is available
     }
+
     public void Reset()
     {
         // Reset logic can go here if necessary.
@@ -46,7 +47,6 @@ public class OverlayTile : MonoBehaviour
         gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
     }
 
-    // Updated ShowTile with optional TileType
     public void ShowTile(Color color, TileType type = TileType.Movement)
     {
         gameObject.GetComponent<SpriteRenderer>().color = color;
@@ -69,15 +69,31 @@ public class OverlayTile : MonoBehaviour
         }
     }
 
-    public void SetSprite(ArrowDirection d)
+    public void SetSprite(ArrowDirection d, bool highlight = false)
     {
+        var arrowRenderer = GetComponentsInChildren<SpriteRenderer>()[1]; // Assuming this is the arrow sprite renderer
+        var tileRenderer = gameObject.GetComponent<SpriteRenderer>();
+
         if (d == ArrowDirection.None)
-            GetComponentsInChildren<SpriteRenderer>()[1].color = new Color(1, 1, 1, 0);
+        {
+            arrowRenderer.color = new Color(1, 1, 1, 0); // Hide the arrow
+        }
         else
         {
-            GetComponentsInChildren<SpriteRenderer>()[1].color = new Color(1, 1, 1, 1);
-            GetComponentsInChildren<SpriteRenderer>()[1].sprite = arrows[(int)d];
-            GetComponentsInChildren<SpriteRenderer>()[1].sortingOrder = gameObject.GetComponent<SpriteRenderer>().sortingOrder;
+            arrowRenderer.color = new Color(1, 1, 1, 1); // Show the arrow
+            arrowRenderer.sprite = arrows[(int)d];
+
+            // Adjust sorting layer and order
+            if (highlight)
+            {
+                arrowRenderer.sortingLayerName = "Highlight"; // Change to "Highlight" sorting layer
+                arrowRenderer.sortingOrder = 1; // Optional: Set a consistent sorting order in "Highlight" layer
+            }
+            else
+            {
+                arrowRenderer.sortingLayerName = tileRenderer.sortingLayerName; // Match the tile's sorting layer
+                arrowRenderer.sortingOrder = tileRenderer.sortingOrder; // Match the tile's sorting order
+            }
         }
     }
 }
