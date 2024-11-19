@@ -1,18 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class TurnStatemanager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private List<Unit> teamA = new List<Unit>();
+    private List<Unit> teamB = new List<Unit>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

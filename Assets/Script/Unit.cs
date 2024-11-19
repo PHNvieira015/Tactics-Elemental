@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,6 +32,23 @@ public class Unit : MonoBehaviour
     public int attackRange;
     List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range
     public List<Ability> abilities;
+    private LevelSystem levelSystem;
+
+
+
+    public void SetLevelSystem(LevelSystem levelSystem)
+    {
+        this.levelSystem = levelSystem;
+
+        levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
+    }
+    private void LevelSystem_OnLevelChanged(object sender, EventArgs e)
+    {
+        //effects for levelingUp
+        Debug.Log("Personagem subiu de nivel!");
+
+
+    }
 
 
     // Tile this unit is standing on
