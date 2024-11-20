@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332250c8b76409d46911f327edf5fdf4, type: 3}
+  m_Name: Archer
+  m_EditorClassIdentifier: 
+  CharacterName: 
+  CharacterDescription: 
+  characterClass: 0
+  offensiveStats: {fileID: 11400000, guid: 7bb6ed67cb334f841856023fd9642158, type: 2}
+  defensiveStats: {fileID: 11400000, guid: aca159b147b56f2438128a8310d30e19, type: 2}
+  movementStats: {fileID: 11400000, guid: 9d8a244639daeeb44882fa1cdfb468b7, type: 2}
+  resourceStats: {fileID: 11400000, guid: 57235b3bb786f6d46823decfffae2bf1, type: 2}
+  levelUp: {fileID: 11400000, guid: af919700b11d97941a983e25d9e0d08c, type: 2}
+  MaxBaseHealth: 100
+  CurrentHealth: 0
+  MaxMana: 100
+  CurrentMana: 0

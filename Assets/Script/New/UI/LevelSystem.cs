@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelSystem
 {
     public event EventHandler OnExperinceChanged;
     public event EventHandler OnLevelChanged;
+
     private int level;
     private int experience;
     private int experienceToNextLevel;
@@ -18,27 +17,36 @@ public class LevelSystem
         experienceToNextLevel = 100;
     }
 
+    // Method to add experience and check for level up
+    // LevelSystem.cs
     public void AddExperience(int amount)
     {
         experience += amount;
+
+        // Check if experience has surpassed the required threshold to level up
         if (experience >= experienceToNextLevel)
-            //Enough experience to level up
         {
             level++;
             experience -= experienceToNextLevel;
-            if(OnLevelChanged !=null) OnLevelChanged(this, new EventArgs());
+
+            // Trigger Level Changed event and log it
+            Debug.Log("Level Up! New Level: " + level);
+            OnLevelChanged?.Invoke(this, EventArgs.Empty);  // Fire the event
         }
-        if(OnExperinceChanged != null) OnExperinceChanged(this, new EventArgs());
+
+        // Trigger Experience Changed event and log it
+        Debug.Log("Experience Changed: " + experience);
+        OnExperinceChanged?.Invoke(this, EventArgs.Empty);  // Fire the event
     }
+
+
     public int GetLelvelNumber()
     {
         return level;
     }
+
     public float GetexperienceNormalized()
     {
-        return (float) experience / experienceToNextLevel;
+        return (float)experience / experienceToNextLevel;
     }
-
-
-
 }
