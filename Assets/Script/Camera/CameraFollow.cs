@@ -1,90 +1,62 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform SelectedUnit;  // The unit the camera will follow
-    public float stopThreshold;  // Distance threshold to determine if the unit is moving
-    private Vector3 lastPosition;  // To track the unit's position from the previous frame
-    private bool isInstantFollow = false; // Flag to control instant follow when mouse is clicked
-    private float originalStopThreshold;  // Store the original value of stopThreshold
-    public LayerMask gridLayer;  // The layer mask to define the grid object(s)
-    [Serializefield] private float WaitTimeToMoveCamera;
-    private void Start()
-    {
-        // Store the original value of stopThreshold
-        originalStopThreshold = stopThreshold;
+    private Func<Vector3> GetCameraFollowPosition;  // Delegate to get the follow position
+    [SerializeField] private float moveThreshold = 1f;  // Dead zone threshold (adjust as needed)
+    [SerializeField] private float cameraMoveSpeed = 2f;  // Adjustable camera move speed (new variable)
+    private Vector3 centerPosition;  // The center position of the camera's view
 
-        // Initialize the camera position if a unit is selected at the start
-        if (SelectedUnit != null)
-        {
-            lastPosition = SelectedUnit.position;
-        }
-        else
-        {
-            Debug.LogWarning("No unit selected for camera follow", this);
-        }
+    public void Setup(Func<Vector3> cameraFollowPosition)
+    {
+        this.GetCameraFollowPosition = cameraFollowPosition;
     }
 
-    // Update is called once per frame
+    public void SetGetCameraFollowPositionFunc(Func<Vector3> GetCameraFollowPosition)
+    {
+        this.GetCameraFollowPosition = GetCameraFollowPosition;
+    }
+
+    void Start()
+    {
+        if (GetCameraFollowPosition == null)
+        {
+            Debug.LogError("GetCameraFollowPosition is not assigned. Please set the camera follow position function.");
+        }
+
+        centerPosition = transform.position; // The center of the camera's view in world space
+    }
+
     void Update()
     {
-        // Only proceed if a unit is selected
-        if (SelectedUnit != null)
+        if (GetCameraFollowPosition == null) return;
+
+        // Get the target position (mouse or object to follow)
+        Vector3 cameraFollowPosition = GetCameraFollowPosition();
+        cameraFollowPosition.z = transform.position.z;  // Keep the camera's z-position the same
+
+        // Calculate the distance from the center of the camera's view
+        Vector3 screenCenter = transform.position; // This is where the camera is currently located
+        float distanceFromCenter = Vector3.Distance(cameraFollowPosition, screenCenter);
+
+        // If the mouse (or target position) is within the threshold, don't move the camera
+        if (distanceFromCenter > moveThreshold)
         {
-            // Raycast from the mouse position to check if it's over the grid
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            // Move the camera smoothly towards the target position
+            Vector3 cameraMoveDir = (cameraFollowPosition - transform.position).normalized;
+            float distance = Vector3.Distance(transform.position, cameraFollowPosition);
 
-            // Check if the raycast hits an object on the grid layer
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, gridLayer))
+            // Move the camera smoothly using Lerp
+            Vector3 newCameraPosition = Vector3.Lerp(transform.position, cameraFollowPosition, cameraMoveSpeed * Time.deltaTime);
+
+            // Check if the camera overshot the target and adjust if necessary
+            if (Vector3.Distance(newCameraPosition, cameraFollowPosition) < 0.1f)
             {
-                // Mouse click within the grid
-                if (Input.GetMouseButtonDown(0))
-                {
-                    // Start the instant follow process and trigger the coroutine
-                    isInstantFollow = true;
-                    stopThreshold = 0;  // Temporarily set stopThreshold to 0 for instant follow
-                    StartCoroutine(ResetFollowStateAfterDelay());  // Start the coroutine to reset follow state after delay
-                }
+                newCameraPosition = cameraFollowPosition;  // Adjust to exactly match the target position
             }
 
-            // Get the desired position for the camera based on the selected unit's position
-            Vector3 desiredPosition = SelectedUnit.position + new Vector3(0, 1, -5);
-
-            // Calculate the distance moved by the unit
-            float distanceMoved = Vector3.Distance(SelectedUnit.position, lastPosition);
-
-            // If stopThreshold is 0, move the camera immediately
-            if (isInstantFollow)
-            {
-                // Smoothly move the camera to follow the unit (instant update on click)
-                transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * 5f);
-                lastPosition = SelectedUnit.position;  // Update the last known position
-            }
-            else if (distanceMoved > stopThreshold)
-            {
-                // Smoothly move the camera to follow the unit
-                transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * 5f);
-                lastPosition = SelectedUnit.position;  // Update the last known position
-            }
+            transform.position = newCameraPosition;
         }
     }
-
-    // Coroutine to reset follow state after a delay
-    private IEnumerator ResetFollowStateAfterDelay()
-    {
-        // Wait for 1 second before resetting
-        yield return new WaitForSeconds(WaitTimeToMoveCamera);
-
-        // After 1 second, reset the follow state
-        isInstantFollow = false;
-        stopThreshold = originalStopThreshold;  // Reset to the original stopThreshold value
-    }
-}
-
-internal class SerializefieldAttribute : Attribute
-{
 }

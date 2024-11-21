@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Testing : MonoBehaviour
+public class UI_Manager : MonoBehaviour
 {
     //[SerializeField] private LevelWindow levelWindow;
     [SerializeField] private Unit unit;
@@ -15,14 +15,13 @@ public class Testing : MonoBehaviour
         //LevelSystem levelSystem = new LevelSystem();
         //levelWindow.SetLevelSystem(levelSystem);
         //unit.SetLevelSystem(levelSystem);
-
-
     }
+
     private void Start()
     {
-        //Instantiate(UI_Health, new Vector3(0, 10), Quaternion.identity);
         HealthBar healthBar = UI_Health.GetComponent<HealthBar>();
-        //Instantiate(UI_Level, new Vector3(0, 10), Quaternion.identity);
         LevelWindow levelWindow = UI_Level.GetComponent<LevelWindow>();
+
+
     }
 }

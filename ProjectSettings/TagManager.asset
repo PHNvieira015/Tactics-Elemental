@@ -36,7 +36,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Cursor
   m_SortingLayers:
   - name: Default
     uniqueID: 0
@@ -46,4 +46,7 @@ TagManager:
     locked: 0
   - name: Unit
     uniqueID: 336280773
+    locked: 0
+  - name: Cursor
+    uniqueID: 1675925571
     locked: 0

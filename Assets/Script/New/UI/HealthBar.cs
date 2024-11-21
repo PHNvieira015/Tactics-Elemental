@@ -47,6 +47,7 @@ public class HealthBar : MonoBehaviour
     {
         healthSystem.Damage(10);
         Debug.Log("Health After Damage: " + healthSystem.GetHealth());
+
     }
 
     // Heal health by 10
