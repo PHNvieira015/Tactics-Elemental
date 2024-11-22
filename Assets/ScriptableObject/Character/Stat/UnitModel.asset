@@ -15,19 +15,15 @@ MonoBehaviour:
   CharacterName: 
   CharacterDescription: 
   characterClass: 0
-  offensiveStats: {fileID: 11400000, guid: 7bb6ed67cb334f841856023fd9642158, type: 2}
-  defensiveStats: {fileID: 11400000, guid: aca159b147b56f2438128a8310d30e19, type: 2}
-  movementStats: {fileID: 11400000, guid: 9d8a244639daeeb44882fa1cdfb468b7, type: 2}
-  resourceStats: {fileID: 11400000, guid: 57235b3bb786f6d46823decfffae2bf1, type: 2}
   levelUp: {fileID: 11400000, guid: af919700b11d97941a983e25d9e0d08c, type: 2}
   equippedWeapon: {fileID: 11400000, guid: 366a187658be32f4ebffda0cdee90734, type: 2}
   equippedArmor: {fileID: 11400000, guid: bccba060c3ab95f45b40d9f19f8eb220, type: 2}
   accessory1: {fileID: 11400000, guid: f283e99cda5abf444a19f550431988ee, type: 2}
   accessory2: {fileID: 11400000, guid: f283e99cda5abf444a19f550431988ee, type: 2}
-  MaxBaseHealth: 100
-  CurrentHealth: 0
-  MaxMana: 100
-  CurrentMana: 0
+  maxBaseHealth: 100
+  currentHealth: 100
+  maxMana: 100
+  currentMana: 0
   strength: 0
   agility: 0
   intellect: 0
@@ -36,8 +32,12 @@ MonoBehaviour:
   physicalDefense: 0
   magicalDefense: 0
   elementType: 0
-  faceDirection: 0
+  weaknessElement: 0
   armorType: 0
+  faceDirection: 0
   weight: 0
   initiative: 0
   movementRange: 0
+  CharacterLevel: 0
+  experience: 0
+  requiredExperience: 0

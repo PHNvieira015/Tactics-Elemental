@@ -5,16 +5,39 @@ public class HealthSystem
 {
     public event EventHandler OnHealthChange;
     public event EventHandler OnDead;
+    public CharacterStat characterStats;
 
     private int health;
     public int healthMax;
+
 
     // Constructor with initial health and max health
     public HealthSystem(int initialHealth, int healthMax)
     {
         this.healthMax = healthMax;
         this.health = Mathf.Clamp(initialHealth, 0, healthMax);  // Ensure initial health is within bounds
+
     }
+    public HealthSystem healthSystem;
+
+    private void Start()
+    {
+        healthSystem = new HealthSystem(characterStats.currentHealth, characterStats.maxBaseHealth);
+        healthSystem.OnHealthChange += HealthSystem_OnHealthChange;
+        healthSystem.OnDead += HealthSystem_OnDead;
+    }
+
+    private void HealthSystem_OnHealthChange(object sender, EventArgs e)
+    {
+        // Handle health UI updates
+    }
+
+    private void HealthSystem_OnDead(object sender, EventArgs e)
+    {
+        // Handle death, disable actions, etc.
+    }
+
+
 
 
     public int GetHealth()
@@ -50,7 +73,7 @@ public class HealthSystem
     }
 
     // Method to invoke the OnHealthChange event
-    private void OnHealthChanged()
+    public void OnHealthChanged()
     {
         OnHealthChange?.Invoke(this, EventArgs.Empty);
     }
@@ -63,5 +86,6 @@ public class HealthSystem
     {
         return health <= 0;
     }
+
 
 }

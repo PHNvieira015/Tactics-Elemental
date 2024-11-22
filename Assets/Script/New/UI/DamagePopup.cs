@@ -7,8 +7,10 @@ public class DamagePopup : MonoBehaviour
 {
     private static DamagePopup Instance;
     private TextMeshPro textMesh;  // Already correctly declared
-    private float disappearTimer;
-    private Color textColor;
+     private Color textColor;
+    [SerializeField] private float disappearTimer;
+    [SerializeField] private int popupSpeed;
+   
 
     public static DamagePopup Create(Vector3 position, int damageAmount)
     {
@@ -61,8 +63,8 @@ public class DamagePopup : MonoBehaviour
     private void Update()
     {
         // Corrected `Time.deltaTime` capitalization.
-        float moveYSpeed = 20f;
-        transform.position += new Vector3(0, moveYSpeed) * Time.deltaTime;
+        float moveYSpeed = popupSpeed;
+        transform.position += new Vector3(popupSpeed, popupSpeed) * Time.deltaTime;
 
         // Handle the disappearing of the text
         disappearTimer -= Time.deltaTime;

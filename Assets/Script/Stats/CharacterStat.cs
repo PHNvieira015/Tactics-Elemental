@@ -21,9 +21,9 @@ public class CharacterStat : ScriptableObject
     public Accessory accessory2;   // 2nd accessory slot
 
     // Resources
-    public int MaxBaseHealth = 100;
+    public int maxBaseHealth = 100;
     public int currentHealth;
-    public int MaxMana = 100;
+    public int maxMana = 100;
     public int currentMana;
 
     // Editable stats (in Inspector)
@@ -91,15 +91,14 @@ public class CharacterStat : ScriptableObject
     // Set Max Health and Initialize
     public void SetMaxHealth(int maxHealth)
     {
-        MaxBaseHealth = maxHealth;
-        currentHealth = MaxBaseHealth; // Set initial health to max health
+        maxBaseHealth = maxHealth;
+        currentHealth = maxBaseHealth; // Set initial health to max health
     }
 
     // Set Max Mana and Initialize
     public void SetMaxMana(int maxMana)
     {
-        MaxMana = maxMana;
-        currentMana = MaxMana; // Set initial mana to max mana
+        currentMana = maxMana; // Set initial mana to max mana
     }
 
     // Take damage (health)
@@ -111,7 +110,7 @@ public class CharacterStat : ScriptableObject
     // Restore health
     public void RestoreHealth(int amount)
     {
-        currentHealth = Mathf.Min(currentHealth + amount, MaxBaseHealth); // Prevent exceeding max health
+        currentHealth = Mathf.Min(currentHealth + amount, maxBaseHealth); // Prevent exceeding max health
     }
 
     // Use mana
@@ -123,15 +122,15 @@ public class CharacterStat : ScriptableObject
     // Restore mana
     public void RestoreMana(int amount)
     {
-        currentMana = Mathf.Min(currentMana + amount, MaxMana); // Prevent exceeding max mana
+        currentMana = Mathf.Min(currentMana + amount, maxMana); // Prevent exceeding max mana
     }
 
     // Initialization method
     public void Initialize()
     {
         // Initialize health and mana
-        currentHealth = MaxBaseHealth;
-        currentMana = MaxMana;
+        currentHealth = maxBaseHealth;
+        currentMana = maxMana;
 
         // Optional method to calculate armor value (example)
         CalculateArmorValue();

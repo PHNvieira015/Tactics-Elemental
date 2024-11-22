@@ -14,6 +14,7 @@ public class CharacterBattle : MonoBehaviour
     private bool isPlayerTeam;
     private GameObject selectionCircle;
     private HealthSystem healthSystem;
+    private HealthBar healthBar;  // Reference to the HealthBar script
 
     private enum State
     {
@@ -30,30 +31,50 @@ public class CharacterBattle : MonoBehaviour
         state = State.Idle;
         Setup(true);
     }
+
     public void Setup(bool isPlayerTeam)
     {
         this.isPlayerTeam = isPlayerTeam;
-        if (isPlayerTeam)
-        {
-            //
-        }
-        healthSystem = new HealthSystem(100, 100);
+
+        // Initialize health system with current health and max health
+        int initialHealth = unit.characterStats.currentHealth;  // Get current health dynamically
+        int maxHealth = unit.characterStats.maxBaseHealth;  // Max health is static (set once)
+        healthSystem = new HealthSystem(initialHealth, maxHealth);
+
+        // Get the HealthBar component attached to this character
+        healthBar = GetComponentInChildren<HealthBar>();  // Ensure your HealthBar is a child of this object
+
+        // Pass the HealthSystem to the HealthBar for synchronization
+        healthBar.SetupHealthSystem(healthSystem);
+
+        // Subscribe to health change event in CharacterBattle (if needed)
+        healthSystem.OnHealthChange += HealthSystem_OnHealthChanged;
     }
 
 
+    public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
+    {
+        if (this == null) return;  // If the character is destroyed, do not proceed
+        // Update the health bar whenever health changes
+        if (healthBar != null)
+        {
+            float healthPercent = healthSystem.GetHealthPercent();
+            healthBar.SetHealthBarSize(healthPercent);  // Update health bar based on health percentage
+        }
+    }
+
     private void Update()
     {
+        if (this == null) return;  // Prevent errors if the object is destroyed
         switch (state)
         {
             case State.Idle:
                 break;
 
             case State.Sliding:
-                //float slideSpeed = 5f;
                 Vector3 direction = (slideTargetPosition - GetPosition());
                 transform.position += direction * slideSpeed * Time.deltaTime;
 
-                //float reachedDistance = 1f;
                 if (Vector3.Distance(GetPosition(), slideTargetPosition) < reachedDistance)
                 {
                     transform.position = slideTargetPosition;  // Ensure we reach the target position
@@ -65,10 +86,16 @@ public class CharacterBattle : MonoBehaviour
                 break;
         }
     }
+
     public void Damage(int damageAmount)
     {
         healthSystem.Damage(damageAmount);
-        Debug.Log("hit " + healthSystem.GetHealthPercent());
+        Debug.Log("Hit! Health: " + healthSystem.GetHealthPercent());
+        DamagePopup.Create(GetPosition(), damageAmount);
+        if (healthSystem.IsDead())
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     public Vector3 GetPosition()
@@ -78,17 +105,15 @@ public class CharacterBattle : MonoBehaviour
 
     public void Attack(CharacterBattle targetCharacterBattle, Action onAttackComplete)
     {
-        // Calculate the target position based on the current position and the enemy's position
+        if (this == null || targetCharacterBattle == null) return; // Prevent errors if the object is destroyed
+
         Vector3 targetPosition = targetCharacterBattle.GetPosition();
 
-        // Calculate the direction and target position to slide to (do not fix the distance, just move towards the target)
         Vector3 slideDirection = (targetPosition - GetPosition()).normalized;
-
-        // Calculate the final target position based on a dynamic distance, for example, a small buffer distance for sliding.
         float slideDistance = Vector3.Distance(GetPosition(), targetPosition);
         Vector3 slideTargetPosition = GetPosition() + slideDirection * slideDistance;
 
-        //Attack Damage
+        // Attack damage
         targetCharacterBattle.Damage(10);
 
         Vector3 startingPosition = GetPosition();
@@ -108,20 +133,20 @@ public class CharacterBattle : MonoBehaviour
         });
     }
 
-
     private void SlideToPosition(Vector3 slideTargetPosition, Action onSlideComplete)
     {
         this.slideTargetPosition = slideTargetPosition;
         this.onSlideComplete = onSlideComplete;
         state = State.Sliding;
     }
+
     public void HideSelectionCircle()
     {
         selectionCircle.SetActive(false);
     }
+
     public void ShowSelectionCircle()
     {
         selectionCircle.SetActive(true);
     }
-
 }
