@@ -55,7 +55,7 @@ namespace TacticsToolkit
             mapBounds = new MapBounds(bounds.xMax, bounds.yMax, bounds.xMin, bounds.yMin);
 
             //loop through the tilemap and create all the overlay tiles
-            for (int z = bounds.max.z; z >= bounds.min.z; z--)
+            for (int z = bounds.max.z; z > bounds.min.z; z--)
             {
                 for (int y = bounds.min.y; y < bounds.max.y; y++)
                 {
