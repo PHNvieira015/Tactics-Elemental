@@ -167,8 +167,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22af7614daff76443ac01dc83a211175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelWindow: {fileID: 0}
   unit: {fileID: 1985653496}
+  UI_Health: {fileID: 0}
+  UI_Level: {fileID: 0}
 --- !u!1 &503701787
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,11 +306,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c62e43e0134c3aa409590198ee4bcad1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SelectedUnit: {fileID: 1099166847693863506}
-  stopThreshold: 0.1
-  gridLayer:
-    serializedVersion: 2
-    m_Bits: 0
+  moveThreshold: 1
+  cameraMoveSpeed: 2
 --- !u!114 &632062737
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3382,11 +3380,6 @@ Transform:
 --- !u!1 &494422836172670169 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1307614554086083607, guid: ba17e771593cc3f46b7462c61213d2ea, type: 3}
-  m_PrefabInstance: {fileID: 1511272622410123470}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1099166847693863506 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1997372950930191004, guid: ba17e771593cc3f46b7462c61213d2ea, type: 3}
   m_PrefabInstance: {fileID: 1511272622410123470}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1511272622410123470

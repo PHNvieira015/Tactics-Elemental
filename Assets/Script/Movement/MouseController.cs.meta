@@ -3,7 +3,10 @@ guid: 8e5d015d65975fb40b4e94edbe0dcc45
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - mapManager: {instanceID: 0}
+  - cursor: {fileID: 1307614554086083607, guid: ba17e771593cc3f46b7462c61213d2ea, type: 3}
+  - characterPrefab: {fileID: 8460626058810772309, guid: 1830119ab571c5940971c0cb63dbd569, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
