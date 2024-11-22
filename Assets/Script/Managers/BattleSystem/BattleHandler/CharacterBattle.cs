@@ -9,91 +9,119 @@ public class CharacterBattle : MonoBehaviour
     private State state;
     private Vector3 slideTargetPosition;
     private Action onSlideComplete;
+    [SerializeField] float slideSpeed = 5f;
+    [SerializeField] float reachedDistance = 1f;
+    private bool isPlayerTeam;
+    private GameObject selectionCircle;
+    private HealthSystem healthSystem;
+
     private enum State
     {
-        Iddle,
+        Idle,  // Corrected spelling
         Sliding,
         Busy
-
     }
-        private void Awake()
+
+    private void Awake()
     {
         unit = GetComponent<Unit>();  // Get the Unit component attached to this GameObject
-        state = State.Iddle;
+        selectionCircle = transform.Find("SelectionCircle").gameObject;
+        HideSelectionCircle();
+        state = State.Idle;
+        Setup(true);
     }
-
-    private void Start()
-    {
-        // Initialization or setup logic goes here if needed
-    }
-
-    // Method to set up the character for the battle
     public void Setup(bool isPlayerTeam)
     {
+        this.isPlayerTeam = isPlayerTeam;
         if (isPlayerTeam)
         {
-            // Setup logic for player team goes here
+            //
         }
-        else
-        {
-            // Setup logic for enemy team goes here
-        }
+        healthSystem = new HealthSystem(100, 100);
     }
+
+
     private void Update()
     {
         switch (state)
         {
-            case State.Iddle:
-            break;
-            case State.Sliding:
-                float slideSpeed = 10f;
-            transform.position += (slideTargetPosition - GetPosition()) *slideSpeed * Time.deltaTime;
+            case State.Idle:
+                break;
 
-                float reachedDistance = 1f;
+            case State.Sliding:
+                //float slideSpeed = 5f;
+                Vector3 direction = (slideTargetPosition - GetPosition());
+                transform.position += direction * slideSpeed * Time.deltaTime;
+
+                //float reachedDistance = 1f;
                 if (Vector3.Distance(GetPosition(), slideTargetPosition) < reachedDistance)
-                {//Arrived at Slide Target Position
-                transform.position = GetPosition();
-                onSlideComplete();
+                {
+                    transform.position = slideTargetPosition;  // Ensure we reach the target position
+                    onSlideComplete?.Invoke();  // Null check before invoking
                 }
-                    break;
-               
+                break;
+
             case State.Busy:
-            break;
+                break;
         }
     }
+    public void Damage(int damageAmount)
+    {
+        healthSystem.Damage(damageAmount);
+        Debug.Log("hit " + healthSystem.GetHealthPercent());
+    }
 
-    // Corrected typo 'publci' to 'public' here
     public Vector3 GetPosition()
     {
         return transform.position;  // Return the position of the character
     }
 
-    // Attack method for attacking another CharacterBattle
     public void Attack(CharacterBattle targetCharacterBattle, Action onAttackComplete)
-    {            // Do stuff for attack (e.g., apply damage, animation, etc.)
-                 // For example:
-                 // targetCharacterBattle.TakeDamage(damageAmount);
-        Vector3 slideTargetPosition = (targetCharacterBattle.GetPosition()+ - targetCharacterBattle.GetPosition()).normalized *10f;
+    {
+        // Calculate the target position based on the current position and the enemy's position
+        Vector3 targetPosition = targetCharacterBattle.GetPosition();
+
+        // Calculate the direction and target position to slide to (do not fix the distance, just move towards the target)
+        Vector3 slideDirection = (targetPosition - GetPosition()).normalized;
+
+        // Calculate the final target position based on a dynamic distance, for example, a small buffer distance for sliding.
+        float slideDistance = Vector3.Distance(GetPosition(), targetPosition);
+        Vector3 slideTargetPosition = GetPosition() + slideDirection * slideDistance;
+
+        //Attack Damage
+        targetCharacterBattle.Damage(10);
+
         Vector3 startingPosition = GetPosition();
 
-        // Slide to Target 
-        SlideToPosition(slideTargetPosition, () => 
-        {//Arrived at Target, attacked him
+        SlideToPosition(slideTargetPosition, () =>
+        {
             state = State.Busy;
 
-        // Calculate attack direction based on the target's position
-        Vector3 attackDir = (targetCharacterBattle.GetPosition() - GetPosition()).normalized;
-            //Attack Completed, slide back
+            // Perform attack logic here, for example applying damage to the target.
+            Vector3 attackDir = (targetCharacterBattle.GetPosition() - GetPosition()).normalized;
+
             SlideToPosition(startingPosition, () =>
-            {//Slide back Completed, back to iddle
-                state = State.Iddle;
-                onAttackComplete();
+            {
+                state = State.Idle;
+                onAttackComplete?.Invoke();  // Return to idle after the attack
             });
         });
     }
+
+
     private void SlideToPosition(Vector3 slideTargetPosition, Action onSlideComplete)
     {
         this.slideTargetPosition = slideTargetPosition;
         this.onSlideComplete = onSlideComplete;
+        state = State.Sliding;
     }
+    public void HideSelectionCircle()
+    {
+        selectionCircle.SetActive(false);
+    }
+    public void ShowSelectionCircle()
+    {
+        selectionCircle.SetActive(true);
+    }
+
 }

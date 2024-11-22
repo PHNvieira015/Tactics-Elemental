@@ -4,12 +4,23 @@ using UnityEngine;
 
 public class BattleHandler : MonoBehaviour
 {
-    [SerializeField] private Transform pfCharacterBattle; // Prefab of the character's transform
-    [SerializeField] Transform Spawningpoint1;           // Player spawn point
-    [SerializeField] Transform Spawningpoint2;           // Enemy spawn point
 
-    private CharacterBattle playerCharacterbattle;
-    private CharacterBattle enemyCharacterbattle;
+    private static BattleHandler instance;
+
+    public static BattleHandler GetInstance()
+    {
+        return instance;
+    }
+
+
+    [SerializeField] private Transform pfCharacterBattle;
+    public Transform SpawningPoint1;
+    public Transform SpawningPoint2;
+
+
+    private CharacterBattle playerCharacterBattle;
+    private CharacterBattle enemyCharacterBattle;
+    private CharacterBattle activeCharacterBattle;
     private State state;
 
     private enum State
@@ -18,17 +29,17 @@ public class BattleHandler : MonoBehaviour
         Busy,
     }
 
+    private void Awake()
+    {
+        instance = this;
+    }
+
     private void Start()
     {
-        // Spawn the player and enemy characters
-        playerCharacterbattle = SpawnCharacter(true);
-        enemyCharacterbattle = SpawnCharacter(false);
+        playerCharacterBattle = SpawnCharacter(true);
+        enemyCharacterBattle = SpawnCharacter(false);
 
-        // Set the spawn points
-        Spawningpoint1.position = new Vector3(0.31f, -2.3f, 0f); // Player spawn position
-        Spawningpoint2.position = new Vector3(5.7f, 0f, 0f);     // Enemy spawn position
-
-        // Set the initial state
+        SetActiveCharacterBattle(playerCharacterBattle);
         state = State.WaitingForPlayer;
     }
 
@@ -36,37 +47,84 @@ public class BattleHandler : MonoBehaviour
     {
         if (state == State.WaitingForPlayer)
         {
-            if (Input.GetKeyDown(KeyCode.Space))  // Check for player input (space key)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                // Change state to Busy when the player acts
                 state = State.Busy;
-
-                // Perform the player's attack and set callback to wait for the next player input
-                playerCharacterbattle.Attack(enemyCharacterbattle, () =>
-                {
-                    state = State.WaitingForPlayer;  // Set state back to waiting for player input
+                playerCharacterBattle.Attack(enemyCharacterBattle, () => {
+                    ChooseNextActiveCharacter();
                 });
             }
         }
     }
 
-    // Method to spawn a character
     private CharacterBattle SpawnCharacter(bool isPlayerTeam)
     {
         Vector3 position;
         if (isPlayerTeam)
         {
-            position = Spawningpoint1.position; // Set spawn point for player
+            position = SpawningPoint1.position;
         }
         else
         {
-            position = Spawningpoint2.position; // Set spawn point for enemy
+            position = SpawningPoint2.position;        }
+        Transform characterTransform = Instantiate(pfCharacterBattle, position, Quaternion.identity);
+        CharacterBattle characterBattle = characterTransform.GetComponent<CharacterBattle>();
+        characterBattle.Setup(isPlayerTeam);
+
+        return characterBattle;
+    }
+
+    private void SetActiveCharacterBattle(CharacterBattle characterBattle)
+    {
+        if (activeCharacterBattle != null)
+        {
+            activeCharacterBattle.HideSelectionCircle();
         }
 
-        // Instantiate the GameObject from the prefab and spawn it at the correct position
-        GameObject characterObject = Instantiate(pfCharacterBattle.gameObject, position, Quaternion.identity);
-
-        // Return the CharacterBattle component attached to the spawned GameObject
-        return characterObject.GetComponent<CharacterBattle>();
+        activeCharacterBattle = characterBattle;
+        activeCharacterBattle.ShowSelectionCircle();
     }
+
+    private void ChooseNextActiveCharacter()
+    {
+        //if (TestBattleOver())
+        //{
+        //    return;
+        //}
+
+        if (activeCharacterBattle == playerCharacterBattle)
+        {
+            SetActiveCharacterBattle(enemyCharacterBattle);
+            state = State.Busy;
+
+            enemyCharacterBattle.Attack(playerCharacterBattle, () => {
+                ChooseNextActiveCharacter();
+            });
+        }
+        else
+        {
+            SetActiveCharacterBattle(playerCharacterBattle);
+            state = State.WaitingForPlayer;
+        }
+    }
+
+    //private bool TestBattleOver()
+    //{
+    //    if (playerCharacterBattle.IsDead())
+    //    {
+    //        // Player dead, enemy wins
+    //        //CodeMonkey.CMDebug.TextPopupMouse("Enemy Wins!");
+    //        BattleOverWindow.Show_Static("Enemy Wins!");
+    //        return true;
+    //    }
+    //    if (enemyCharacterBattle.IsDead())
+    //    {
+    //        // Enemy dead, player wins
+    //        //CodeMonkey.CMDebug.TextPopupMouse("Player Wins!");
+    //        BattleOverWindow.Show_Static("Player Wins!");
+    //        return true;
+    //    }
+
+    //    return false;
+    //}
 }

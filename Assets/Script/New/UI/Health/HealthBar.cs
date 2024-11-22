@@ -8,7 +8,7 @@ public class HealthBar : MonoBehaviour
 {
     private HealthSystem healthSystem;  // Declare healthSystem instance correctly
     private int healthMax;
-    
+
 
     [SerializeField] public Image HealthBarImage;   // Fixed typo: Serializefield -> SerializeField
     [SerializeField] public TextMeshProUGUI healthText;   // Fixed typo: Serializefield -> SerializeField
@@ -22,8 +22,8 @@ public class HealthBar : MonoBehaviour
         // Initialize the health system with 100 health and max health of 100
         healthSystem = new HealthSystem(100, 100);
         Debug.Log("Health: " + healthSystem.GetHealth());
-        
-    // Setup button listeners
+
+        // Setup button listeners
         ButtonUI_Reset.onClick.AddListener(ResetHealth);
         ButtonUI_Damage.onClick.AddListener(DamageHealth);
         ButtonUI_Heal.onClick.AddListener(HealHealth);
@@ -67,7 +67,7 @@ public class HealthBar : MonoBehaviour
     private void HealthSystem_OnHealthChanged(object sender, System.EventArgs e)
     {
         // Update the health bar and health text when health changes
-        SetHealthBarSize(healthSystem.GetHealthNormalized());
+        SetHealthBarSize(healthSystem.GetHealthPercent());
         SetHealthNumber(healthSystem.GetHealth(), healthSystem.healthMax);
     }
 
