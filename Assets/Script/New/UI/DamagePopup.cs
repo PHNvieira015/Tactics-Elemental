@@ -18,7 +18,7 @@ public class DamagePopup : MonoBehaviour
 
         // Instantiate the DamagePopup prefab and get the transform.
         Transform damagePopupTransform = Instantiate(GameAssets.instance.DamagePopup, position, Quaternion.identity).transform;
-
+        
         // Log the instantiated object
         Debug.Log("DamagePopup instantiated.");
 
@@ -53,7 +53,7 @@ public class DamagePopup : MonoBehaviour
 
     public void Setup(int damageAmount)
     {
-        // Set the damage amount as text in the popup.
+        //// Set the damage amount as text in the popup.
         Debug.Log($"Setting damage amount: {damageAmount}");
         textMesh.SetText(damageAmount.ToString());
         textColor = textMesh.color;
