@@ -1,18 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
-public class TurnOrderManager : MonoBehaviour
+public class TurnOrderManager:MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	//enum TurnState
+	//{
+	//	Startingturn,
+	//	moving,
+		
+	//	attacking,
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-}
+	//	UsingSkill,
+
+
+	//}
+
+
+	}
+

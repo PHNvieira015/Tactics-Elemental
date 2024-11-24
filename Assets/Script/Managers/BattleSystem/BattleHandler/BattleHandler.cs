@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BattleHandler : MonoBehaviour
 {
-
+    public BattleOverWindow battleOverWindow; // Reference to BattleOverWindow
     private static BattleHandler instance;
 
     public static BattleHandler GetInstance()
@@ -87,10 +87,10 @@ public class BattleHandler : MonoBehaviour
 
     private void ChooseNextActiveCharacter()
     {
-        //if (TestBattleOver())
-        //{
-        //    return;
-        //}
+        if (TestBattleOver())
+        {
+            return;
+        }
 
         if (activeCharacterBattle == playerCharacterBattle)
         {
@@ -108,23 +108,22 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
-    //private bool TestBattleOver()
-    //{
-    //    if (playerCharacterBattle.IsDead())
-    //    {
-    //        // Player dead, enemy wins
-    //        //CodeMonkey.CMDebug.TextPopupMouse("Enemy Wins!");
-    //        BattleOverWindow.Show_Static("Enemy Wins!");
-    //        return true;
-    //    }
-    //    if (enemyCharacterBattle.IsDead())
-    //    {
-    //        // Enemy dead, player wins
-    //        //CodeMonkey.CMDebug.TextPopupMouse("Player Wins!");
-    //        BattleOverWindow.Show_Static("Player Wins!");
-    //        return true;
-    //    }
+    private bool TestBattleOver()
+    {
+        if (playerCharacterBattle.IsDead())
+        {
+            // Player dead, enemy wins
+            battleOverWindow.ShowBattleResult(false); // Show losing message
+            return true;
+        }
+        if (enemyCharacterBattle.IsDead())
+        {
+            // Enemy dead, player wins
+            //CodeMonkey.CMDebug.TextPopupMouse("Player Wins!");
+            battleOverWindow.ShowBattleResult(true); // Show winner message
+            return true;
+        }
 
-    //    return false;
-    //}
+        return false;
+    }
 }

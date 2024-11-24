@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CharacterBattle : MonoBehaviour
 {
-    private Unit unit;  // Reference to the Unit component
+    private Unit unit;
     private State state;
     private Vector3 slideTargetPosition;
     private Action onSlideComplete;
@@ -14,18 +14,18 @@ public class CharacterBattle : MonoBehaviour
     private bool isPlayerTeam;
     private GameObject selectionCircle;
     private HealthSystem healthSystem;
-    private HealthBar healthBar;  // Reference to the HealthBar script
+    private HealthBar healthBar;
 
     private enum State
     {
-        Idle,  // Corrected spelling
+        Idle,
         Sliding,
         Busy
     }
 
     private void Awake()
     {
-        unit = GetComponent<Unit>();  // Get the Unit component attached to this GameObject
+        unit = GetComponent<Unit>();
         selectionCircle = transform.Find("SelectionCircle").gameObject;
         HideSelectionCircle();
         state = State.Idle;
@@ -36,52 +36,48 @@ public class CharacterBattle : MonoBehaviour
     {
         this.isPlayerTeam = isPlayerTeam;
 
-        // Initialize health system with current health and max health
-        int initialHealth = unit.characterStats.currentHealth;  // Get current health dynamically
-        int maxHealth = unit.characterStats.maxBaseHealth;  // Max health is static (set once)
+        int initialHealth = unit.characterStats.currentHealth;
+        int maxHealth = unit.characterStats.maxBaseHealth;
         healthSystem = new HealthSystem(initialHealth, maxHealth);
 
-        // Get the HealthBar component attached to this character
-        healthBar = GetComponentInChildren<HealthBar>();  // Ensure your HealthBar is a child of this object
+        healthBar = GetComponentInChildren<HealthBar>();
 
-        // Pass the HealthSystem to the HealthBar for synchronization
         healthBar.SetupHealthSystem(healthSystem);
 
-        // Subscribe to health change event in CharacterBattle (if needed)
         healthSystem.OnHealthChange += HealthSystem_OnHealthChanged;
     }
 
-
     public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
     {
-        if (this == null) return;  // If the character is destroyed, do not proceed
-        // Update the health bar whenever health changes
+        if (this == null) return;
         if (healthBar != null)
         {
             float healthPercent = healthSystem.GetHealthPercent();
-            healthBar.SetHealthBarSize(healthPercent);  // Update health bar based on health percentage
+            healthBar.SetHealthBarSize(healthPercent);
         }
     }
 
     private void Update()
     {
-        if (this == null) return;  // Prevent errors if the object is destroyed
+        if (this == null) return;
+
+        // If the object has been destroyed, don't proceed further in Update()
+        if (healthSystem.IsDead()) return;
+
         switch (state)
         {
             case State.Idle:
                 break;
-
             case State.Sliding:
                 Vector3 direction = (slideTargetPosition - GetPosition());
                 transform.position += direction * slideSpeed * Time.deltaTime;
 
                 if (Vector3.Distance(GetPosition(), slideTargetPosition) < reachedDistance)
                 {
-                    transform.position = slideTargetPosition;  // Ensure we reach the target position
-                    onSlideComplete?.Invoke();  // Null check before invoking
+                    transform.position = slideTargetPosition;
+                    onSlideComplete?.Invoke();
                 }
                 break;
-
             case State.Busy:
                 break;
         }
@@ -89,31 +85,36 @@ public class CharacterBattle : MonoBehaviour
 
     public void Damage(int damageAmount)
     {
+        if (this == null) return; // Check if object is destroyed before applying damage
+
         healthSystem.Damage(damageAmount);
-        Debug.Log("Hit! Health: " + healthSystem.GetHealthPercent());
         DamagePopup.Create(GetPosition(), damageAmount);
-        if (healthSystem.IsDead())
+        if (healthSystem.IsDead())  // Check if the character is dead
         {
-            Destroy(this.gameObject);
+            Destroy(this.gameObject); // Destroy the object if health is zero
         }
     }
 
     public Vector3 GetPosition()
     {
-        return transform.position;  // Return the position of the character
+        // Ensure that the object is not destroyed
+        if (this == null) return Vector3.zero;
+
+        return transform.position;
     }
 
     public void Attack(CharacterBattle targetCharacterBattle, Action onAttackComplete)
     {
-        if (this == null || targetCharacterBattle == null) return; // Prevent errors if the object is destroyed
+        if (this == null || targetCharacterBattle == null) return;
+
+        // Check if either character is destroyed
+        if (targetCharacterBattle == null || targetCharacterBattle.healthSystem.IsDead()) return;
 
         Vector3 targetPosition = targetCharacterBattle.GetPosition();
-
         Vector3 slideDirection = (targetPosition - GetPosition()).normalized;
         float slideDistance = Vector3.Distance(GetPosition(), targetPosition);
         Vector3 slideTargetPosition = GetPosition() + slideDirection * slideDistance;
 
-        // Attack damage
         targetCharacterBattle.Damage(10);
 
         Vector3 startingPosition = GetPosition();
@@ -122,19 +123,21 @@ public class CharacterBattle : MonoBehaviour
         {
             state = State.Busy;
 
-            // Perform attack logic here, for example applying damage to the target.
             Vector3 attackDir = (targetCharacterBattle.GetPosition() - GetPosition()).normalized;
 
             SlideToPosition(startingPosition, () =>
             {
                 state = State.Idle;
-                onAttackComplete?.Invoke();  // Return to idle after the attack
+                onAttackComplete?.Invoke();
             });
         });
     }
 
     private void SlideToPosition(Vector3 slideTargetPosition, Action onSlideComplete)
     {
+        // Check if the object is destroyed before starting the slide
+        if (this == null) return;
+
         this.slideTargetPosition = slideTargetPosition;
         this.onSlideComplete = onSlideComplete;
         state = State.Sliding;
@@ -142,11 +145,24 @@ public class CharacterBattle : MonoBehaviour
 
     public void HideSelectionCircle()
     {
-        selectionCircle.SetActive(false);
+        if (selectionCircle != null)
+        {
+            selectionCircle.SetActive(false);
+        }
     }
 
     public void ShowSelectionCircle()
     {
-        selectionCircle.SetActive(true);
+        if (selectionCircle != null)
+        {
+            selectionCircle.SetActive(true);
+        }
+    }
+
+    // Add this method to check if the character is dead
+    public bool IsDead()
+    {
+        if (healthSystem == null) return true;
+        return healthSystem.IsDead();  // Checks the health system for death
     }
 }
