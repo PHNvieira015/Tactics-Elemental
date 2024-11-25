@@ -8,16 +8,9 @@ public class Unit : MonoBehaviour
 {
     // Reference to CharacterStat ScriptableObject for accessing stats and data
     public CharacterStat characterStats;
-
     // Initialize the character stats (this is done by the Inspector in this case)
-    private void Awake()
-    {
-        if (characterStats == null)
-        {
-            Debug.LogError("CharacterStats reference is missing!");
-        }
-    }
 
+    
     // Control player properties
     public int teamID; //team 1 or 2
     public int playerOwner; // 1 for Player 1, 2 for Player 2
@@ -30,12 +23,54 @@ public class Unit : MonoBehaviour
     public GameObject weaponIcon; //icon over unit if it's attackable
     // AttackRange
     public int attackRange;
+
     List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range
-    public List<Ability> abilities;
+
     private LevelSystem levelSystem;
 
+    //samething?
+    private UnitSkills unitSkills;
+    public List<Ability> abilities;
+
+    #region skills
+    private void Awake()
+    {
+        if (characterStats == null)
+        {
+            Debug.LogError("CharacterStats reference is missing!");
+        }
+        unitSkills = new UnitSkills();
+        unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
+    }
+    #endregion
+    #region SkillTree
+    private void UnitSkills_OnSkillUnlocked(object sender, UnitSkills.OnSkillUnlockedEventArgs e)
+    {
+        switch (e.skillType)
+        {
+
+            case UnitSkills.SkillType.MoveSpeed_1:
+                //make effect for 
+                Debug.Log("MoveSPeed_1");
+                break;
+            case UnitSkills.SkillType.MoveSpeed_2:
+                //make effect for 
+                Debug.Log("MoveSPeed_2");
+                break;
+            case UnitSkills.SkillType.HealthMax_1:
+                //make effect for 
+                Debug.Log("HeathMax_1");
+                break;
+            case UnitSkills.SkillType.HealthMax_2:
+                //make effect for 
+                Debug.Log("HeathMax_2");
+                break;
+        }
+    }
+    #endregion
 
 
+    #region levelsystem
     public void SetLevelSystem(LevelSystem levelSystem)
     {
         this.levelSystem = levelSystem;
@@ -49,18 +84,20 @@ public class Unit : MonoBehaviour
 
 
     }
-
+    #endregion
 
     // Tile this unit is standing on
     public OverlayTile standingOnTile;
 
+    #region buff/debuff
     // Buffs and debuffs
     public List<Buff> buffs = new List<Buff>(); // List of buffs currently affecting the unit
     public List<Debuff> debuffs = new List<Debuff>(); // List of debuffs currently affecting the unit
-
     // Track current turn for buffs
     private int currentTurn = 0;
+    #endregion
 
+    #region turnstate
     // Turn State
     public enum TurnState { Move, Attack, Skill, Idle }
 
@@ -93,6 +130,7 @@ public class Unit : MonoBehaviour
         }
     }
 
+    #endregion
     private void Start()
     {
         // Example: Adding a buff/debuff manually (if needed)
@@ -131,6 +169,7 @@ public class Unit : MonoBehaviour
         }
     }
 
+    #region buff/debuff
     // Apply buffs
     public void ApplyBuff(Buff newBuff)
     {
@@ -194,8 +233,10 @@ public class Unit : MonoBehaviour
         Debug.Log($"Start of turn {currentTurn} - Refreshing buffs and debuffs.");
         UpdateTurnBasedEffects();
     }
+    #endregion
 
     // This method sets the character's faceDirection at the end of their turn
+    #region facedirection
     private void SetFaceDirectionAtTurnEnd()
     {
         // Logic to determine face direction at the end of the turn.
@@ -218,6 +259,7 @@ public class Unit : MonoBehaviour
             Debug.Log("Unit is facing West.");
         }
     }
+    #endregion
 
     // Placeholder method that might be used to gather enemies
     //void getenemies()
@@ -232,4 +274,20 @@ public class Unit : MonoBehaviour
     //    }
     //}
 
+    //skillcheck
+
+    #region Skills
+
+    //Earthshatterskill
+    public bool CanUseEarthShatter()
+    {
+        return unitSkills.IsSkillUnlocked(UnitSkills.SkillType.Earthshatter);
+    }
+    public UnitSkills GetUnitSkills()
+    {
+        return unitSkills;
+    }
+
+
+    #endregion
 }

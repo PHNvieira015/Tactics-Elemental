@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelText: {fileID: 5502450612843341216}
-  expereinceBarImage: {fileID: 4933677435422604944}
+  experienceBarImage: {fileID: 4933677435422604944}
   ButtonUI_5xp: {fileID: 6264557572270155593}
   ButtonUI_10xp: {fileID: 5553518963518383710}
   ButtonUI_50xp: {fileID: 248101995194900898}
