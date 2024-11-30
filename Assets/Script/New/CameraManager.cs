@@ -1,17 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
     public CameraFollow cameraFollow;
-    public Transform cursorTransform;
-    public Transform selectedUnitTransform;
-    // Start is called before the first frame update
+
     void Start()
     {
-        cameraFollow.Setup(() => cursorTransform.position);
-        //follow player instead of mouse, gonna need that for enemy turn and when a unit is selected
-        //cameraFollow.SetGetCameraFollowPositionFunc(() => selectedUnitTransform.position);
+        // Set the camera to follow the mouse
+        cameraFollow.Setup(() => Camera.main.ScreenToWorldPoint(Input.mousePosition));
+    }
+
+    void Update()
+    {
+        // Update the camera to follow the mouse position in world space
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPosition.z = 0f; // Ensure that the z-coordinate remains constant
+
+        // Debugging: log the mouse world position
+        Debug.Log($"Mouse World Position: {mouseWorldPosition}");
+
+        // Update the camera follow position dynamically
+        cameraFollow.SetGetCameraFollowPositionFunc(() => mouseWorldPosition);
     }
 }

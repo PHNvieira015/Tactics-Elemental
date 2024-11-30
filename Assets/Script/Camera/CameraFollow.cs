@@ -5,18 +5,20 @@ public class CameraFollow : MonoBehaviour
 {
     private Func<Vector3> GetCameraFollowPosition;  // Delegate to get the follow position
     [SerializeField] private float moveThreshold = 1f;  // Dead zone threshold (adjust as needed)
-    [SerializeField] private float cameraMoveSpeed = 2f;  // Adjustable camera move speed (new variable)
+    [SerializeField] private float cameraMoveSpeed = 2f;  // Adjustable camera move speed
     private Vector3 centerPosition;  // The center position of the camera's view
 
     // Camera limits for X and Y movement (set in inspector)
     public Vector3 mapMin;
     public Vector3 mapMax;
 
+    // Setup function to assign the follow target (delegate)
     public void Setup(Func<Vector3> cameraFollowPosition)
     {
         this.GetCameraFollowPosition = cameraFollowPosition;
     }
 
+    // Set function to dynamically change the follow target
     public void SetGetCameraFollowPositionFunc(Func<Vector3> GetCameraFollowPosition)
     {
         this.GetCameraFollowPosition = GetCameraFollowPosition;
@@ -40,11 +42,17 @@ public class CameraFollow : MonoBehaviour
         Vector3 cameraFollowPosition = GetCameraFollowPosition();
         cameraFollowPosition.z = transform.position.z;  // Keep the camera's z-position the same
 
+        // Debugging: log the mouse/world position to see if it's being passed correctly
+        Debug.Log($"Mouse Position (World Space): {cameraFollowPosition}");
+
         // Calculate the distance from the center of the camera's view
         Vector3 screenCenter = transform.position; // This is where the camera is currently located
         float distanceFromCenter = Vector3.Distance(cameraFollowPosition, screenCenter);
 
-        // If the mouse (or target position) is within the threshold, don't move the camera
+        // Debugging: log the distance from the center
+        Debug.Log($"Distance from Camera Center: {distanceFromCenter}");
+
+        // If the target position is within the threshold, don't move the camera
         if (distanceFromCenter > moveThreshold)
         {
             // Step 1: Clamp the target position before moving the camera
