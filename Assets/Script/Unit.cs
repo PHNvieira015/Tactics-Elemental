@@ -49,21 +49,29 @@ public class Unit : MonoBehaviour
         switch (e.skillType)
         {
 
-            case UnitSkills.SkillType.MoveSpeed_1:
+            case UnitSkills.SkillType.Tier1_1:
                 //make effect for 
                 Debug.Log("MoveSPeed_1");
                 break;
-            case UnitSkills.SkillType.MoveSpeed_2:
+            case UnitSkills.SkillType.Tier2_1:
                 //make effect for 
                 Debug.Log("MoveSPeed_2");
                 break;
-            case UnitSkills.SkillType.HealthMax_1:
+            case UnitSkills.SkillType.Tier1_2:
                 //make effect for 
                 Debug.Log("HeathMax_1");
                 break;
-            case UnitSkills.SkillType.HealthMax_2:
+            case UnitSkills.SkillType.Tier2_2:
                 //make effect for 
                 Debug.Log("HeathMax_2");
+                break;
+            case UnitSkills.SkillType.Tier3_1:
+                //make effect for 
+                Debug.Log("Earthshatter");
+                break;
+            case UnitSkills.SkillType.Tier3_2:
+                //make effect for 
+                Debug.Log("EarthShatter2");
                 break;
         }
     }
@@ -141,13 +149,16 @@ public class Unit : MonoBehaviour
     }
 
     // Call this method to start a new turn
+    #region TurnState
     public void StartNewTurn()
     {
         currentTurn++;
         UpdateTurnBasedEffects();
     }
 
+    #endregion
     // Method to check if the unit is alive
+    #region TakeDamage
     public bool IsAlive()
     {
         return isAlive && !isDown; // Unit is alive if isAlive is true and isDown is false
@@ -168,6 +179,7 @@ public class Unit : MonoBehaviour
             Debug.Log($"{gameObject.name} has been defeated!");
         }
     }
+    #endregion
 
     #region buff/debuff
     // Apply buffs

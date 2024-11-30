@@ -20,10 +20,12 @@ public class UnitSkills
         None,
         Earthshatter,
         Whirlwind,
-        MoveSpeed_1,
-        MoveSpeed_2,
-        HealthMax_1,
-        HealthMax_2,
+        Tier1_2,
+        Tier2_2,
+        Tier1_1,
+        Tier2_1,
+        Tier3_1,
+        Tier3_2,
         // Add more skills here as needed
     }
 
@@ -59,6 +61,7 @@ public class UnitSkills
         return unlockedSkillTypeList.Contains(skilltype);
     }
 
+
     // Method to activate the skill (only if it's unlocked)
     public void ActivateTalent(SkillType skilltype)
     {
@@ -75,12 +78,12 @@ public class UnitSkills
     }
 
     // Method to get skill requirements
+
     public SkillType GetSkillRequirement(SkillType skilltype)
     {
         switch (skilltype)
         {
-            case SkillType.HealthMax_2: return SkillType.HealthMax_1;
-            case SkillType.MoveSpeed_2: return SkillType.MoveSpeed_1;
+            case SkillType.Tier2_1: return SkillType.Tier1_1;
             case SkillType.Whirlwind: return SkillType.Earthshatter;
             default: return SkillType.None; // Return SkillType.None if no requirement
         }
@@ -89,23 +92,34 @@ public class UnitSkills
     // Method to try unlocking a skill based on its requirements
     public bool TryUnlockSkill(SkillType skillType)
     {
+        if (CanUnlock(skillType))
+        {
+            UnlockSkill(skillType);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+   
+    public bool CanUnlock(SkillType skillType)
+    {
         SkillType skillRequirement = GetSkillRequirement(skillType);
-        if (skillRequirement != SkillType.None) // Fixed missing parentheses
+        if (skillRequirement != SkillType.None)
         {
             if (IsSkillUnlocked(skillRequirement))
             {
-                UnlockSkill(skillType);
-                return true; // Skill successfully unlocked
+                return true;
             }
             else
             {
-                return false; // Skill cannot be unlocked, requirement not met
+                return false;
             }
         }
         else
         {
-            UnlockSkill(skillType); // Unlock skill without any requirement
-            return true; // Skill successfully unlocked
+            return true;
         }
     }
 
