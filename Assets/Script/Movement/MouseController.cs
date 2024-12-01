@@ -6,6 +6,7 @@ using TacticsToolkit;
 
 public class MouseController : MonoBehaviour
 {
+    public GameMaster gameMaster;  // Reference to the GameMaster
     public MapManager mapManager;
     public GameObject cursor;
     public float speed;
@@ -21,6 +22,8 @@ public class MouseController : MonoBehaviour
 
     public Color color = Color.green;  // Default color for the tiles (you can change this)
 
+    public List<Unit> playerAvailableUnits;  // List of available units for the player
+
     private void Start()
     {
         pathFinder = new PathFinder();
@@ -30,6 +33,14 @@ public class MouseController : MonoBehaviour
         path = new List<OverlayTile>();
         isMoving = false;
         rangeFinderTiles = new List<OverlayTile>();
+
+        if (gameMaster == null)
+        {
+            gameMaster = FindObjectOfType<GameMaster>();  // In case it's not assigned via Inspector
+        }
+
+        // Now you can access the available units like this:
+        playerAvailableUnits = gameMaster.playerAvailableUnits;
     }
 
     void LateUpdate()
@@ -64,13 +75,18 @@ public class MouseController : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 // Ensure ShowTile receives the correct TileType (use TileType instead of TileTypes)
-                tile.ShowTile(color, TileType.Movement);  // Assuming TileType is the correct enum type
+                tile.ShowTile(color, TileType.Spawn);  // Assuming TileType is the correct enum type
 
-                if (unit == null)  // Instantiate the unit
-                {
-                    unit = Instantiate(characterPrefab).GetComponent<Unit>();
-                    PositionCharacterOnLine(tile);
-                    GetInRangeTiles();
+                    if (gameMaster.playerAvailableUnits.Count > 0)
+                    {
+                    if (tile.GetComponent<SpawningTile>() != null)  // Check if the tile is a SpawningTile
+                    {
+                        SpawnUnitOnTile(tile);
+                    }
+                    else
+                    {
+                        Debug.Log("Cannot spawn unit here, tile is not a SpawningTile.");
+                    }
                 }
                 else
                 {
@@ -83,6 +99,25 @@ public class MouseController : MonoBehaviour
         if (path.Count > 0 && isMoving)
         {
             MoveAlongPath();
+        }
+    }
+
+    private void SpawnUnitOnTile(OverlayTile tile)
+    {
+        // Display the list of available units for the player to choose from
+        if (playerAvailableUnits.Count > 0)
+        {
+            // Choose a unit (you can modify this based on your UI, or randomly select for now)
+            Unit selectedUnit = playerAvailableUnits[0];  // Select the first unit as an example (modify this logic for selection)
+            unit = Instantiate(selectedUnit.gameObject).GetComponent<Unit>();
+
+            // Position the unit on the spawning tile
+            PositionCharacterOnLine(tile);
+            GetInRangeTiles();
+        }
+        else
+        {
+            Debug.Log("No available units to spawn.");
         }
     }
 

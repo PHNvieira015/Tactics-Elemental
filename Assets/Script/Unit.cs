@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+[System.Serializable]
 public class Unit : MonoBehaviour
 {
     // Reference to CharacterStat ScriptableObject for accessing stats and data
     public CharacterStat characterStats;
     // Initialize the character stats (this is done by the Inspector in this case)
-
     
     // Control player properties
     public int teamID; //team 1 or 2
@@ -41,6 +41,8 @@ public class Unit : MonoBehaviour
         }
         unitSkills = new UnitSkills();
         unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
+        levelSystem = new LevelSystem(characterStats);
+        levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
     }
     #endregion
     #region SkillTree
@@ -107,31 +109,31 @@ public class Unit : MonoBehaviour
 
     #region turnstate
     // Turn State
-    public enum TurnState { Move, Attack, Skill, Idle }
+    public enum unitTurnState { Move, Attack, Skill, Idle }
 
-    public void SetState(TurnState state)
+    public void SetState(unitTurnState state)
     {
         switch (state)
         {
-            case TurnState.Move:
+            case unitTurnState.Move:
                 if (hasMoved == false)
                 {
                     // EnableMovementUI();
                 }
                 break;
 
-            case TurnState.Attack:
+            case unitTurnState.Attack:
                 if (hasAttacked == false)
                 {
                     // EnableAttackUI();
                 }
                 break;
 
-            case TurnState.Skill:
+            case unitTurnState.Skill:
                 // EnableSkillUI();
                 break;
 
-            case TurnState.Idle:
+            case unitTurnState.Idle:
                 // At the end of the turn, we set the faceDirection.
                 SetFaceDirectionAtTurnEnd();
                 break;

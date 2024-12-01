@@ -9,12 +9,20 @@ public class LevelSystem
     private int level;
     private int experience;
     private int experienceToNextLevel;
+    public CharacterStat characterStats;
 
-    public LevelSystem()
+    public LevelSystem(CharacterStat characterStat)
     {
-        level = 0;
-        experience = 0;
-        experienceToNextLevel = 100;
+        if (characterStat == null)
+        {
+            Debug.LogError("CharacterStat is not assigned!");
+            return;
+        }
+
+        characterStats = characterStat;
+        level = characterStats.CharacterLevel;
+        experience = characterStats.experience;
+        experienceToNextLevel = characterStats.requiredExperience;
     }
 
     // Method to add experience and check for level up
@@ -28,6 +36,9 @@ public class LevelSystem
         {
             level++;
             experience -= experienceToNextLevel;
+            characterStats.SetCharacterLevel(level);
+            characterStats.experience = experience;  // Update the character's experience
+            characterStats.requiredExperience = CalculateRequiredExperience(level);  // Adjust required experience for the next level
 
             // Trigger Level Changed event and log it
             Debug.Log("Level Up! New Level: " + level);
@@ -39,7 +50,10 @@ public class LevelSystem
         OnExperinceChanged?.Invoke(this, EventArgs.Empty);  // Fire the event
     }
 
-
+    private int CalculateRequiredExperience (int currentLevel)
+    {
+        return currentLevel* 20;
+    }
     public int GetLelvelNumber()
     {
         return level;

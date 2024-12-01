@@ -103,5 +103,7 @@ public enum TileType
     Movement,
     AttackRangeColor,
     AttackColor,
-    Blocked
+    Blocked,
+    Spawn,
+
 }

@@ -42,15 +42,9 @@ public class CameraFollow : MonoBehaviour
         Vector3 cameraFollowPosition = GetCameraFollowPosition();
         cameraFollowPosition.z = transform.position.z;  // Keep the camera's z-position the same
 
-        // Debugging: log the mouse/world position to see if it's being passed correctly
-        Debug.Log($"Mouse Position (World Space): {cameraFollowPosition}");
-
         // Calculate the distance from the center of the camera's view
         Vector3 screenCenter = transform.position; // This is where the camera is currently located
         float distanceFromCenter = Vector3.Distance(cameraFollowPosition, screenCenter);
-
-        // Debugging: log the distance from the center
-        Debug.Log($"Distance from Camera Center: {distanceFromCenter}");
 
         // If the target position is within the threshold, don't move the camera
         if (distanceFromCenter > moveThreshold)

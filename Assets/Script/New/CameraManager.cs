@@ -16,9 +16,6 @@ public class CameraManager : MonoBehaviour
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPosition.z = 0f; // Ensure that the z-coordinate remains constant
 
-        // Debugging: log the mouse world position
-        Debug.Log($"Mouse World Position: {mouseWorldPosition}");
-
         // Update the camera follow position dynamically
         cameraFollow.SetGetCameraFollowPositionFunc(() => mouseWorldPosition);
     }

@@ -12,24 +12,37 @@ public class LevelWindow : MonoBehaviour
     [SerializeField] public Button ButtonUI_10xp;
     [SerializeField] public Button ButtonUI_50xp;
 
-    private LevelSystem levelSystem;
+    private LevelSystem levelSystem;   // LevelSystem reference
+    private Unit unit;  // Reference to the Unit script
 
     private void Start()
     {
-        // Initialize LevelSystem
-        levelSystem = new LevelSystem();
+        // Try to find the Unit component attached to the same GameObject or its parent
+        unit = GetComponentInParent<Unit>();  // Get from parent or adjust if necessary
 
-        // Set up UI handlers
+        // Ensure the Unit and CharacterStats are properly assigned
+        if (unit == null || unit.characterStats == null)
+        {
+            Debug.LogError("Unit or CharacterStats is missing in LevelWindow.");
+            return;
+        }
+
+        // Initialize LevelSystem with the characterStats from the Unit
+        levelSystem = new LevelSystem(unit.characterStats);
+
+        // Set up the experience button handlers
         ButtonUI_5xp.onClick.AddListener(() =>
         {
             Debug.Log("Button 5XP pressed");
             levelSystem.AddExperience(5); // Add 5 XP when pressed
         });
+
         ButtonUI_10xp.onClick.AddListener(() =>
         {
             Debug.Log("Button 10XP pressed");
             levelSystem.AddExperience(10); // Add 10 XP when pressed
         });
+
         ButtonUI_50xp.onClick.AddListener(() =>
         {
             Debug.Log("Button 50XP pressed");
@@ -40,21 +53,23 @@ public class LevelWindow : MonoBehaviour
         SetLevelSystem(levelSystem);
     }
 
+    // Method to set experience bar size
     private void SetExperienceBarSize(float experienceNormalized)
     {
         experienceBarImage.fillAmount = experienceNormalized;
         Debug.Log("Experience bar updated: " + experienceNormalized); // Debug log for experience bar update
     }
 
+    // Method to set level number
     private void SetLevelNumber(int levelNumber)
     {
-        levelText.text = "Level\n" + (levelNumber + 1);
+        levelText.text = "Level\n" + (levelNumber + 1); // Display level number (adjust for 1-based index)
         Debug.Log("Level updated: " + (levelNumber + 1)); // Debug log for level update
     }
 
+    // Set LevelSystem and subscribe to events
     public void SetLevelSystem(LevelSystem levelSystem)
     {
-        // Ensure the level system is set
         if (levelSystem == null)
         {
             Debug.LogError("LevelSystem is not assigned to LevelWindow.");
@@ -63,7 +78,7 @@ public class LevelWindow : MonoBehaviour
 
         this.levelSystem = levelSystem;
 
-        // Update initial UI values
+        // Update UI with the initial level and experience values
         SetLevelNumber(levelSystem.GetLelvelNumber());
         SetExperienceBarSize(levelSystem.GetexperienceNormalized());
 
@@ -71,19 +86,20 @@ public class LevelWindow : MonoBehaviour
         levelSystem.OnExperinceChanged += LevelSystem_OnExperinceChanged;
         levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
 
-        // Debugging the subscription
         Debug.Log("Subscribed to LevelSystem events.");
     }
 
+    // Event handler when experience changes
     private void LevelSystem_OnExperinceChanged(object sender, System.EventArgs e)
     {
-        Debug.Log("Experience Changed Event Triggered"); // Check if this event is triggered
+        Debug.Log("Experience Changed Event Triggered");
         SetExperienceBarSize(levelSystem.GetexperienceNormalized());
     }
 
+    // Event handler when level changes
     private void LevelSystem_OnLevelChanged(object sender, System.EventArgs e)
     {
-        Debug.Log("Level Changed Event Triggered"); // Check if this event is triggered
+        Debug.Log("Level Changed Event Triggered");
         SetLevelNumber(levelSystem.GetLelvelNumber());
     }
 }

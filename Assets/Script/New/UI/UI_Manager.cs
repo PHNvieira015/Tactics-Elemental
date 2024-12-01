@@ -8,6 +8,7 @@ public class UI_Manager : MonoBehaviour
     [SerializeField] private Unit unit;
     public Transform UI_Health;
     public Transform UI_Level;
+    public Transform ActionMenu;
 
     // Start is called before the first frame update
     private void Awake()
@@ -21,7 +22,7 @@ public class UI_Manager : MonoBehaviour
     {
         HealthBar healthBar = UI_Health.GetComponent<HealthBar>();
         LevelWindow levelWindow = UI_Level.GetComponent<LevelWindow>();
-
+        
 
     }
 }

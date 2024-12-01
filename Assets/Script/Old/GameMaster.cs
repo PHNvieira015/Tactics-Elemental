@@ -4,64 +4,39 @@ using UnityEngine;
 
 public class GameMaster : MonoBehaviour
 {
-    /*
-    public CharacterInfo selectedUnit;
+    public List<Unit> playerAvailableUnits;  // The list of units available to the player
+    public Unit unitPrefab; // Drag your prefab into this field in the Inspector
+    public CharacterStat defaultCharacterStat;  // Reference to a default CharacterStat ScriptableObject
 
-    public int playerTurn = 1;
-
-    public GameObject selectedUnitSquare;
-    public void ResetTiles()
+    void Start()
     {
-        foreach (Tile tile in FindObjectsOfType<Tile>())
-        {
-            tile.Reset();
-        }
+        // Instantiate a new Unit prefab
+        Unit newUnit = Instantiate(unitPrefab);
+
+        // Assign the default CharacterStat ScriptableObject to the new unit
+        newUnit.characterStats = defaultCharacterStat;
+
+        // Add the new unit to the list
+        playerAvailableUnits.Add(newUnit);
+
+        // Print the list of units to the console
+        PrintUnitList();
     }
 
-    private void Update()
+    // Method to print out the details of all units in the list
+    void PrintUnitList()
     {
+        // Check if the list is empty
+        if (playerAvailableUnits.Count == 0)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                EndTurn();
-            }
-            if (selectedUnit != null)
-            {
-                selectedUnitSquare.SetActive(true);
-                selectedUnitSquare.transform.position = selectedUnit.transform.position;
-            }
-            else
-            {
-                selectedUnitSquare.SetActive(false);
-            }
+            Debug.Log("No units available.");
+            return;
+        }
+
+        // Loop through the list and print each unit's details
+        foreach (Unit unit in playerAvailableUnits)
+        {
+            Debug.Log($"Unit Name: {unit.characterStats.CharacterName}, Health: {unit.characterStats.currentHealth}");
         }
     }
-    void EndTurn()
-    {
-        if (playerTurn == 1)
-        {
-            playerTurn = 2;
-        }
-        else if (playerTurn == 2)
-        {
-            playerTurn = 1;
-        }
-        if (selectedUnit != null)
-        {
-            selectedUnit.selected = false;
-            selectedUnit = null;
-        }
-        ResetTiles();
-
-        foreach (CharacterInfo CharacterInfo in FindObjectsOfType<Unit>())
-        {
-            CharacterInfo.hasMoved = false;
-            CharacterInfo.weaponIcon.SetActive(false);
-            CharacterInfo.hasAttacked = false;
-        }
-
-    }
-
-    // Start is called before the first frame update
-*/
 }
