@@ -1,11 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterBattle : MonoBehaviour
 {
     private Unit unit;
+    private CharacterStat characterStat; // Declare characterStat at the class level
     private State state;
     private Vector3 slideTargetPosition;
     private Action onSlideComplete;
@@ -26,43 +25,41 @@ public class CharacterBattle : MonoBehaviour
     private void Awake()
     {
         unit = GetComponent<Unit>();
+        characterStat = GetComponent<CharacterStat>();
         selectionCircle = transform.Find("SelectionCircle").gameObject;
         HideSelectionCircle();
         state = State.Idle;
-        Setup(true);
+        Setup(true); // This should initialize the health system properly
     }
 
     public void Setup(bool isPlayerTeam)
+{
+    this.isPlayerTeam = isPlayerTeam;
+
+    int initialHealth = characterStat.currentHealth;  // Get current health from characterStats
+    int maxHealth = characterStat.maxBaseHealth;  // Get max health from characterStats
+    healthSystem = new HealthSystem(initialHealth, maxHealth, characterStat);  // Pass characterStats
+
+    healthBar = GetComponentInChildren<HealthBar>();
+    healthBar.SetupHealthSystem(healthSystem);
+
+    healthSystem.OnHealthChange += HealthSystem_OnHealthChanged;
+}
+
+public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
+{
+    if (this == null) return;
+    if (healthBar != null)
     {
-        this.isPlayerTeam = isPlayerTeam;
-
-        int initialHealth = unit.characterStats.currentHealth;
-        int maxHealth = unit.characterStats.maxBaseHealth;
-        healthSystem = new HealthSystem(initialHealth, maxHealth);
-
-        healthBar = GetComponentInChildren<HealthBar>();
-
-        healthBar.SetupHealthSystem(healthSystem);
-
-        healthSystem.OnHealthChange += HealthSystem_OnHealthChanged;
+        float healthPercent = healthSystem.GetHealthPercent();
+        healthBar.SetHealthBarSize(healthPercent);
     }
+}
 
-    public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
-    {
-        if (this == null) return;
-        if (healthBar != null)
-        {
-            float healthPercent = healthSystem.GetHealthPercent();
-            healthBar.SetHealthBarSize(healthPercent);
-        }
-    }
 
     private void Update()
     {
         if (this == null) return;
-
-        // If the object has been destroyed, don't proceed further in Update()
-        if (healthSystem.IsDead()) return;
 
         switch (state)
         {

@@ -7,20 +7,20 @@ using UnityEngine.Tilemaps;
 [System.Serializable]
 public class Unit : MonoBehaviour
 {
-    // Reference to CharacterStat ScriptableObject for accessing stats and data
-    public CharacterStat characterStats;
-    // Initialize the character stats (this is done by the Inspector in this case)
-    
+    // Reference to CharacterStat MonoBehaviour for accessing stats and data
+    public CharacterStat characterStats;  // Now a component of the same GameObject
+
     // Control player properties
-    public int teamID; //team 1 or 2
+    public int teamID; // Team 1 or 2
     public int playerOwner; // 1 for Player 1, 2 for Player 2
     public int Mitigation; // Damage mitigation
     public bool isAlive = true; // Default value for isAlive
     public bool isDown; // Whether the unit is down (incapacitated)
     public bool hasMoved; // Whether the unit has moved in this turn
     public bool hasAttacked; // Whether the unit has attacked in this turn
-    public bool selected; // Add this to track if the unit is selected
-    public GameObject weaponIcon; //icon over unit if it's attackable
+    public bool selected; // Track if the unit is selected
+    public GameObject weaponIcon; // Icon over unit if it's attackable
+
     // AttackRange
     public int attackRange;
 
@@ -28,87 +28,76 @@ public class Unit : MonoBehaviour
 
     private LevelSystem levelSystem;
 
-    //samething?
     private UnitSkills unitSkills;
     public List<Ability> abilities;
 
     #region skills
     private void Awake()
     {
+        // Get the CharacterStat component from the same GameObject this Unit is attached to
+        characterStats = GetComponent<CharacterStat>();
+
         if (characterStats == null)
         {
-            Debug.LogError("CharacterStats reference is missing!");
+            Debug.LogError("CharacterStat component is missing from this GameObject!");
         }
-        unitSkills = new UnitSkills();
-        unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
-        levelSystem = new LevelSystem(characterStats);
-        levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
+        else
+        {
+            unitSkills = new UnitSkills();
+            unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
+            levelSystem = new LevelSystem(characterStats);
+            levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
+        }
     }
-    #endregion
-    #region SkillTree
+
     private void UnitSkills_OnSkillUnlocked(object sender, UnitSkills.OnSkillUnlockedEventArgs e)
     {
         switch (e.skillType)
         {
-
             case UnitSkills.SkillType.Tier1_1:
-                //make effect for 
-                Debug.Log("MoveSPeed_1");
+                Debug.Log("MoveSpeed_1");
                 break;
             case UnitSkills.SkillType.Tier2_1:
-                //make effect for 
-                Debug.Log("MoveSPeed_2");
+                Debug.Log("MoveSpeed_2");
                 break;
             case UnitSkills.SkillType.Tier1_2:
-                //make effect for 
-                Debug.Log("HeathMax_1");
+                Debug.Log("HealthMax_1");
                 break;
             case UnitSkills.SkillType.Tier2_2:
-                //make effect for 
-                Debug.Log("HeathMax_2");
+                Debug.Log("HealthMax_2");
                 break;
             case UnitSkills.SkillType.Tier3_1:
-                //make effect for 
                 Debug.Log("Earthshatter");
                 break;
             case UnitSkills.SkillType.Tier3_2:
-                //make effect for 
                 Debug.Log("EarthShatter2");
                 break;
         }
     }
     #endregion
 
-
     #region levelsystem
     public void SetLevelSystem(LevelSystem levelSystem)
     {
         this.levelSystem = levelSystem;
-
         levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
     }
+
     private void LevelSystem_OnLevelChanged(object sender, EventArgs e)
     {
-        //effects for levelingUp
         Debug.Log("Personagem subiu de nivel!");
-
-
     }
     #endregion
 
-    // Tile this unit is standing on
     public OverlayTile standingOnTile;
 
     #region buff/debuff
-    // Buffs and debuffs
     public List<Buff> buffs = new List<Buff>(); // List of buffs currently affecting the unit
     public List<Debuff> debuffs = new List<Debuff>(); // List of debuffs currently affecting the unit
-    // Track current turn for buffs
     private int currentTurn = 0;
     #endregion
 
     #region turnstate
-    // Turn State
     public enum unitTurnState { Move, Attack, Skill, Idle }
 
     public void SetState(unitTurnState state)
@@ -134,42 +123,29 @@ public class Unit : MonoBehaviour
                 break;
 
             case unitTurnState.Idle:
-                // At the end of the turn, we set the faceDirection.
                 SetFaceDirectionAtTurnEnd();
                 break;
         }
     }
-
     #endregion
+
     private void Start()
     {
-        // Example: Adding a buff/debuff manually (if needed)
         if (buffs.Count > 0)
         {
             Debug.Log($"First Buff: {buffs[0].buffName}");
         }
     }
 
-    // Call this method to start a new turn
-    #region TurnState
-    public void StartNewTurn()
-    {
-        currentTurn++;
-        UpdateTurnBasedEffects();
-    }
-
-    #endregion
-    // Method to check if the unit is alive
     #region TakeDamage
     public bool IsAlive()
     {
         return isAlive && !isDown; // Unit is alive if isAlive is true and isDown is false
     }
 
-    // Damage system
     public void TakeDamage(int damage)
     {
-        int effectiveDamage = Mathf.Max(damage - Mitigation, 1); // Mitigation reduces damage, but minimum is 1
+        int effectiveDamage = Mathf.Max(damage - Mitigation, 1);
         characterStats.currentHealth -= effectiveDamage;
 
         Debug.Log($"{gameObject.name} took {effectiveDamage} damage. Remaining HP: {characterStats.currentHealth}");
@@ -183,8 +159,7 @@ public class Unit : MonoBehaviour
     }
     #endregion
 
-    #region buff/debuff
-    // Apply buffs
+    #region Buff/Debuff
     public void ApplyBuff(Buff newBuff)
     {
         if (!buffs.Contains(newBuff)) // Prevent applying duplicates
@@ -198,7 +173,6 @@ public class Unit : MonoBehaviour
         }
     }
 
-    // Apply debuffs
     public void ApplyDebuff(Debuff newDebuff)
     {
         if (!debuffs.Contains(newDebuff)) // Prevent applying duplicates
@@ -212,50 +186,40 @@ public class Unit : MonoBehaviour
         }
     }
 
-    // Method to update the buffs/debuffs each turn
     private void UpdateTurnBasedEffects()
     {
-        // For Buffs: Decrease duration for each buff
         foreach (var buff in buffs)
         {
-            buff.duration--; // Decrease duration by 1 turn
+            buff.duration--;
             if (buff.duration <= 0)
             {
                 Debug.Log($"Buff {buff.buffName} has expired.");
             }
         }
 
-        // For Debuffs: Decrease duration for each debuff
         foreach (var debuff in debuffs)
         {
-            debuff.duration--; // Decrease duration by 1 turn
+            debuff.duration--;
             if (debuff.duration <= 0)
             {
                 Debug.Log($"Debuff {debuff.debuffName} has expired.");
             }
         }
 
-        // Remove expired buffs and debuffs
         buffs.RemoveAll(buff => buff.duration <= 0);
         debuffs.RemoveAll(debuff => debuff.duration <= 0);
     }
 
-    // This method will be called every time the turn starts to refresh status effects
     public void RefreshStatusEffects()
     {
-        // Optional: Refresh buffs/debuffs based on turn
         Debug.Log($"Start of turn {currentTurn} - Refreshing buffs and debuffs.");
         UpdateTurnBasedEffects();
     }
     #endregion
 
-    // This method sets the character's faceDirection at the end of their turn
-    #region facedirection
+    #region FaceDirection
     private void SetFaceDirectionAtTurnEnd()
     {
-        // Logic to determine face direction at the end of the turn.
-        // Assuming the unit's last action, or input decides the direction.
-
         if (characterStats.faceDirection == CharacterStat.Direction.North)
         {
             Debug.Log("Unit is facing North.");
@@ -273,35 +237,15 @@ public class Unit : MonoBehaviour
             Debug.Log("Unit is facing West.");
         }
     }
-    #endregion
+#endregion
 
-    // Placeholder method that might be used to gather enemies
-    //void getenemies()
-    //{
-    //    enemiesInRange.Clear();
-    //    foreach (Unit unit in FindObjectsOfType<Unit>())
-    //    {
-    //        if (Mathf.Abs(transform.position.x - unit.transform.position.x) < attackRange)
-    //        {
-    //            enemiesInRange.Add(unit);
-    //        }
-    //    }
-    //}
-
-    //skillcheck
-
-    #region Skills
-
-    //Earthshatterskill
     public bool CanUseEarthShatter()
     {
         return unitSkills.IsSkillUnlocked(UnitSkills.SkillType.Earthshatter);
     }
+
     public UnitSkills GetUnitSkills()
     {
         return unitSkills;
     }
-
-
-    #endregion
 }

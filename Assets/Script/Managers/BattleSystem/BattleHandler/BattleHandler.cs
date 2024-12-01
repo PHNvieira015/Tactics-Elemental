@@ -12,14 +12,10 @@ public class BattleHandler : MonoBehaviour
         return instance;
     }
 
+    // References to both character battle units (player and enemy)
+    public CharacterBattle attackCharacterBattle;
+    public CharacterBattle targetCharacterBattle;
 
-    [SerializeField] private Transform pfCharacterBattle;
-    public Transform SpawningPoint1;
-    public Transform SpawningPoint2;
-
-
-    private CharacterBattle attackerCharacterBattle;
-    private CharacterBattle TargetCharacterBattle;
     private CharacterBattle activeCharacterBattle;
     private State state;
 
@@ -36,10 +32,8 @@ public class BattleHandler : MonoBehaviour
 
     private void Start()
     {
-        attackerCharacterBattle = SpawnCharacter(true);
-        TargetCharacterBattle = SpawnCharacter(false);
-
-        SetActiveCharacterBattle(attackerCharacterBattle);
+        // Set the active character at the start (attacker will be the first active character)
+        activeCharacterBattle = attackCharacterBattle;
         state = State.WaitingForPlayer;
     }
 
@@ -47,33 +41,34 @@ public class BattleHandler : MonoBehaviour
     {
         if (state == State.WaitingForPlayer)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            // Mouse click to select target
+            if (Input.GetMouseButtonDown(0))  // Left mouse click
             {
-                state = State.Busy;
-                attackerCharacterBattle.Attack(TargetCharacterBattle, () => {
-                    ChooseNextActiveCharacter();
-                });
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out hit))
+                {
+                    CharacterBattle selectedCharacter = hit.transform.GetComponent<CharacterBattle>();
+
+                    if (selectedCharacter != null && selectedCharacter != activeCharacterBattle)
+                    {
+                        // If the selected character is not the active one, set it as the target
+                        SetTargetCharacterBattle(selectedCharacter);
+                        state = State.Busy;
+
+                        // Attack the target
+                        activeCharacterBattle.Attack(targetCharacterBattle, () =>
+                        {
+                            ChooseNextActiveCharacter();
+                        });
+                    }
+                }
             }
         }
     }
 
-    private CharacterBattle SpawnCharacter(bool isPlayerTeam)
-    {
-        Vector3 position;
-        if (isPlayerTeam)
-        {
-            position = SpawningPoint1.position;
-        }
-        else
-        {
-            position = SpawningPoint2.position;        }
-        Transform characterTransform = Instantiate(pfCharacterBattle, position, Quaternion.identity);
-        CharacterBattle characterBattle = characterTransform.GetComponent<CharacterBattle>();
-        characterBattle.Setup(isPlayerTeam);
-
-        return characterBattle;
-    }
-
+    // Set the active character to attack
     private void SetActiveCharacterBattle(CharacterBattle characterBattle)
     {
         if (activeCharacterBattle != null)
@@ -85,6 +80,13 @@ public class BattleHandler : MonoBehaviour
         activeCharacterBattle.ShowSelectionCircle();
     }
 
+    // Set the selected target
+    private void SetTargetCharacterBattle(CharacterBattle selectedTarget)
+    {
+        targetCharacterBattle = selectedTarget;
+    }
+
+    // Switch to the next active character after the attack
     private void ChooseNextActiveCharacter()
     {
         if (TestBattleOver())
@@ -92,34 +94,35 @@ public class BattleHandler : MonoBehaviour
             return;
         }
 
-        if (activeCharacterBattle == attackerCharacterBattle)
+        if (activeCharacterBattle == attackCharacterBattle)
         {
-            SetActiveCharacterBattle(TargetCharacterBattle);
+            SetActiveCharacterBattle(targetCharacterBattle);
             state = State.Busy;
 
-            TargetCharacterBattle.Attack(attackerCharacterBattle, () => {
+            targetCharacterBattle.Attack(attackCharacterBattle, () =>
+            {
                 ChooseNextActiveCharacter();
             });
         }
         else
         {
-            SetActiveCharacterBattle(attackerCharacterBattle);
+            SetActiveCharacterBattle(attackCharacterBattle);
             state = State.WaitingForPlayer;
         }
     }
 
+    // Test if the battle is over
     private bool TestBattleOver()
     {
-        if (attackerCharacterBattle.IsDead())
+        if (attackCharacterBattle.IsDead())
         {
             // Player dead, enemy wins
             battleOverWindow.ShowBattleResult(false); // Show losing message
             return true;
         }
-        if (TargetCharacterBattle.IsDead())
+        if (targetCharacterBattle.IsDead())
         {
             // Enemy dead, player wins
-            //CodeMonkey.CMDebug.TextPopupMouse("Player Wins!");
             battleOverWindow.ShowBattleResult(true); // Show winner message
             return true;
         }

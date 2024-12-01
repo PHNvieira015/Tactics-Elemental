@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-public class HealthBar : MonoBehaviour
+public class HealthBar2 : MonoBehaviour
 {
     private HealthSystem healthSystem;  // Declare healthSystem instance correctly
     private int healthMax;
 
     [SerializeField] public Image HealthBarImage;
-    [SerializeField] public TextMeshProUGUI healthText;
-    [SerializeField] public Button ButtonUI_Reset;
-    [SerializeField] public Button ButtonUI_Damage;
-    [SerializeField] public Button ButtonUI_Heal;
+    //[SerializeField] public TextMeshProUGUI healthText;
+    //[SerializeField] public Button ButtonUI_Reset;
+    //[SerializeField] public Button ButtonUI_Damage;
+    //[SerializeField] public Button ButtonUI_Heal;
 
     // Start is called before the first frame update
     void Start()
     {
         // Setup button listeners
-        ButtonUI_Reset.onClick.AddListener(ResetHealth);
-        ButtonUI_Damage.onClick.AddListener(DamageHealth);
-        ButtonUI_Heal.onClick.AddListener(HealHealth);
+        //ButtonUI_Reset.onClick.AddListener(ResetHealth);
+        //ButtonUI_Damage.onClick.AddListener(DamageHealth);
+        //ButtonUI_Heal.onClick.AddListener(HealHealth);
     }
 
     // Method to set up HealthSystem externally from CharacterBattle
@@ -40,7 +40,7 @@ public class HealthBar : MonoBehaviour
     {
         // Update the health bar and health text when health changes
         SetHealthBarSize(healthSystem.GetHealthPercent());
-        SetHealthNumber(healthSystem.GetHealth(), healthSystem.healthMax);
+        SetHealthNumber(healthSystem.GetHealth(), healthSystem.GetHealthMax()); // Using the getter here
     }
 
     // Method to update the health bar size based on normalized health value
@@ -52,10 +52,10 @@ public class HealthBar : MonoBehaviour
     // Method to update the health text (current health / max health)
     private void SetHealthNumber(int health, int healthMax)
     {
-        healthText.text = "Health\n" + health + "/" + healthMax;
+        //healthText.text = "Health\n" + health + "/" + healthMax;
     }
 
-    // Reset health to max
+    // Reset health to max (100 in this case)
     void ResetHealth()
     {
         healthSystem.SetHealthMax();  // Reset health to max value

@@ -5,41 +5,28 @@ public class HealthSystem
 {
     public event EventHandler OnHealthChange;
     public event EventHandler OnDead;
-    public CharacterStat characterStats;
 
-    private int health;
+    private CharacterStat characterStats;  // Reference to CharacterStat
+    public int health;
     public int healthMax;
 
 
-    // Constructor with initial health and max health
-    public HealthSystem(int initialHealth, int healthMax)
+    // Constructor: Initialize with characterStats and values
+    public HealthSystem(int initialHealth, int healthMax, CharacterStat characterStats)
     {
+        this.characterStats = characterStats;
         this.healthMax = healthMax;
-        this.health = Mathf.Clamp(initialHealth, 0, healthMax);  // Ensure initial health is within bounds
 
+        // Initialize health, clamping it between 0 and max health
+        this.health = healthMax;
+
+        // Sync with CharacterStat
+        this.characterStats.currentHealth = this.health;
     }
-    public HealthSystem healthSystem;
-
-    private void Start()
+    public int GetHealthMax()
     {
-        healthSystem = new HealthSystem(characterStats.currentHealth, characterStats.maxBaseHealth);
-        healthSystem.OnHealthChange += HealthSystem_OnHealthChange;
-        healthSystem.OnDead += HealthSystem_OnDead;
+        return healthMax;
     }
-
-    private void HealthSystem_OnHealthChange(object sender, EventArgs e)
-    {
-        // Handle health UI updates
-    }
-
-    private void HealthSystem_OnDead(object sender, EventArgs e)
-    {
-        // Handle death, disable actions, etc.
-    }
-
-
-
-
     public int GetHealth()
     {
         return health;
@@ -50,42 +37,56 @@ public class HealthSystem
         return (float)health / healthMax;
     }
 
-    // Damage health, ensuring health doesn't go below 0
+    // Damage health (update both HealthSystem and CharacterStat)
     public void Damage(int damageAmount)
     {
+        if (health <= 0) return;  // If already dead, return
+
         health -= damageAmount;
-        health = Mathf.Max(health, 0);  // Clamp health to be at least 0
-        OnHealthChanged();  // Trigger event when health changes
-    }
-    // Heal health, ensuring health doesn't exceed max health
-    public void Heal(int healAmount)
-    {
-        health += healAmount;
-        health = Mathf.Min(health, healthMax);  // Clamp health to be at most healthMax
-        OnHealthChanged();  // Trigger event when health changes
+        health = Mathf.Max(health, 0);  // Ensure health doesn't go below 0
+
+        // Update characterStats' currentHealth
+        characterStats.currentHealth = health;
+
+        // Trigger health change event
+        OnHealthChanged();
     }
 
-    // Set health to the maximum value
+    // Heal health (update both HealthSystem and CharacterStat)
+    public void Heal(int healAmount)
+    {
+        if (health >= healthMax) return;  // Don't heal if already at max health
+
+        health += healAmount;
+        health = Mathf.Min(health, healthMax);  // Ensure health doesn't exceed max health
+
+        // Update characterStats' currentHealth
+        characterStats.currentHealth = health;
+
+        // Trigger health change event
+        OnHealthChanged();
+    }
+
     public void SetHealthMax()
     {
         health = healthMax;
-        OnHealthChanged();  // Trigger event when health changes
+        characterStats.currentHealth = health;  // Sync with CharacterStat
+        OnHealthChanged();
     }
 
-    // Method to invoke the OnHealthChange event
+    // Event trigger when health changes
     public void OnHealthChanged()
     {
         OnHealthChange?.Invoke(this, EventArgs.Empty);
     }
+
     public void Die()
     {
-        if (OnDead != null) OnDead(this, EventArgs.Empty);
+        OnDead?.Invoke(this, EventArgs.Empty);
     }
 
     public bool IsDead()
     {
         return health <= 0;
     }
-
-
 }

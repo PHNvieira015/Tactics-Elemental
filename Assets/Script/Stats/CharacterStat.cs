@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Weapon;
 
-[CreateAssetMenu(fileName = "New Character Stats", menuName = "Tactical RPG/Character Stats")]
-public class CharacterStat : ScriptableObject
+public class CharacterStat : MonoBehaviour
 {
     public string CharacterName;
     public string CharacterDescription;
-    public enum CharacterClass { Warrior, Mage, Archer }
+    public enum CharacterClass { None, Warrior, Mage, Archer }
     public CharacterClass characterClass;
 
     // References to other ScriptableObjects
@@ -21,9 +20,9 @@ public class CharacterStat : ScriptableObject
     public Accessory accessory2;   // 2nd accessory slot
 
     // Resources
-    public int maxBaseHealth = 100;
+    public int maxBaseHealth;
     public int currentHealth;
-    public int maxMana = 100;
+    public int maxMana;
     public int currentMana;
 
     // Editable stats (in Inspector)
@@ -38,11 +37,11 @@ public class CharacterStat : ScriptableObject
     public int magicalDefense;
 
     // Define element type and weakness
-    public enum ElementType { Water, Fire, Wind, Earth, Thunder }
+    public enum ElementType { None,Water, Fire, Wind, Earth, Thunder }
     public ElementType elementType; // The element type of the unit
     [HideInInspector] public ElementType weaknessElement; // Weakness based on the element type
 
-    public enum ArmorType { Plate, Mail, Leather, Cloth }
+    public enum ArmorType { None, Plate, Mail, Leather, Cloth }
     [HideInInspector] public ArmorType armorType;
 
     // Player direction
@@ -64,6 +63,9 @@ public class CharacterStat : ScriptableObject
     {
         switch (elementType)
         {
+            case ElementType.None:
+                
+                break;
             case ElementType.Water:
                 weaknessElement = ElementType.Thunder; // Water is weak to Thunder
                 break;

@@ -33,7 +33,6 @@ public class UI_SkillTree : MonoBehaviour
         Talent2_2.onClick.AddListener(OnTalent2_2Clicked);
         Talent3_1.onClick.AddListener(OnTalent3_1Clicked);
         Talent3_2.onClick.AddListener(OnTalent3_2Clicked);
-        
 
         // Add listener for activating skill
         //Skill_1.onClick.AddListener(OnSkill_1Clicked);
@@ -126,11 +125,9 @@ public class UI_SkillTree : MonoBehaviour
     private void OnTalent2_2Clicked()
     {
         if (unitSkills.IsSkillUnlocked(UnitSkills.SkillType.Tier1_1) || unitSkills.IsSkillUnlocked(UnitSkills.SkillType.Tier1_2))
-        { 
-            {
-                UnlockTalent(UnitSkills.SkillType.Tier2_2, Talent2_2);
-                Debug.Log("Tier2_2 unlocked: " + unitSkills.IsSkillUnlocked(UnitSkills.SkillType.Tier2_2));
-            }
+        {
+            UnlockTalent(UnitSkills.SkillType.Tier2_2, Talent2_2);
+            Debug.Log("Tier2_2 unlocked: " + unitSkills.IsSkillUnlocked(UnitSkills.SkillType.Tier2_2));
         }
         else
         {
@@ -152,7 +149,6 @@ public class UI_SkillTree : MonoBehaviour
         }
     }
 
-
     // Handle Talent 3-2 button click
     private void OnTalent3_2Clicked()
     {
@@ -173,16 +169,17 @@ public class UI_SkillTree : MonoBehaviour
     {
         if (unitSkills != null)
         {
-            return;
+            // Implement the skill logic here, for example:
+            Debug.Log("Using Earthshatter!");
         }
         else
         {
-            Debug.Log("Use EarthShatter");
             Debug.LogWarning("UnitSkills is not assigned.");
         }
     }
     #endregion
-    #region active skill
+
+    #region Active Skill
     // Method to set the UnitSkills reference
     public void SetUnitSkills(UnitSkills unitSkills)
     {
@@ -200,23 +197,29 @@ public class UI_SkillTree : MonoBehaviour
 
     private void UpdateVisuals()
     {
-        if (unitSkills.IsSkillUnlocked(UnitSkills.SkillType.Earthshatter))
+        // Update visuals based on unlocked skills
+        if (unitSkills != null)
         {
-            Image skillButtonImage = Skill_1.GetComponent<Image>();
+            UpdateSkillButton(Skill_1, UnitSkills.SkillType.Earthshatter);
+        }
+    }
+
+    private void UpdateSkillButton(Button skillButton, UnitSkills.SkillType skillType)
+    {
+        if (unitSkills.IsSkillUnlocked(skillType))
+        {
+            Image skillButtonImage = skillButton.GetComponent<Image>();
             if (skillButtonImage != null)
             {
-                skillButtonImage.material = null; // Set the material to your desired material
+                skillButtonImage.material = skillUnlockableMaterial;
             }
-            else
+        }
+        else
+        {
+            Image skillButtonImage = skillButton.GetComponent<Image>();
+            if (skillButtonImage != null)
             {
-                if (unitSkills.IsSkillUnlocked(UnitSkills.SkillType.Earthshatter))
-                {
-                    skillButtonImage.material = skillUnlockableMaterial;
-                }
-                else
-                {
-                    skillButtonImage.material = skillLockedMaterial;
-                }
+                skillButtonImage.material = skillLockedMaterial;
             }
         }
     }
