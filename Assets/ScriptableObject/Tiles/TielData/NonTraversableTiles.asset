@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f7a0fbb197fa3a45a878dc2a00c4057, type: 3}
   m_Name: NonTraversableTiles
   m_EditorClassIdentifier: 
-  baseTiles: []
+  baseTiles:
+  - {fileID: 11400000, guid: 184e7162f6894ff419f87bbb626be0cd, type: 2}
   hasTooltip: 0
   tooltipName: 
   tooltipDescription: Non Traversable

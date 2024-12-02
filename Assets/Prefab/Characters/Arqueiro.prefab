@@ -85,6 +85,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 12c4fd245717f1444a373cc9d04e8f6c, type: 3}
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: initiative
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: CharacterName
       value: Red Archer
       objectReference: {fileID: 0}

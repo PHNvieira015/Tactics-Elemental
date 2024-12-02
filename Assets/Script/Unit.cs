@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 [System.Serializable]
 public class Unit : MonoBehaviour
 {
+    #region variables
     // Reference to CharacterStat MonoBehaviour for accessing stats and data
     public CharacterStat characterStats;  // Now a component of the same GameObject
 
@@ -20,16 +21,23 @@ public class Unit : MonoBehaviour
     public bool hasAttacked; // Whether the unit has attacked in this turn
     public bool selected; // Track if the unit is selected
     public GameObject weaponIcon; // Icon over unit if it's attackable
-
-    // AttackRange
-    public int attackRange;
+    public GameObject SelectionCircle;  // Add this declaration at the beginning of your class
+    public bool isTarget; //is being target
+    public int attackRange; // AttackRange
 
     List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range
 
-    private LevelSystem levelSystem;
+    private LevelSystem levelSystem;  //leveling system, stat growth
+
+
+    public List<Buff> buffs = new List<Buff>(); // List of buffs currently affecting the unit
+    public List<Debuff> debuffs = new List<Debuff>(); // List of debuffs currently affecting the unit
+    private int currentTurn = 0; //buff duration to do
+
 
     private UnitSkills unitSkills;
     public List<Ability> abilities;
+#endregion
 
     #region skills
     private void Awake()
@@ -91,45 +99,8 @@ public class Unit : MonoBehaviour
 
     public OverlayTile standingOnTile;
 
-    #region buff/debuff
-    public List<Buff> buffs = new List<Buff>(); // List of buffs currently affecting the unit
-    public List<Debuff> debuffs = new List<Debuff>(); // List of debuffs currently affecting the unit
-    private int currentTurn = 0;
-    #endregion
-
-    #region turnstate
-    public enum unitTurnState { Move, Attack, Skill, Idle }
-
-    public void SetState(unitTurnState state)
-    {
-        switch (state)
-        {
-            case unitTurnState.Move:
-                if (hasMoved == false)
-                {
-                    // EnableMovementUI();
-                }
-                break;
-
-            case unitTurnState.Attack:
-                if (hasAttacked == false)
-                {
-                    // EnableAttackUI();
-                }
-                break;
-
-            case unitTurnState.Skill:
-                // EnableSkillUI();
-                break;
-
-            case unitTurnState.Idle:
-                SetFaceDirectionAtTurnEnd();
-                break;
-        }
-    }
-    #endregion
-
-    private void Start()
+    
+   private void Start()
     {
         if (buffs.Count > 0)
         {
@@ -218,7 +189,7 @@ public class Unit : MonoBehaviour
     #endregion
 
     #region FaceDirection
-    private void SetFaceDirectionAtTurnEnd()
+    public void SetFaceDirectionAtTurnEnd()
     {
         if (characterStats.faceDirection == CharacterStat.Direction.North)
         {
@@ -237,8 +208,9 @@ public class Unit : MonoBehaviour
             Debug.Log("Unit is facing West.");
         }
     }
-#endregion
+    #endregion
 
+    #region useSkills
     public bool CanUseEarthShatter()
     {
         return unitSkills.IsSkillUnlocked(UnitSkills.SkillType.Earthshatter);
@@ -248,4 +220,56 @@ public class Unit : MonoBehaviour
     {
         return unitSkills;
     }
+    #endregion
+
+    #region Select and Deselect Methods
+
+    public void Select()
+    {
+        if (SelectionCircle != null)
+        {
+            SelectionCircle.SetActive(true);
+        }
+    }
+
+    public void Deselect()
+    {
+        if (SelectionCircle != null)
+        {
+            SelectionCircle.SetActive(false);
+        }
+    }
+
+    public void TargetSelect()
+    {
+        if (SelectionCircle != null)
+        {
+            SelectionCircle.SetActive(true);
+            SetSelectionCircleColor(Color.red); // Change SelectionCircle color to red
+        }
+    }
+
+    public void TargetDeselect()
+    {
+        if (SelectionCircle != null)
+        {
+            SelectionCircle.SetActive(false);
+            SetSelectionCircleColor(Color.white); // Reset SelectionCircle color to default
+        }
+    }
+
+    private void SetSelectionCircleColor(Color color)
+    {
+        Renderer renderer = SelectionCircle.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = color;
+        }
+        else
+        {
+            Debug.LogError($"Renderer not found on SelectionCircle for {name}");
+        }
+    }
+
+    #endregion
 }

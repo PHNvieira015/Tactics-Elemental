@@ -1,13 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static GameManager;
+using UnityEngine.UI;  // Required for UI components
 
 public class SpawningManager : MonoBehaviour
 {
     [SerializeField] private GameMaster gameMaster;  // Reference to the GameMaster
     [SerializeField] private GameObject SpawningSelection;
+    [SerializeField] private Button startButton;  // Reference to the Start button
     public List<Unit> playerAvailableUnits;  // List of available units for the player
     public List<Unit> unplayableUnits;  // List of units that have already been placed
     public MouseController mouseController;  // Reference to the MouseController
@@ -30,26 +30,46 @@ public class SpawningManager : MonoBehaviour
         }
 
         // Subscribe to game state change event
-        GameManager.OnGameStateChanged += GameManagerOnOnGameStateChanged;
+        GameMaster.OnGameStateChanged += GameManagerOnGameStateChanged;
+
+        // Ensure Start Button is hooked up
+        if (startButton != null)
+        {
+            startButton.onClick.AddListener(OnStartButtonClicked);
+            startButton.interactable = true;  // Enable start button immediately
+        }
+        else
+        {
+            Debug.LogError("Start Button is not assigned!");
+        }
     }
 
     void OnDestroy()
     {
         // Unsubscribe from game state change event
-        GameManager.OnGameStateChanged -= GameManagerOnOnGameStateChanged;
+        GameMaster.OnGameStateChanged -= GameManagerOnGameStateChanged;
+
+        // Unsubscribe the button click listener
+        if (startButton != null)
+        {
+            startButton.onClick.RemoveListener(OnStartButtonClicked);
+        }
     }
 
-    private void GameManagerOnOnGameStateChanged(GameState state)
+    private void GameManagerOnGameStateChanged(GameMaster.GameState state)
     {
         // Toggle SpawningSelection visibility based on game state
-        SpawningSelection.SetActive(state == GameState.SpawningUnits);
+        SpawningSelection.SetActive(state == GameMaster.GameState.SpawningUnits);
+    }
 
-        // If we are in the SpawningUnits state, update the game state to PlayerTurn
-        if (state == GameState.SpawningUnits)
-        {
-            // Now we can safely access the singleton GameManager and update the state
-            GameManager.instance.UpdateGameState(GameState.PlayerTurn);
-        }
+    // Called when the player clicks the Start Button
+    private void OnStartButtonClicked()
+    {
+        // Transition to GameRound state when the Start button is clicked
+        Debug.Log("Start button clicked. Transitioning to GameRound.");
+        GameMaster.instance.spawnedUnits = unplayableUnits;
+        GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
+        startButton.gameObject.SetActive(false);
     }
 
     private void Update()
