@@ -87,7 +87,7 @@ public class GameMaster : MonoBehaviour
                 break;
 
             case GameState.UnitTurn:
-                ProcessUnitTurn();
+                //ProcessUnitTurn();
                 break;
 
             case GameState.Victory:
@@ -110,6 +110,7 @@ public class GameMaster : MonoBehaviour
     // Method to spawn the enemy units
     private void SpawnEnemies()
     {
+        Debug.Log(enemyList.Count);
         if (enemyList.Count > 0 && enemySpawner != null)
         {
             // Gather all child tiles under the EnemySpawner
@@ -120,7 +121,7 @@ public class GameMaster : MonoBehaviour
             }
 
             // Ensure we do not spawn more enemies than there are spawn tiles
-            int spawnLimit = Mathf.Min(enemyList.Count, enemySpawningTiles.Count);
+            int spawnLimit = enemyList.Count;
 
             // Loop through the number of enemies to spawn based on available tiles
             for (int i = 0; i < spawnLimit; i++)
