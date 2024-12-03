@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6494024047759659306
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4795539584732142731}
+  - component: {fileID: 1095814986044431201}
+  - component: {fileID: 3310785106208368754}
+  m_Layer: 0
+  m_Name: Null Unit
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4795539584732142731
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6494024047759659306}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.8508701, y: 1.7745694, z: -0.015083659}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1095814986044431201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6494024047759659306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4088a82e5570ba4bae6c3d7a51ab7ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterStats: {fileID: 0}
+  teamID: 0
+  playerOwner: 0
+  Mitigation: 0
+  isAlive: 1
+  isDown: 0
+  hasMoved: 0
+  hasAttacked: 0
+  selected: 0
+  weaponIcon: {fileID: 0}
+  SelectionCircle: {fileID: 0}
+  isTarget: 0
+  attackRange: 0
+  buffs: []
+  debuffs: []
+  abilities: []
+  standingOnTile: {fileID: 0}
+--- !u!114 &3310785106208368754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6494024047759659306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332250c8b76409d46911f327edf5fdf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CharacterName: null
+  CharacterDescription: 
+  characterClass: 0
+  levelUp: {fileID: 0}
+  equippedWeapon: {fileID: 0}
+  equippedArmor: {fileID: 0}
+  accessory1: {fileID: 0}
+  accessory2: {fileID: 0}
+  maxBaseHealth: 0
+  currentHealth: 0
+  maxMana: 0
+  currentMana: 0
+  strength: 0
+  agility: 0
+  intellect: 0
+  PrimaryAttackType: 0
+  armorValue: 0
+  physicalDefense: 0
+  magicalDefense: 0
+  elementType: 0
+  weaknessElement: 0
+  armorType: 0
+  faceDirection: 0
+  weight: 0
+  initiative: 0
+  movementRange: 0
+  CharacterLevel: 0
+  experience: 0
+  requiredExperience: 0

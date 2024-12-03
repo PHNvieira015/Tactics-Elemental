@@ -80,8 +80,8 @@ public class SpawningManager : MonoBehaviour
         {
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>();
 
-            // Show valid spawn tiles
-            if (tile.GetComponent<SpawningTile>() != null && !tile.GetComponent<SpawningTile>().IsOccupied)
+            // Check if we got a valid tile and it's a spawnable tile
+            if (tile != null && tile.GetComponent<SpawningTile>() != null && !tile.GetComponent<SpawningTile>().IsOccupied)
             {
                 tile.ShowTile(spawnTileColor, TileType.Spawn);
 
@@ -126,60 +126,84 @@ public class SpawningManager : MonoBehaviour
 
     private void SpawnUnitOnTile(OverlayTile tile)
     {
-        if (playerAvailableUnits.Count > 0 && tile.GetComponent<SpawningTile>() != null)
+        if (tile == null)
         {
-            // Ensure that the tile isn't already occupied
-            if (tile.GetComponent<SpawningTile>().IsOccupied)
-            {
-                Debug.Log("Cannot spawn unit here, tile is already occupied.");
-                return;
-            }
+            Debug.LogError("Tile is null in SpawnUnitOnTile.");
+            return;
+        }
 
-            // Choose the first available unit from the list
-            Unit selectedUnit = playerAvailableUnits[0];
-            Unit unitInstance = Instantiate(selectedUnit.gameObject).GetComponent<Unit>();
+        SpawningTile spawningTile = tile.GetComponent<SpawningTile>();
+        if (spawningTile == null)
+        {
+            Debug.LogError("Tile does not have a SpawningTile component.");
+            return;
+        }
 
-            // Position the unit on the spawning tile
-            unitInstance.transform.position = tile.transform.position;
-            unitInstance.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
-            unitInstance.standingOnTile = tile;
+        // Ensure we have an available unit to spawn
+        if (playerAvailableUnits.Count == 0)
+        {
+            Debug.LogError("No available units to spawn.");
+            return;
+        }
 
-            // Set the unit as selected in MouseController
+        // Ensure the tile is not already occupied
+        if (spawningTile.IsOccupied)
+        {
+            Debug.Log("Cannot spawn unit here, tile is already occupied.");
+            return;
+        }
+
+        // Select the first available unit
+        Unit selectedUnit = playerAvailableUnits[0];
+
+        // Instantiate the unit prefab
+        Unit unitInstance = Instantiate(selectedUnit.gameObject).GetComponent<Unit>();
+        if (unitInstance == null)
+        {
+            Debug.LogError("Failed to instantiate the unit.");
+            return;
+        }
+
+        // Ensure the SpriteRenderer exists and is not null
+        SpriteRenderer spriteRenderer = unitInstance.GetComponent<SpriteRenderer>();
+        if (spriteRenderer == null)
+        {
+            Debug.LogError("Unit does not have a SpriteRenderer.");
+            return;
+        }
+
+        // Position the unit on the spawning tile
+        unitInstance.transform.position = tile.transform.position;
+        spriteRenderer.sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
+
+        // Set the unit's standingOnTile field
+        unitInstance.standingOnTile = tile;
+
+        // If the MouseController is not null, assign the unit
+        if (mouseController != null)
+        {
             mouseController.SetUnit(unitInstance);
-
-            // Remove the unit from available units and add to unplayable units
-            playerAvailableUnits.Remove(selectedUnit);
-            unplayableUnits.Add(selectedUnit);
-
-            // Mark the tile as occupied
-            tile.GetComponent<SpawningTile>().IsOccupied = true;
-
-            // Hide and destroy the preview unit after placement
-            if (unitPreview != null)
-            {
-                unitPreview.SetActive(false);
-                Destroy(unitPreview);  // Destroy the preview object after placement
-            }
-
-            // Print lists for debugging
-            Debug.Log("Available Units after spawn:");
-            foreach (var unit in playerAvailableUnits)
-            {
-                Debug.Log(unit.characterStats.CharacterName);
-            }
-
-            Debug.Log("Unplayable Units after spawn:");
-            foreach (var unit in unplayableUnits)
-            {
-                Debug.Log(unit.characterStats.CharacterName);
-            }
-
-            Debug.Log("Unit spawned at: " + tile.transform.position);
         }
         else
         {
-            Debug.Log("No available units to spawn.");
+            Debug.LogError("MouseController is not assigned.");
         }
+
+        // Remove the unit from available units and add it to unplayable units
+        playerAvailableUnits.Remove(selectedUnit);
+        unplayableUnits.Add(selectedUnit);
+
+        // Mark the tile as occupied
+        spawningTile.IsOccupied = true;
+
+        // If there's a unit preview, hide and destroy it
+        if (unitPreview != null)
+        {
+            unitPreview.SetActive(false);
+            Destroy(unitPreview);  // Destroy the preview object after placement
+        }
+
+        Debug.Log("Unit spawned at: " + tile.transform.position);
     }
 
     private static RaycastHit2D? GetFocusedOnTile()

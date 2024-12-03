@@ -178,9 +178,6 @@ public class GameMaster : MonoBehaviour
     enemyList = enemyUnits;      // Enemy units go into enemyList (team B)
 
     Debug.Log("Teams set successfully.");
-
-    // Transition to the GameRound state
-    UpdateGameState(GameState.GameRound);
 }
 
     // Method to initialize the turn order based on unit initiative

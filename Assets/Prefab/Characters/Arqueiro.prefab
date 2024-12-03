@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: characterStats
       value: 
-      objectReference: {fileID: 11400000, guid: 7626b34c460fe5f41bff6feede2f29e4, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 1805770769454740621, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -90,7 +90,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: CharacterName
-      value: Red Archer
+      value: Arqueiro
       objectReference: {fileID: 0}
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: CharacterLevel
