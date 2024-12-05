@@ -68,7 +68,7 @@ namespace TacticsToolkit
                             var overlayTile = Instantiate(overlayTilePrefab, overlayContainer.transform);
                             var cellWorldPosition = tilemap.GetCellCenterWorld(tileLocation);
                             var baseTile = tilemap.GetTile(tileLocation);
-                            overlayTile.transform.position = new Vector3(cellWorldPosition.x, cellWorldPosition.y, cellWorldPosition.z -4);
+                            overlayTile.transform.position = new Vector3(cellWorldPosition.x, cellWorldPosition.y, cellWorldPosition.z +10);// was -4 , but had issues with World Canvas and this Z axis so changed to +10, solved
                             overlayTile.GetComponent<SpriteRenderer>().sortingOrder = tilemap.GetComponent<TilemapRenderer>().sortingOrder;
                             overlayTile.gridLocation = tileLocation;
 

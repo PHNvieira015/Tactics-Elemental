@@ -17,7 +17,7 @@ public class MouseController : MonoBehaviour
     private ArrowTranslator arrowTranslator;
     private List<OverlayTile> path;
     private List<OverlayTile> rangeFinderTiles;
-    private bool isMoving;
+    public bool isMoving;
 
     public Color color = Color.green;  // Default color for the tiles (you can change this)
 
