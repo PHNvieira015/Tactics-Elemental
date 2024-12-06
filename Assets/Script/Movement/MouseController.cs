@@ -18,6 +18,7 @@ public class MouseController : MonoBehaviour
     private List<OverlayTile> path;
     private List<OverlayTile> rangeFinderTiles;
     public bool isMoving;
+    public TurnStateManager turnStateManager;  // Reference to TurnStateManager
 
     public Color color = Color.green;  // Default color for the tiles (you can change this)
 
@@ -35,10 +36,21 @@ public class MouseController : MonoBehaviour
         {
             gameMaster = FindObjectOfType<GameMaster>();  // In case it's not assigned via Inspector
         }
+        // Make sure the reference to TurnStateManager is set
+        if (turnStateManager == null)
+        {
+            turnStateManager = FindObjectOfType<TurnStateManager>();  // Find the TurnStateManager if it's not assigned
+        }
     }
 
     void LateUpdate()
     {
+        // Ensure that the current state is "Moving" before allowing movement
+        if (turnStateManager.currentTurnState != TurnStateManager.TurnState.Moving)
+        {
+            return;  // If we're not in the Moving state, exit the function
+        }
+
         RaycastHit2D? hit = GetFocusedOnTile();
 
         if (hit.HasValue)

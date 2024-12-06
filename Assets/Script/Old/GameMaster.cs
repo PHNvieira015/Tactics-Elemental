@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static TurnStateManager;
 
@@ -74,6 +75,7 @@ public class GameMaster : MonoBehaviour
 
             case GameState.UnitTurn:
                 ProcessUnitTurn();
+
                 break;
 
             case GameState.Victory:
@@ -168,10 +170,7 @@ public class GameMaster : MonoBehaviour
                 turnStateManager.SetCurrentUnit(currentUnit);
                 turnStateManager.ChangeState(TurnStateManager.TurnState.TurnStart);
             }
-            else
-            {
-                HandleEndOfRound();
-            }
+
         }
     }
 
@@ -187,12 +186,13 @@ public class GameMaster : MonoBehaviour
             }
 
             Debug.Log($"{currentUnit.name} is dead. Continuing to the next unit.");
+            break;
         }
 
         currentUnit = null;
     }
 
-    private void HandleEndOfRound()
+   public void HandleEndOfRound()
     {
         bool playersAlive = spawnedUnits.Any(unit => unit.isAlive);
         bool enemiesAlive = enemyList.Any(unit => unit.isAlive);
@@ -209,8 +209,26 @@ public class GameMaster : MonoBehaviour
         {
             UpdateGameState(GameState.GameRound);
         }
+        
     }
+    private void CheckVictoryDefeat()
+    {
+        bool playersAlive = spawnedUnits.Any(unit => unit.isAlive);
+        bool enemiesAlive = enemyList.Any(unit => unit.isAlive);
 
+        if (playersAlive && !enemiesAlive)
+        {
+            UpdateGameState(GameState.Victory);
+        }
+        else if (enemiesAlive && !playersAlive)
+        {
+            UpdateGameState(GameState.Defeat);
+        }
+        else
+        {
+            UpdateGameState(GameState.GameRound);  // Continue with the next round
+        }
+    }
     private void OnEnable()
     {
         // Ensure we have a reference to the TurnStateManager from the child GameObject

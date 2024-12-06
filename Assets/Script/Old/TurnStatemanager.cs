@@ -18,15 +18,30 @@ public class TurnStateManager : MonoBehaviour
 
     private PathFinder pathFinder;
 
-    [SerializeField]public Unit currentUnit;
-    
-    private TurnState currentTurnState;
+    [SerializeField] public Unit currentUnit;
+
+    public TurnState currentTurnState;
     public event Action<TurnState> OnTurnStateChanged;
 
     // Reference to UI_ActionBar and ActionBar
     public GameObject UI_ActionBar;
     public GameObject ActionBar;
     public UI_ActionBar uiActionBar;  // Reference to UI_ActionBar script
+    [SerializeField] public GameMaster gameMaster;  // Direct reference to GameMaster
+
+    private void Awake()
+    {
+        // Optionally find GameMaster if not assigned in the inspector
+        if (gameMaster == null)
+        {
+            gameMaster = FindObjectOfType<GameMaster>();  // Find GameMaster in the scene
+            if (gameMaster == null)
+            {
+                Debug.LogError("GameMaster not found in the scene!");
+            }
+        }
+    }
+
     public void SetCurrentUnit(Unit unit)
     {
         currentUnit = unit;
@@ -78,10 +93,6 @@ public class TurnStateManager : MonoBehaviour
 
                     turnStarted = true;
                 }
-                else
-                {
-                    Debug.LogWarning("Turn has already started for this unit.");
-                }
                 break;
 
             case TurnState.Moving:
@@ -89,7 +100,6 @@ public class TurnStateManager : MonoBehaviour
                 {
                     DisableUI_Action();
                     Debug.Log($"{currentUnit.name} is moving...");
-                    // Now trigger movement via MouseController
                     // Now trigger movement via MouseController
                     MouseController mouseController = FindObjectOfType<MouseController>(); // Find MouseController in the scene
                     if (mouseController != null)
@@ -102,18 +112,11 @@ public class TurnStateManager : MonoBehaviour
                     }
                     // After movement ends, mark the unit as moved
                     currentUnit.hasMoved = true;
-
-
-
-                }
-                else
-                {
-                    Debug.Log($"{currentUnit.name} has already moved.");
                 }
 
-                    EnableUI_Action();
-                    uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
-                    uiActionBar.GameObjectButton_return.SetActive(true); // activate Return button
+                EnableUI_Action();
+                uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
+                uiActionBar.GameObjectButton_return.SetActive(true); // activate Return button
                 break;
 
             case TurnState.Attacking:
@@ -126,7 +129,6 @@ public class TurnStateManager : MonoBehaviour
                     EnableUI_Action();
                     uiActionBar.GameObjectButton_attack.SetActive(false);//deactivate attack button
                     uiActionBar.GameObjectButton_return.SetActive(true); // activate Return button
-
                 }
                 else
                 {
@@ -146,16 +148,24 @@ public class TurnStateManager : MonoBehaviour
             case TurnState.Waiting:
                 DisableUI_Action();
                 Debug.Log($"{currentUnit.name} is waiting...");
-                //enable waiting UI and confirmation after it it should also preview the selection
+                // When the unit is in the waiting state, allow player to click "End Turn" or perform other actions
                 currentUnit.SetFaceDirectionAtTurnEnd();
                 currentUnit.selected = false;
-                ChangeState(TurnState.EndTurn); // Automatically transition to EndTurn
+                // Do not automatically transition here; the player should decide when to end the turn
                 break;
 
             case TurnState.EndTurn:
                 Debug.Log($"Turn ended for {currentUnit.name}.");
                 turnStarted = false;
                 // Notify GameMaster or other systems about the turn ending
+                if (gameMaster != null)
+                {
+                    gameMaster.HandleEndOfRound();  // Call the function from GameMaster
+                }
+                else
+                {
+                    Debug.LogError("GameMaster is not assigned!");
+                }
                 break;
 
             default:
@@ -163,6 +173,7 @@ public class TurnStateManager : MonoBehaviour
                 break;
         }
     }
+
     private void DisableUI_Action()
     {
         // Assuming UI_ActionBar is the GameObject, not the script itself

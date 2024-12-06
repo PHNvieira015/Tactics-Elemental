@@ -14,6 +14,8 @@ namespace TacticsToolkit
         public TileDataRuntimeSet tileTypeList;
         public Dictionary<Vector2Int, OverlayTile> map;
         public Dictionary<TileBase, TileData> dataFromTiles = new Dictionary<TileBase, TileData>();
+        [SerializeField] private int ZHeigh;
+        private GameMaster gameMaster;  // Reference to the GameMaster
 
         public Tilemap tilemap;
 
@@ -23,6 +25,7 @@ namespace TacticsToolkit
 
         public void Awake()
         {
+
             if (_instance != null && _instance != this)
             {
                 Destroy(this.gameObject);
@@ -68,7 +71,7 @@ namespace TacticsToolkit
                             var overlayTile = Instantiate(overlayTilePrefab, overlayContainer.transform);
                             var cellWorldPosition = tilemap.GetCellCenterWorld(tileLocation);
                             var baseTile = tilemap.GetTile(tileLocation);
-                            overlayTile.transform.position = new Vector3(cellWorldPosition.x, cellWorldPosition.y, cellWorldPosition.z +10);// was -4 , but had issues with World Canvas and this Z axis so changed to +10, solved
+                            overlayTile.transform.position = new Vector3(cellWorldPosition.x, cellWorldPosition.y, cellWorldPosition.z +ZHeigh);// was -4 , but had issues with World Canvas and this Z axis so changed to +10, solved
                             overlayTile.GetComponent<SpriteRenderer>().sortingOrder = tilemap.GetComponent<TilemapRenderer>().sortingOrder;
                             overlayTile.gridLocation = tileLocation;
 
