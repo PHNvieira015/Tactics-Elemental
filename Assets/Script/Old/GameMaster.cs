@@ -89,22 +89,48 @@ public class GameMaster : MonoBehaviour
             // Get the list of tiles from the spawner (excluding the parent object)
             List<Transform> enemySpawningTiles = enemySpawner.GetComponentsInChildren<Transform>().Skip(1).ToList();
 
-
             int spawnLimit = Mathf.Min(enemyList.Count, enemySpawningTiles.Count);
 
             for (int i = 0; i < spawnLimit; i++)
             {
                 // Get the current enemy and corresponding tile
                 Unit enemyToSpawn = enemyList[i];
-                Transform selectedTile = enemySpawningTiles[i];
+                Transform spawnPoint = enemySpawningTiles[i];
 
-                // Instantiate the enemy unit at the tile's position
-                Unit spawnedUnit = Instantiate(enemyToSpawn, selectedTile.position, Quaternion.identity);
-                spawnedUnit.teamID = 2; // Set enemy team ID
-                spawnedUnit.playerOwner = 2; // Set enemy player owner ID
+                // Instantiate the enemy unit at the spawn point
+                Unit spawnedUnit = Instantiate(enemyToSpawn, spawnPoint.position, Quaternion.identity);
+                spawnedUnit.teamID = 2;
+                spawnedUnit.playerOwner = 2;
+
+                // Raycast to find the tile under the spawn position
+                RaycastHit2D[] hits = Physics2D.RaycastAll(spawnPoint.position, Vector2.zero);
+
+                // Find the first hit with an OverlayTile component
+                OverlayTile tileUnderEnemy = hits
+                    .Select(hit => hit.collider.GetComponent<OverlayTile>())
+                    .FirstOrDefault(tile => tile != null);
+
+                if (tileUnderEnemy != null)
+                {
+                    spawnedUnit.standingOnTile = tileUnderEnemy;
+                    Debug.Log($"Enemy {spawnedUnit.name} spawned on tile at position {tileUnderEnemy.transform.position}");
+                }
+                else
+                {
+                    Debug.LogWarning($"No tile found under enemy spawn point at position {spawnPoint.position}");
+                }
+
+                // Set proper sprite rendering order if tile was found
+                if (tileUnderEnemy != null)
+                {
+                    SpriteRenderer spriteRenderer = spawnedUnit.GetComponent<SpriteRenderer>();
+                    if (spriteRenderer != null)
+                    {
+                        spriteRenderer.sortingOrder = tileUnderEnemy.GetComponent<SpriteRenderer>().sortingOrder;
+                    }
+                }
+
                 spawnedUnits.Add(spawnedUnit);
-
-                // Remove the used tile from the list to prevent reuse
                 enemySpawningTiles.RemoveAt(i);
             }
         }
@@ -112,10 +138,6 @@ public class GameMaster : MonoBehaviour
         {
             Debug.LogError("No enemies to spawn or no spawner available.");
         }
-
-        // Assign the spawned units to their respective teams
-        //SetTeams();
-
     }
 
 

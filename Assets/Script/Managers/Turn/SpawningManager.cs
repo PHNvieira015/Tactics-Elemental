@@ -13,6 +13,9 @@ public class SpawningManager : MonoBehaviour
     public MouseController mouseController;  // Reference to the MouseController
     public Color spawnTileColor = Color.blue;  // Color for spawn tiles
     private GameObject unitPreview;  // Preview of the unit being placed
+    [SerializeField] private GameObject EnemySpawnerTiles;
+    [SerializeField] private GameObject PlayerSpawningTiles;
+
 
     void Awake()
     {
@@ -80,6 +83,8 @@ public class SpawningManager : MonoBehaviour
 
         // Disable the Start button to prevent multiple clicks
         startButton.gameObject.SetActive(false);
+        EnemySpawnerTiles.gameObject.SetActive(false);
+        PlayerSpawningTiles.gameObject.SetActive(false);
     }
 
 
