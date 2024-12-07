@@ -113,50 +113,55 @@ public class GameMaster : MonoBehaviour
     {
         if (enemyList.Count > 0 && enemySpawner != null)
         {
-            var enemySpawningTiles = enemySpawner.GetComponentsInChildren<Transform>().Skip(1).ToList(); // Skip the parent
-            int spawnLimit = Mathf.Min(enemyList.Count, enemySpawningTiles.Count);
+            // Get the list of tiles from the spawner (excluding the parent object)
+            List<Transform> enemySpawningTiles = enemySpawner.GetComponentsInChildren<Transform>().Skip(1).ToList();
 
-            // Create a list to track occupied tiles (to avoid overlap)
-            List<Transform> availableTiles = new List<Transform>(enemySpawningTiles);
+            // Debug: Log initial setup
+            Debug.Log($"Tiles available: {enemySpawningTiles.Count}, Enemies to spawn: {enemyList.Count}");
+
+            int spawnLimit = Mathf.Min(enemyList.Count, enemySpawningTiles.Count);
 
             for (int i = 0; i < spawnLimit; i++)
             {
+                // Get the current enemy and corresponding tile
                 Unit enemyToSpawn = enemyList[i];
+                Transform selectedTile = enemySpawningTiles[i];
 
-                // Check if there are any available tiles left
-                if (availableTiles.Count == 0)
-                {
-                    Debug.LogError("No available tiles left for spawning.");
-                    return;
-                }
+                // Debug: Log the assignment
+                Debug.Log($"Assigning {enemyToSpawn.name} to tile {selectedTile.name} at position {selectedTile.position}");
 
-                // Randomly pick a tile from the available ones
-                int randomTileIndex = UnityEngine.Random.Range(0, availableTiles.Count);
-                Transform spawnTile = availableTiles[randomTileIndex];
+                // Instantiate the enemy unit at the tile's position
+                Unit spawnedUnit = Instantiate(enemyToSpawn, selectedTile.position, Quaternion.identity);
+                spawnedUnit.teamID = 2; // Set enemy team ID
+                spawnedUnit.playerOwner = 2; // Set enemy player owner ID
+                spawnedUnits.Add(spawnedUnit);
 
-                // Remove the used tile from the list of available tiles
-                availableTiles.RemoveAt(randomTileIndex);
+                // Debug: Log the spawned unit
+                Debug.Log($"Spawned {spawnedUnit.name} at position {spawnedUnit.transform.position}");
 
-                if (!spawnedUnits.Contains(enemyToSpawn))
-                {
-                    // Spawn the unit on the selected tile
-                    Unit spawnedUnit = Instantiate(enemyToSpawn, spawnTile.position, Quaternion.identity);
-                    spawnedUnit.teamID = 2;
-                    spawnedUnit.playerOwner = 2;
-                    spawnedUnits.Add(spawnedUnit);
+                // Remove the used tile from the list to prevent reuse
+                enemySpawningTiles.RemoveAt(i);
 
-                    // Optionally, mark the tile as occupied if needed
-                    // You can use a custom component to track tile occupation here if needed
-                }
+                // Debug: Log the remaining tiles after each spawn
+                Debug.Log($"Remaining tiles after spawn: {enemySpawningTiles.Count}");
             }
         }
         else
         {
-            Debug.LogError("No enemies or spawner available.");
+            Debug.LogError("No enemies to spawn or no spawner available.");
         }
 
+        // Assign the spawned units to their respective teams
         SetTeams();
+
+        // Debug: Log all spawned units
+        Debug.Log("Spawned Units:");
+        foreach (var unit in spawnedUnits)
+        {
+            Debug.Log($"{unit.name} at position {unit.transform.position}");
+        }
     }
+
 
     private void SetTeams()
     {

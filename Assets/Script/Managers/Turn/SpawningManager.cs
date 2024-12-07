@@ -203,7 +203,6 @@ public class SpawningManager : MonoBehaviour
             Destroy(unitPreview);  // Destroy the preview object after placement
         }
 
-        Debug.Log("Unit spawned at: " + tile.transform.position);
     }
 
     private static RaycastHit2D? GetFocusedOnTile()

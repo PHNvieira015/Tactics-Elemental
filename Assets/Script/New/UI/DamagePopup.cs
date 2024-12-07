@@ -47,7 +47,6 @@ public class DamagePopup : MonoBehaviour
         }
         else
         {
-            Debug.Log("TextMeshPro component found.");
         }
     }
 
