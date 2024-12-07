@@ -29,7 +29,7 @@ public class CharacterStat : MonoBehaviour
     public int strength;
     public int agility;
     public int intellect;
-    [HideInInspector] public AttackType PrimaryAttackType;
+    public AttackType PrimaryAttackType;
 
     // Defensive stats (Editable)
     public int armorValue;

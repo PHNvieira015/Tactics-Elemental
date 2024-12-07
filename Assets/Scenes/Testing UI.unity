@@ -9259,7 +9259,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1839838163}
   - component: {fileID: 1839838164}
-  - component: {fileID: 1839838165}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -9311,29 +9310,15 @@ MonoBehaviour:
   - {fileID: 436018977071568555, guid: 66171decff49d29438d261c36c50efcf, type: 3}
   enemyList:
   - {fileID: 6799471685966266938, guid: d7530a2780dd20044b39d0c4c11cfb72, type: 3}
-  - {fileID: 436018977071568555, guid: 66171decff49d29438d261c36c50efcf, type: 3}
-  - {fileID: 436018977071568555, guid: 66171decff49d29438d261c36c50efcf, type: 3}
-  - {fileID: 436018977071568555, guid: 66171decff49d29438d261c36c50efcf, type: 3}
-  - {fileID: 436018977071568555, guid: 66171decff49d29438d261c36c50efcf, type: 3}
-  - {fileID: 436018977071568555, guid: 66171decff49d29438d261c36c50efcf, type: 3}
+  - {fileID: 5883015407676484983, guid: 24c395dda9ecad042b6903eb0a7d0bd8, type: 3}
+  - {fileID: 5883015407676484983, guid: 24c395dda9ecad042b6903eb0a7d0bd8, type: 3}
   playerList: []
   spawnedUnits: []
   enemySpawner: {fileID: 1791059474}
   currentUnit: {fileID: 0}
   turnStateManager: {fileID: 1538757723}
+  spawningManager: {fileID: 0}
   State: 0
---- !u!114 &1839838165
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1839838162}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fcfc0fd459ed624886d83862dba1313, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1866669386
 PrefabInstance:
   m_ObjectHideFlags: 0

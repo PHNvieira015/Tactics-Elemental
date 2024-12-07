@@ -19,6 +19,7 @@ public class GameMaster : MonoBehaviour
     public GameObject enemySpawner;
     public Unit currentUnit;
     public TurnStateManager turnStateManager;
+    public SpawningManager spawningManager;
 
     public static event Action<GameState> OnGameStateChanged;
 
@@ -62,51 +63,23 @@ public class GameMaster : MonoBehaviour
                 break;
 
             case GameState.GameRound:
-                Debug.Log("unidades na lista: "+ spawnedUnits.Count);
-
-                if (spawnedUnits.Count > 0 && enemyList.Count > 0)
+                Debug.Log("Preparing teams and initializing turn queue...");
+                SetTeams();
+                if (playerList.Count > 0 && enemyList.Count > 0)
                 {
-                    Debug.Log($"GameMaster active: {gameObject.activeSelf} during1...");
-
-                    // Initialize the turn order once the teams are set
                     InitializeTurnOrder();
-                    Debug.Log($"GameMaster active: {gameObject.activeSelf} during2...");
-
-
-                    if (turnQueue.Count > 0)
-                    {
-                        currentUnit = turnQueue.Dequeue();  // Start with the first unit in the queue
-                        UpdateGameState(GameState.UnitTurn);  // Proceed to the unit turn
-                    }
-                    else
-                    {
-                        Debug.LogError("TurnQueue is empty. Cannot start the game round.");
-                    }
+                    UpdateGameState(GameState.UnitTurn);
                 }
                 else
                 {
-                    Debug.LogError("Teams not initialized. Cannot start the game round.");
+                    Debug.LogError("Failed to initialize turn order. Player or enemy list is empty.");
                 }
-                break;
-
-            case GameState.UnitTurn:
-                ProcessUnitTurn();
-                break;
-
-            case GameState.Victory:
-                Debug.Log("Victory! The game is over.");
-                break;
-
-            case GameState.Defeat:
-                Debug.Log("Defeat! Better luck next time.");
                 break;
 
             default:
                 Debug.LogWarning($"Unhandled game state: {newState}");
                 break;
         }
-
-        OnGameStateChanged?.Invoke(newState);
     }
 
     private void SpawnEnemies()
@@ -116,8 +89,6 @@ public class GameMaster : MonoBehaviour
             // Get the list of tiles from the spawner (excluding the parent object)
             List<Transform> enemySpawningTiles = enemySpawner.GetComponentsInChildren<Transform>().Skip(1).ToList();
 
-            // Debug: Log initial setup
-            Debug.Log($"Tiles available: {enemySpawningTiles.Count}, Enemies to spawn: {enemyList.Count}");
 
             int spawnLimit = Mathf.Min(enemyList.Count, enemySpawningTiles.Count);
 
@@ -127,23 +98,14 @@ public class GameMaster : MonoBehaviour
                 Unit enemyToSpawn = enemyList[i];
                 Transform selectedTile = enemySpawningTiles[i];
 
-                // Debug: Log the assignment
-                Debug.Log($"Assigning {enemyToSpawn.name} to tile {selectedTile.name} at position {selectedTile.position}");
-
                 // Instantiate the enemy unit at the tile's position
                 Unit spawnedUnit = Instantiate(enemyToSpawn, selectedTile.position, Quaternion.identity);
                 spawnedUnit.teamID = 2; // Set enemy team ID
                 spawnedUnit.playerOwner = 2; // Set enemy player owner ID
                 spawnedUnits.Add(spawnedUnit);
 
-                // Debug: Log the spawned unit
-                Debug.Log($"Spawned {spawnedUnit.name} at position {spawnedUnit.transform.position}");
-
                 // Remove the used tile from the list to prevent reuse
                 enemySpawningTiles.RemoveAt(i);
-
-                // Debug: Log the remaining tiles after each spawn
-                Debug.Log($"Remaining tiles after spawn: {enemySpawningTiles.Count}");
             }
         }
         else
@@ -152,54 +114,88 @@ public class GameMaster : MonoBehaviour
         }
 
         // Assign the spawned units to their respective teams
-        SetTeams();
+        //SetTeams();
 
-        // Debug: Log all spawned units
-        Debug.Log("Spawned Units:");
-        foreach (var unit in spawnedUnits)
-        {
-            Debug.Log($"{unit.name} at position {unit.transform.position}");
-        }
     }
 
 
     private void SetTeams()
     {
-        var playerUnits = spawnedUnits.Where(unit => unit.teamID == 1).ToList();
-        var enemies = spawnedUnits.Where(unit => unit.teamID == 2).ToList();
+        if (spawningManager == null)
+        {
+            Debug.LogError("SpawningManager is null. Cannot set teams.");
+            return;
+        }
 
-        // Keep both player and enemy units in spawnedUnits
-        spawnedUnits = playerUnits.Concat(enemies).ToList();  // Ensure both teams are in the spawnedUnits list
-        playerList = playerUnits;  // Store player units
-        enemyList = enemies;  // Store enemies separately
+        playerList = spawningManager.playedUnits;
+        Debug.Log("player list is"+spawningManager.playedUnits);
+        enemyList = spawnedUnits.Where(unit => unit.teamID == 2).ToList();
 
-        Debug.Log("Teams successfully set.");
+        Debug.Log($"Player units: {playerList.Count}, Enemy units: {enemyList.Count}");
     }
+
 
     public void InitializeTurnOrder()
     {
         Debug.Log($"Player count: {playerList.Count}, enemyList count: {enemyList.Count}");
 
-        // Get all alive units
-        var allUnits = new List<Unit>(playerList);  // Create a new list from playerList
-        allUnits.AddRange(enemyList);  // Add all elements from enemyList to allUnits
-        allUnits = allUnits.Where(unit => unit.isAlive).ToList();  // Optionally, filter out dead
+        // Combine all units into a single list
+        var allUnits = new List<Unit>(playerList);
+        allUnits.AddRange(enemyList);
 
-        // Log each unit being added to the turn queue
-        Debug.Log("Initializing turn order with the following units:");
-        foreach (var unit in allUnits)
+        Debug.Log($"Total units before sorting and filtering: {allUnits.Count}");
+
+        if (allUnits.Count == 0)
         {
-            Debug.Log($"{unit.name} (Initiative: {unit.characterStats.initiative})");
+            Debug.LogError("No units available to initialize turn order.");
+            return;
         }
 
-        // Order the units by initiative
-        turnQueue = new Queue<Unit>(allUnits.OrderByDescending(unit => unit.characterStats.initiative));
+        // Ensure that every unit has a valid characterStats
+        foreach (var unit in allUnits)
+        {
+            if (unit == null)
+            {
+                Debug.LogError($"Unit is null!");
+            }
+            else if (unit.characterStats == null)
+            {
+                Debug.LogError($"Unit '{unit.name}' has no characterStats assigned!");
+            }
+            else
+            {
+                Debug.Log($"Unit: {unit.name}, Initiative: {unit.characterStats.initiative}");
+            }
+        }
 
-        // Log turn order
+        // Initialize the turn queue, ordering by initiative (highest first)
+        try
+        {
+            turnQueue = new Queue<Unit>(allUnits.OrderByDescending(unit => unit.characterStats.initiative));
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Exception occurred while sorting units: {ex}");
+        }
+
+        // Log the turn order after sorting
         Debug.Log("Turn order initialized:");
         foreach (var unit in turnQueue)
         {
-            Debug.Log($"{unit.name} (Initiative: {unit.characterStats.initiative})");
+            Debug.Log($"Unit in queue: {unit.name} with initiative {unit.characterStats.initiative}");
+        }
+
+        // Set the first unit as currentUnit
+        if (turnQueue.Count > 0)
+        {
+            currentUnit = turnQueue.Dequeue(); // Dequeue the first unit
+            Debug.Log($"First unit in turn queue: {currentUnit.name}");
+            // Proceed to the next game state
+            UpdateGameState(GameState.UnitTurn);
+        }
+        else
+        {
+            Debug.LogError("Turn queue is empty after attempting to initialize.");
         }
     }
 
@@ -215,14 +211,62 @@ public class GameMaster : MonoBehaviour
         {
             FindNextLivingUnit();
 
-            if (currentUnit != null)
+            if (currentUnit == null)
             {
-                currentUnit.Select();
-                Debug.Log($"It's {currentUnit.name}'s turn!");
-                // Start the unit's turn using the TurnStateManager
+                if (turnQueue.Count > 0)
+                {
+                    currentUnit = turnQueue.Dequeue(); // Dequeue the next unit
+                    currentUnit.Select();
+                    Debug.Log($"It's {currentUnit.name}'s turn!");
+                    turnStateManager.SetCurrentUnit(currentUnit);
+                    turnStateManager.ChangeState(TurnStateManager.TurnState.TurnStart);
+                }
+                else
+                {
+                    Debug.LogError("Turn queue is empty, no more units to process.");
+                    HandleEndOfRound();
+                }
+            }
+        }
+    }
+
+    private void EndUnitTurn()
+    {
+        // Log the turn queue before the current unit finishes their turn
+        LogTurnQueueState("Before turn ends:");
+
+        // After a unit finishes its turn, remove them from the queue
+        if (currentUnit != null)
+        {
+            Debug.Log($"{currentUnit.name} has finished their turn. Removing from the queue.");
+            // No need to dequeue here, since we are processing the turn with Dequeue on currentUnit
+
+            // Log the current state of the queue after the turn
+            LogTurnQueueState("After turn ends:");
+
+            // Now we want to get the next unit in the queue
+            if (turnQueue.Count > 0)
+            {
+                currentUnit = turnQueue.Dequeue();  // Get the next unit from the queue
+                Debug.Log($"Next unit: {currentUnit.name} with initiative {currentUnit.characterStats.initiative}");
+                // Update the game state or continue the game logic
                 turnStateManager.SetCurrentUnit(currentUnit);
                 turnStateManager.ChangeState(TurnStateManager.TurnState.TurnStart);
             }
+            else
+            {
+                Debug.LogError("Turn queue is empty, no more units to process.");
+                HandleEndOfRound();
+            }
+        }
+    }
+
+    private void LogTurnQueueState(string message)
+    {
+        Debug.Log(message);
+        foreach (var unit in turnQueue)
+        {
+            Debug.Log($"Unit in queue: {unit.name} with initiative {unit.characterStats.initiative}");
         }
     }
 
@@ -265,10 +309,9 @@ public class GameMaster : MonoBehaviour
 
     private void OnEnable()
     {
-        // Ensure we have a reference to the TurnStateManager from the child GameObject
         if (turnStateManager == null)
         {
-            turnStateManager = GetComponentInChildren<TurnStateManager>();  // Automatically gets the TurnStateManager from children
+            turnStateManager = GetComponentInChildren<TurnStateManager>();
         }
 
         if (turnStateManager != null)
@@ -279,7 +322,18 @@ public class GameMaster : MonoBehaviour
         {
             Debug.LogError("TurnStateManager reference is missing. Make sure it's a child of the GameManager!");
         }
+
+        // Dynamically find the SpawningManager instance
+        if (spawningManager == null)
+        {
+            spawningManager = FindObjectOfType<SpawningManager>();
+            if (spawningManager == null)
+            {
+                Debug.LogError("SpawningManager could not be found in the scene. Ensure it exists.");
+            }
+        }
     }
+
 
     private void OnDisable()
     {

@@ -65,12 +65,23 @@ public class SpawningManager : MonoBehaviour
     // Called when the player clicks the Start Button
     private void OnStartButtonClicked()
     {
-        // Transition to GameRound state when the Start button is clicked
-        Debug.Log("Start button clicked. Transitioning to GameRound.");
-        GameMaster.instance.playerList = playedUnits;
+        if (GameMaster.instance != null)
+        {
+            GameMaster.instance.playerList = new List<Unit>(playedUnits); // Ensure we send the list properly
+            Debug.Log("Player units assigned to GameMaster.");
+        }
+        else
+        {
+            Debug.LogError("GameMaster instance is not available.");
+        }
+
+        Debug.Log("Starting Game Round.");
         GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
+
+        // Disable the Start button to prevent multiple clicks
         startButton.gameObject.SetActive(false);
     }
+
 
     private void Update()
     {
@@ -149,7 +160,6 @@ public class SpawningManager : MonoBehaviour
         // Ensure the tile is not already occupied
         if (spawningTile.IsOccupied)
         {
-            Debug.Log("Cannot spawn unit here, tile is already occupied.");
             return;
         }
 
@@ -163,7 +173,10 @@ public class SpawningManager : MonoBehaviour
             Debug.LogError("Failed to instantiate the unit.");
             return;
         }
-
+        if (unitInstance.characterStats == null)
+        {
+            Debug.LogError($"CharacterStat is missing for unit: {unitInstance.name}");
+        }
         // Ensure the SpriteRenderer exists and is not null
         SpriteRenderer spriteRenderer = unitInstance.GetComponent<SpriteRenderer>();
         if (spriteRenderer == null)

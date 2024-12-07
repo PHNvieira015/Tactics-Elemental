@@ -57,14 +57,12 @@ public class LevelWindow : MonoBehaviour
     private void SetExperienceBarSize(float experienceNormalized)
     {
         experienceBarImage.fillAmount = experienceNormalized;
-        Debug.Log("Experience bar updated: " + experienceNormalized); // Debug log for experience bar update
     }
 
     // Method to set level number
     private void SetLevelNumber(int levelNumber)
     {
         levelText.text = "Level\n" + (levelNumber + 1); // Display level number (adjust for 1-based index)
-        Debug.Log("Level updated: " + (levelNumber + 1)); // Debug log for level update
     }
 
     // Set LevelSystem and subscribe to events
@@ -85,8 +83,6 @@ public class LevelWindow : MonoBehaviour
         // Subscribe to events
         levelSystem.OnExperinceChanged += LevelSystem_OnExperinceChanged;
         levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
-
-        Debug.Log("Subscribed to LevelSystem events.");
     }
 
     // Event handler when experience changes

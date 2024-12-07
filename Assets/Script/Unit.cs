@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 [System.Serializable]
+[RequireComponent(typeof(CharacterStat))]
 public class Unit : MonoBehaviour
 {
     #region variables
@@ -37,25 +38,29 @@ public class Unit : MonoBehaviour
 
     private UnitSkills unitSkills;
     public List<Ability> abilities;
-#endregion
+    #endregion
 
     #region skills
     private void Awake()
     {
-        // Get the CharacterStat component from the same GameObject this Unit is attached to
-        characterStats = GetComponent<CharacterStat>();
+        // Hard-code the reference to CharacterStat by directly referencing the same GameObject
+        characterStats = this.gameObject.GetComponent<CharacterStat>();
 
         if (characterStats == null)
         {
-            Debug.LogError("CharacterStat component is missing from this GameObject!");
+            // If it's not attached, you can add it dynamically (optional)
+            characterStats = gameObject.AddComponent<CharacterStat>();
+            Debug.Log(characterStats.name + "CharacterStat was not found, so it has been added automatically.");
         }
         else
         {
-            unitSkills = new UnitSkills();
-            unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
-            levelSystem = new LevelSystem(characterStats);
-            levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
+            Debug.Log(characterStats.name +"CharacterStat found on this GameObject.");
         }
+
+        unitSkills = new UnitSkills();
+        unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
+        levelSystem = new LevelSystem(characterStats);
+        levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
     }
 
     private void UnitSkills_OnSkillUnlocked(object sender, UnitSkills.OnSkillUnlockedEventArgs e)

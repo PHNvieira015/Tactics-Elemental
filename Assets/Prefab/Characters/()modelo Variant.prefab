@@ -715,7 +715,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4088a82e5570ba4bae6c3d7a51ab7ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterStats: {fileID: 11400000, guid: 5816a39ce35c01442ba28fd406e750fb, type: 2}
+  characterStats: {fileID: 8931217287400680452}
   teamID: 0
   playerOwner: 0
   Mitigation: 0
@@ -725,11 +725,13 @@ MonoBehaviour:
   hasAttacked: 0
   selected: 0
   weaponIcon: {fileID: 6808402186744926048}
+  SelectionCircle: {fileID: 0}
+  isTarget: 0
   attackRange: 0
-  abilities: []
-  standingOnTile: {fileID: 0}
   buffs: []
   debuffs: []
+  abilities: []
+  standingOnTile: {fileID: 0}
 --- !u!114 &8931217287400680452
 MonoBehaviour:
   m_ObjectHideFlags: 0
