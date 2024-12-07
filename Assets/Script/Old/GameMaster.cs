@@ -13,9 +13,10 @@ public class GameMaster : MonoBehaviour
     // Teams and unit references
     public List<Unit> playerAvailableUnits = new List<Unit>();
     public List<Unit> enemyList = new List<Unit>();
-    public GameObject enemySpawner;
+    public List<Unit> playerList = new List<Unit>();
     public List<Unit> spawnedUnits = new List<Unit>();
     public Queue<Unit> turnQueue = new Queue<Unit>();
+    public GameObject enemySpawner;
     public Unit currentUnit;
     public TurnStateManager turnStateManager;
 
@@ -61,11 +62,26 @@ public class GameMaster : MonoBehaviour
                 break;
 
             case GameState.GameRound:
+                Debug.Log("unidades na lista: "+ spawnedUnits.Count);
+
                 if (spawnedUnits.Count > 0 && enemyList.Count > 0)
                 {
-                    Debug.Log("Starting a new game round...");
+                    Debug.Log($"GameMaster active: {gameObject.activeSelf} during1...");
+
+                    // Initialize the turn order once the teams are set
                     InitializeTurnOrder();
-                    UpdateGameState(GameState.UnitTurn);
+                    Debug.Log($"GameMaster active: {gameObject.activeSelf} during2...");
+
+
+                    if (turnQueue.Count > 0)
+                    {
+                        currentUnit = turnQueue.Dequeue();  // Start with the first unit in the queue
+                        UpdateGameState(GameState.UnitTurn);  // Proceed to the unit turn
+                    }
+                    else
+                    {
+                        Debug.LogError("TurnQueue is empty. Cannot start the game round.");
+                    }
                 }
                 else
                 {
@@ -75,7 +91,6 @@ public class GameMaster : MonoBehaviour
 
             case GameState.UnitTurn:
                 ProcessUnitTurn();
-
                 break;
 
             case GameState.Victory:
@@ -101,19 +116,37 @@ public class GameMaster : MonoBehaviour
             var enemySpawningTiles = enemySpawner.GetComponentsInChildren<Transform>().Skip(1).ToList(); // Skip the parent
             int spawnLimit = Mathf.Min(enemyList.Count, enemySpawningTiles.Count);
 
+            // Create a list to track occupied tiles (to avoid overlap)
+            List<Transform> availableTiles = new List<Transform>(enemySpawningTiles);
+
             for (int i = 0; i < spawnLimit; i++)
             {
                 Unit enemyToSpawn = enemyList[i];
-                Transform spawnTile = enemySpawningTiles[i];
+
+                // Check if there are any available tiles left
+                if (availableTiles.Count == 0)
+                {
+                    Debug.LogError("No available tiles left for spawning.");
+                    return;
+                }
+
+                // Randomly pick a tile from the available ones
+                int randomTileIndex = UnityEngine.Random.Range(0, availableTiles.Count);
+                Transform spawnTile = availableTiles[randomTileIndex];
+
+                // Remove the used tile from the list of available tiles
+                availableTiles.RemoveAt(randomTileIndex);
 
                 if (!spawnedUnits.Contains(enemyToSpawn))
                 {
+                    // Spawn the unit on the selected tile
                     Unit spawnedUnit = Instantiate(enemyToSpawn, spawnTile.position, Quaternion.identity);
                     spawnedUnit.teamID = 2;
                     spawnedUnit.playerOwner = 2;
                     spawnedUnits.Add(spawnedUnit);
 
-                    Debug.Log($"Enemy {spawnedUnit.characterStats.CharacterName} spawned at {spawnTile.position}.");
+                    // Optionally, mark the tile as occupied if needed
+                    // You can use a custom component to track tile occupation here if needed
                 }
             }
         }
@@ -130,19 +163,34 @@ public class GameMaster : MonoBehaviour
         var playerUnits = spawnedUnits.Where(unit => unit.teamID == 1).ToList();
         var enemies = spawnedUnits.Where(unit => unit.teamID == 2).ToList();
 
-        Debug.Log($"Player Units: {playerUnits.Count}, Enemies: {enemies.Count}");
-
-        spawnedUnits = playerUnits;  // Assign only player units to spawnedUnits
-        enemyList = enemies;         // Assign only enemies to enemyList
+        // Keep both player and enemy units in spawnedUnits
+        spawnedUnits = playerUnits.Concat(enemies).ToList();  // Ensure both teams are in the spawnedUnits list
+        playerList = playerUnits;  // Store player units
+        enemyList = enemies;  // Store enemies separately
 
         Debug.Log("Teams successfully set.");
     }
 
     public void InitializeTurnOrder()
     {
-        var allUnits = spawnedUnits.Concat(enemyList).Where(unit => unit.isAlive).ToList();
+        Debug.Log($"Player count: {playerList.Count}, enemyList count: {enemyList.Count}");
+
+        // Get all alive units
+        var allUnits = new List<Unit>(playerList);  // Create a new list from playerList
+        allUnits.AddRange(enemyList);  // Add all elements from enemyList to allUnits
+        allUnits = allUnits.Where(unit => unit.isAlive).ToList();  // Optionally, filter out dead
+
+        // Log each unit being added to the turn queue
+        Debug.Log("Initializing turn order with the following units:");
+        foreach (var unit in allUnits)
+        {
+            Debug.Log($"{unit.name} (Initiative: {unit.characterStats.initiative})");
+        }
+
+        // Order the units by initiative
         turnQueue = new Queue<Unit>(allUnits.OrderByDescending(unit => unit.characterStats.initiative));
 
+        // Log turn order
         Debug.Log("Turn order initialized:");
         foreach (var unit in turnQueue)
         {
@@ -170,7 +218,6 @@ public class GameMaster : MonoBehaviour
                 turnStateManager.SetCurrentUnit(currentUnit);
                 turnStateManager.ChangeState(TurnStateManager.TurnState.TurnStart);
             }
-
         }
     }
 
@@ -178,42 +225,23 @@ public class GameMaster : MonoBehaviour
     {
         while (turnQueue.Count > 0)
         {
-            currentUnit = turnQueue.Dequeue();
-
+            currentUnit = turnQueue.Peek();  // Get the first element without removing it.
+            turnQueue.Dequeue();
             if (currentUnit.isAlive)
             {
-                return;
+                return;  // We found a living unit, exit the loop.
             }
 
             Debug.Log($"{currentUnit.name} is dead. Continuing to the next unit.");
-            break;
         }
 
+        // If no living units are left, set currentUnit to null (this will end the game or loop back).
         currentUnit = null;
     }
 
-   public void HandleEndOfRound()
+    public void HandleEndOfRound()
     {
-        bool playersAlive = spawnedUnits.Any(unit => unit.isAlive);
-        bool enemiesAlive = enemyList.Any(unit => unit.isAlive);
-
-        if (playersAlive && !enemiesAlive)
-        {
-            UpdateGameState(GameState.Victory);
-        }
-        else if (enemiesAlive && !playersAlive)
-        {
-            UpdateGameState(GameState.Defeat);
-        }
-        else
-        {
-            UpdateGameState(GameState.GameRound);
-        }
-        
-    }
-    private void CheckVictoryDefeat()
-    {
-        bool playersAlive = spawnedUnits.Any(unit => unit.isAlive);
+        bool playersAlive = playerList.Any(unit => unit.isAlive);
         bool enemiesAlive = enemyList.Any(unit => unit.isAlive);
 
         if (playersAlive && !enemiesAlive)
@@ -229,6 +257,7 @@ public class GameMaster : MonoBehaviour
             UpdateGameState(GameState.GameRound);  // Continue with the next round
         }
     }
+
     private void OnEnable()
     {
         // Ensure we have a reference to the TurnStateManager from the child GameObject

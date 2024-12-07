@@ -7269,7 +7269,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  unplayableUnits: []
+  playedUnits: []
   mouseController: {fileID: 583550734}
   spawnTileColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &1203084078
@@ -9314,10 +9314,11 @@ MonoBehaviour:
   - {fileID: 436018977071568555, guid: 66171decff49d29438d261c36c50efcf, type: 3}
   - {fileID: 436018977071568555, guid: 66171decff49d29438d261c36c50efcf, type: 3}
   - {fileID: 5883015407676484983, guid: 24c395dda9ecad042b6903eb0a7d0bd8, type: 3}
-  enemySpawner: {fileID: 1791059474}
+  playerList: []
   spawnedUnits: []
+  enemySpawner: {fileID: 1791059474}
   currentUnit: {fileID: 0}
-  turnStateManager: {fileID: 0}
+  turnStateManager: {fileID: 1538757723}
   State: 0
 --- !u!114 &1839838165
 MonoBehaviour:

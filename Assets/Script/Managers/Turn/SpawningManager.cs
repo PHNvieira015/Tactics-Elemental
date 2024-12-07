@@ -9,14 +9,14 @@ public class SpawningManager : MonoBehaviour
     [SerializeField] private GameObject SpawningSelection;
     [SerializeField] private Button startButton;  // Reference to the Start button
     public List<Unit> playerAvailableUnits;  // List of available units for the player
-    public List<Unit> unplayableUnits;  // List of units that have already been placed
+    public List<Unit> playedUnits;  // List of units that have already been placed
     public MouseController mouseController;  // Reference to the MouseController
     public Color spawnTileColor = Color.blue;  // Color for spawn tiles
     private GameObject unitPreview;  // Preview of the unit being placed
 
     void Awake()
     {
-        unplayableUnits = new List<Unit>(); // Initialize the list of unplayable units
+        playedUnits = new List<Unit>(); // Initialize the list of played units
 
         // Make sure we have a valid reference to GameMaster
         if (gameMaster != null)
@@ -67,7 +67,7 @@ public class SpawningManager : MonoBehaviour
     {
         // Transition to GameRound state when the Start button is clicked
         Debug.Log("Start button clicked. Transitioning to GameRound.");
-        GameMaster.instance.spawnedUnits = unplayableUnits;
+        GameMaster.instance.playerList = playedUnits;
         GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
         startButton.gameObject.SetActive(false);
     }
@@ -191,7 +191,7 @@ public class SpawningManager : MonoBehaviour
 
         // Remove the unit from available units and add it to unplayable units
         playerAvailableUnits.Remove(selectedUnit);
-        unplayableUnits.Add(selectedUnit);
+        playedUnits.Add(selectedUnit);
 
         // Mark the tile as occupied
         spawningTile.IsOccupied = true;
