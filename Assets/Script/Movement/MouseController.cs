@@ -10,7 +10,7 @@ public class MouseController : MonoBehaviour
     public MapManager mapManager;
     public GameObject cursor;
     public float speed;
-    private Unit unit;  // Now we're working with the Unit class
+    private Unit currentUnit;  // Now we're working with the Unit class
 
     private PathFinder pathFinder;
     private RangeFinder rangeFinder;
@@ -19,6 +19,7 @@ public class MouseController : MonoBehaviour
     private List<OverlayTile> rangeFinderTiles;
     public bool isMoving;
     public TurnStateManager turnStateManager;  // Reference to TurnStateManager
+
 
     public Color color = Color.green;  // Default color for the tiles (you can change this)
 
@@ -61,7 +62,7 @@ public class MouseController : MonoBehaviour
 
             if (rangeFinderTiles.Contains(tile) && !isMoving)
             {
-                path = pathFinder.FindPath(unit.standingOnTile, tile, rangeFinderTiles);
+                path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
 
                 foreach (var item in rangeFinderTiles)
                 {
@@ -70,7 +71,7 @@ public class MouseController : MonoBehaviour
 
                 for (int i = 0; i < path.Count; i++)
                 {
-                    var previousTile = i > 0 ? path[i - 1] : unit.standingOnTile;
+                    var previousTile = i > 0 ? path[i - 1] : currentUnit.standingOnTile;
                     var futureTile = i < path.Count - 1 ? path[i + 1] : null;
 
                     var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
@@ -100,10 +101,10 @@ public class MouseController : MonoBehaviour
         var step = speed * Time.deltaTime;
 
         float zIndex = path[0].transform.position.z;
-        unit.transform.position = Vector2.MoveTowards(unit.transform.position, path[0].transform.position, step);
-        unit.transform.position = new Vector3(unit.transform.position.x, unit.transform.position.y, zIndex);
+        currentUnit.transform.position = Vector2.MoveTowards(currentUnit.transform.position, path[0].transform.position, step);
+        currentUnit.transform.position = new Vector3(currentUnit.transform.position.x, currentUnit.transform.position.y, zIndex);
 
-        if (Vector2.Distance(unit.transform.position, path[0].transform.position) < 0.00001f)
+        if (Vector2.Distance(currentUnit.transform.position, path[0].transform.position) < 0.00001f)
         {
             PositionCharacterOnLine(path[0]);
             path.RemoveAt(0);
@@ -118,9 +119,9 @@ public class MouseController : MonoBehaviour
 
     private void PositionCharacterOnLine(OverlayTile tile)
     {
-        unit.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
-        unit.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
-        unit.standingOnTile = tile;  // Set the unit's standing tile
+        currentUnit.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
+        currentUnit.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
+        currentUnit.standingOnTile = tile;  // Set the unit's standing tile
     }
 
     private static RaycastHit2D? GetFocusedOnTile()
@@ -140,7 +141,7 @@ public class MouseController : MonoBehaviour
 
     private void GetInRangeTiles()
     {
-        rangeFinderTiles = rangeFinder.GetTilesInRange(new Vector2Int(unit.standingOnTile.gridLocation.x, unit.standingOnTile.gridLocation.y), 3);
+        rangeFinderTiles = rangeFinder.GetTilesInRange(new Vector2Int(currentUnit.standingOnTile.gridLocation.x, currentUnit.standingOnTile.gridLocation.y), 3);
 
         foreach (var item in rangeFinderTiles)
         {
@@ -152,6 +153,6 @@ public class MouseController : MonoBehaviour
     // SetUnit method to be used by SpawningManager
     public void SetUnit(Unit newUnit)
     {
-        unit = newUnit;
+        currentUnit = newUnit;
     }
 }

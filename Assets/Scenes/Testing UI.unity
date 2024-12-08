@@ -7272,6 +7272,8 @@ MonoBehaviour:
   playedUnits: []
   mouseController: {fileID: 583550734}
   spawnTileColor: {r: 0, g: 0, b: 1, a: 1}
+  EnemySpawnerTiles: {fileID: 1791059474}
+  PlayerSpawningTiles: {fileID: 1263657887}
 --- !u!1 &1203084078
 GameObject:
   m_ObjectHideFlags: 0
@@ -7390,7 +7392,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1263657888}
   m_Layer: 0
-  m_Name: SpawningTiles
+  m_Name: PlayerSpawningTiles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7974,13 +7976,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45f22ad3e39ded1439ac0d3571fc6d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mouseController: {fileID: 0}
   TurnStartingPosition: {x: 0, y: 0, z: 0}
   currentUnit: {fileID: 0}
   currentTurnState: 0
   UI_ActionBar: {fileID: 1661925146}
   ActionBar: {fileID: 636211421}
   uiActionBar: {fileID: 1661925148}
-  gameMaster: {fileID: 0}
+  gameMaster: {fileID: 1839838164}
 --- !u!1 &1612048998
 GameObject:
   m_ObjectHideFlags: 0
@@ -8833,7 +8836,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1791059475}
   m_Layer: 0
-  m_Name: EnemySpawner
+  m_Name: EnemySpawnerTiles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

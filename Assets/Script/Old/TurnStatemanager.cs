@@ -4,10 +4,12 @@ using UnityEngine;
 public class TurnStateManager : MonoBehaviour
 {
     private bool turnStarted;
+    [SerializeField] public MouseController mouseController; // Use MouseController instead of PathFinder
     [HideInInspector] public Vector3 TurnStartingPosition;
 
     public enum TurnState
     {
+        None,
         TurnStart,
         Moving,
         Attacking,
@@ -40,6 +42,16 @@ public class TurnStateManager : MonoBehaviour
                 Debug.LogError("GameMaster not found in the scene!");
             }
         }
+
+        // Ensure MouseController is assigned correctly
+        if (mouseController == null)
+        {
+            mouseController = FindObjectOfType<MouseController>();  // Find MouseController in the scene
+            if (mouseController == null)
+            {
+                Debug.LogError("MouseController not found in the scene!");
+            }
+        }
     }
 
     public void SetCurrentUnit(Unit unit)
@@ -51,6 +63,10 @@ public class TurnStateManager : MonoBehaviour
 
     public void ChangeState(TurnState newState)
     {
+        if (currentTurnState == newState)
+        {
+            return; // Avoid redundant state processing
+        }
         UI_ActionBar.SetActive(false); // Deactivate Move button
         currentTurnState = newState;
         Debug.Log($"State changed to {currentTurnState}");
@@ -72,6 +88,9 @@ public class TurnStateManager : MonoBehaviour
 
         switch (state)
         {
+            case TurnState.None:
+                break;
+
             case TurnState.TurnStart:
                 EnableUI_Action();
                 if (!turnStarted)
@@ -84,7 +103,7 @@ public class TurnStateManager : MonoBehaviour
                     if (UI_ActionBar != null && ActionBar != null)
                     {
                         uiActionBar.ActionBar.SetActive(true); // Make sure the ActionBar is visible
-                        Debug.Log("ActionBar deactivated.");
+                        Debug.Log("ActionBar activated.");
                     }
                     else
                     {
@@ -101,7 +120,6 @@ public class TurnStateManager : MonoBehaviour
                     DisableUI_Action();
                     Debug.Log($"{currentUnit.name} is moving...");
                     // Now trigger movement via MouseController
-                    MouseController mouseController = FindObjectOfType<MouseController>(); // Find MouseController in the scene
                     if (mouseController != null)
                     {
                         mouseController.isMoving = true; // Enable movement in MouseController
@@ -123,12 +141,11 @@ public class TurnStateManager : MonoBehaviour
                 if (!currentUnit.hasAttacked)
                 {
                     DisableUI_Action();
-                    //enable Attack UI if there is one
                     Debug.Log($"{currentUnit.name} is attacking...");
                     // Attack logic
                     EnableUI_Action();
-                    uiActionBar.GameObjectButton_attack.SetActive(false);//deactivate attack button
-                    uiActionBar.GameObjectButton_return.SetActive(true); // activate Return button
+                    uiActionBar.GameObjectButton_attack.SetActive(false); // Deactivate attack button
+                    uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
                 }
                 else
                 {
@@ -138,29 +155,27 @@ public class TurnStateManager : MonoBehaviour
 
             case TurnState.UsingSkill:
                 DisableUI_Action();
-                //enable Skill UI
                 Debug.Log($"{currentUnit.name} is using a skill...");
                 // Skill usage logic
                 EnableUI_Action();
-                uiActionBar.GameObjectButton_return.SetActive(true); // activate Return button
+                uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
                 break;
 
             case TurnState.Waiting:
                 DisableUI_Action();
                 Debug.Log($"{currentUnit.name} is waiting...");
-                // When the unit is in the waiting state, allow player to click "End Turn" or perform other actions
                 currentUnit.SetFaceDirectionAtTurnEnd();
                 currentUnit.selected = false;
-                // Do not automatically transition here; the player should decide when to end the turn
                 break;
 
             case TurnState.EndTurn:
                 Debug.Log($"Turn ended for {currentUnit.name}.");
                 turnStarted = false;
-                // Notify GameMaster or other systems about the turn ending
+                currentUnit.hasMoved = false;  // Reset movement status
+                currentUnit.hasAttacked = false;  // Reset attack status
                 if (gameMaster != null)
                 {
-                    gameMaster.HandleEndOfRound();  // Call the function from GameMaster
+                    gameMaster.HandleEndOfRound();  // Handle end-of-round in GameMaster
                 }
                 else
                 {

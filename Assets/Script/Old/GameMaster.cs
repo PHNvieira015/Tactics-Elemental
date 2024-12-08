@@ -75,6 +75,22 @@ public class GameMaster : MonoBehaviour
                     Debug.LogError("Failed to initialize turn order. Player or enemy list is empty.");
                 }
                 break;
+            case GameState.UnitTurn:
+                {
+                    Debug.Log("Unit Turn for " + currentUnit.name);
+
+                    // Initialize TurnStateManager with the current unit
+                    if (turnStateManager != null && currentUnit != null)
+                    {
+                        turnStateManager.SetCurrentUnit(currentUnit); // Set the current unit in TurnStateManager
+                        turnStateManager.ChangeState(TurnStateManager.TurnState.TurnStart); // Trigger turn start
+                    }
+                    else
+                    {
+                        Debug.LogError("TurnStateManager or currentUnit is null, unable to start turn.");
+                    }
+                    break;
+                }
 
             default:
                 Debug.LogWarning($"Unhandled game state: {newState}");
