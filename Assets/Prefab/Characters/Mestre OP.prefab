@@ -9,9 +9,21 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: isAlive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: hasMoved
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: characterStats
       value: 
       objectReference: {fileID: 9052105488149179527}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: unitGameObject
+      value: 
+      objectReference: {fileID: 2267376773412625824}
     - target: {fileID: 1808987032276278563, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_Name
       value: Mestre OP
@@ -69,6 +81,10 @@ PrefabInstance:
       value: Mestre
       objectReference: {fileID: 0}
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: movementRange
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: characterClass
       value: 1
       objectReference: {fileID: 0}
@@ -77,12 +93,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 626b73c273482804181fce84ca63c097, type: 3}
+--- !u!1 &2267376773412625824 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1808987032276278563, guid: 626b73c273482804181fce84ca63c097, type: 3}
+  m_PrefabInstance: {fileID: 463175005256450179}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &9052105488149179527 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
   m_PrefabInstance: {fileID: 463175005256450179}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 2267376773412625824}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 332250c8b76409d46911f327edf5fdf4, type: 3}

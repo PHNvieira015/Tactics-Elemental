@@ -112,7 +112,7 @@ Transform:
   m_GameObject: {fileID: 5179766086941088657}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -157,9 +157,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -983874409
-  m_SortingLayer: 1
-  m_SortingOrder: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 4
   m_Sprite: {fileID: 21300000, guid: 1e0acb2c84618b444b4abbc86eb0e834, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
@@ -190,7 +190,7 @@ MonoBehaviour:
   activeCharacter: {fileID: 0}
   tileData: {fileID: 0}
   Previous: {fileID: 0}
-  gridLocation: {x: 0, y: 0, z: 0}
+  gridLocation: {x: 0, y: 0, z: 3}
   arrows:
   - {fileID: 618819722, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
   - {fileID: 983428285, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}

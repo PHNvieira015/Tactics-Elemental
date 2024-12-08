@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TacticsToolkit;
 using UnityEngine;
+using System.Collections;
 
 public class MouseController : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class MouseController : MonoBehaviour
     public MapManager mapManager;
     public GameObject cursor;
     public float speed;
-    private Unit currentUnit;  // Now we're working with the Unit class
+    [SerializeField] public Unit currentUnit;  // Now we're working with the Unit class
 
     private PathFinder pathFinder;
     private RangeFinder rangeFinder;
@@ -20,7 +21,7 @@ public class MouseController : MonoBehaviour
     public bool isMoving;
     public TurnStateManager turnStateManager;  // Reference to TurnStateManager
 
-
+    public Vector3 TargetPosition { get; private set; } // Property to store the target position
     public Color color = Color.green;  // Default color for the tiles (you can change this)
 
     void Start()
@@ -37,19 +38,34 @@ public class MouseController : MonoBehaviour
         {
             gameMaster = FindObjectOfType<GameMaster>();  // In case it's not assigned via Inspector
         }
-        // Make sure the reference to TurnStateManager is set
+
         if (turnStateManager == null)
         {
             turnStateManager = FindObjectOfType<TurnStateManager>();  // Find the TurnStateManager if it's not assigned
+        }
+
+        // Make sure we update the movement range if needed
+        if (currentUnit != null)
+        {
+            GetInRangeTiles(); // Initialize range tiles for the unit
         }
     }
 
     void LateUpdate()
     {
-        // Ensure that the current state is "Moving" before allowing movement
-        if (turnStateManager.currentTurnState != TurnStateManager.TurnState.Moving)
+        if (currentUnit != null)
         {
-            return;  // If we're not in the Moving state, exit the function
+            // Directly use currentUnit.standingOnTile (no need for a separate standingOnTile field)
+            Debug.Log($"Unit Position: {currentUnit.gameObject.transform.position}, Standing on Tile: {currentUnit.standingOnTile?.name}");
+        }
+
+        if (isMoving)
+        {
+            if (path.Count > 0)
+            {
+                StartCoroutine(MoveAlongPathCoroutine());
+            }
+            return; // Prevent further path recalculation if already moving
         }
 
         RaycastHit2D? hit = GetFocusedOnTile();
@@ -60,68 +76,75 @@ public class MouseController : MonoBehaviour
             cursor.transform.position = tile.transform.position;
             cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder;
 
+            // Update TargetPosition
+            TargetPosition = tile.transform.position;
+
             if (rangeFinderTiles.Contains(tile) && !isMoving)
             {
-                path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
-
-                foreach (var item in rangeFinderTiles)
+                // Only recalculate path if target tile has changed
+                if (currentUnit.standingOnTile != tile)
                 {
-                    MapManager.Instance.map[item.grid2DLocation].SetSprite(ArrowDirection.None);
-                }
+                    path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
 
-                for (int i = 0; i < path.Count; i++)
-                {
-                    var previousTile = i > 0 ? path[i - 1] : currentUnit.standingOnTile;
-                    var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+                    // Visualize the path using arrows
+                    foreach (var item in rangeFinderTiles)
+                    {
+                        MapManager.Instance.map[item.grid2DLocation].SetSprite(ArrowDirection.None);
+                    }
 
-                    var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
-                    path[i].SetSprite(arrow);
+                    for (int i = 0; i < path.Count; i++)
+                    {
+                        var previousTile = i > 0 ? path[i - 1] : currentUnit.standingOnTile;
+                        var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+
+                        var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
+                        path[i].SetSprite(arrow);
+                    }
                 }
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && rangeFinderTiles.Contains(tile))
             {
-                // Handle the unit movement only (no spawning logic here)
-                if (isMoving)
-                {
-                    tile.gameObject.GetComponent<OverlayTile>().HideTile();
-                    isMoving = false; // Once the movement is completed, stop moving.
-                }
+                path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
+                isMoving = true; // Lock movement state
+                Debug.Log($"Path calculated: {path.Count} tiles.");
             }
-        }
-
-        if (path.Count > 0 && isMoving)
-        {
-            MoveAlongPath();
         }
     }
 
-    private void MoveAlongPath()
+    private IEnumerator MoveAlongPathCoroutine()
     {
-        var step = speed * Time.deltaTime;
-
-        float zIndex = path[0].transform.position.z;
-        currentUnit.transform.position = Vector2.MoveTowards(currentUnit.transform.position, path[0].transform.position, step);
-        currentUnit.transform.position = new Vector3(currentUnit.transform.position.x, currentUnit.transform.position.y, zIndex);
-
-        if (Vector2.Distance(currentUnit.transform.position, path[0].transform.position) < 0.00001f)
+        foreach (var tile in path)
         {
-            PositionCharacterOnLine(path[0]);
-            path.RemoveAt(0);
+            while (Vector2.Distance(currentUnit.transform.position, tile.transform.position) > 0.01f)
+            {
+                currentUnit.gameObject.transform.position = Vector2.MoveTowards(
+                    currentUnit.gameObject.transform.position,
+                    tile.transform.position,
+                    speed * Time.deltaTime
+                );
+                yield return null;
+            }
+            PositionCharacterOnLine(tile);
         }
 
-        if (path.Count == 0)
-        {
-            GetInRangeTiles();
-            isMoving = false;
-        }
+        isMoving = false; // End movement
+        GetInRangeTiles(); // Refresh range tiles after movement
     }
 
     private void PositionCharacterOnLine(OverlayTile tile)
     {
-        currentUnit.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
+        // Set the unit's position to the center of the tile
+        currentUnit.gameObject.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y + 0.0001f, tile.transform.position.z);
+
+        // Update the sorting order based on the tile's sorting order
         currentUnit.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
-        currentUnit.standingOnTile = tile;  // Set the unit's standing tile
+
+        // Update the unit's standing tile after movement
+        currentUnit.standingOnTile = tile;
+
+        // Debug to ensure correct tile assignment
+        Debug.Log($"{currentUnit.name} is now standing on tile: {tile.name}");
     }
 
     private static RaycastHit2D? GetFocusedOnTile()
@@ -133,26 +156,47 @@ public class MouseController : MonoBehaviour
 
         if (hits.Length > 0)
         {
+            // Return the tile hit based on the highest sorting order (Z-axis)
             return hits.OrderByDescending(i => i.collider.transform.position.z).First();
         }
 
         return null;
     }
 
-    private void GetInRangeTiles()
+    public void GetInRangeTiles()
     {
-        rangeFinderTiles = rangeFinder.GetTilesInRange(new Vector2Int(currentUnit.standingOnTile.gridLocation.x, currentUnit.standingOnTile.gridLocation.y), 3);
-
-        foreach (var item in rangeFinderTiles)
+        if (currentUnit == null)
         {
-            // Ensure you're passing the correct TileType here
-            item.ShowTile(color, TileType.Movement);  // TileType instead of TileTypes
+            Debug.LogError("CurrentUnit is null! Ensure SetUnit() is called before moving.");
+            return;
         }
+
+        if (currentUnit.standingOnTile == null)
+        {
+            Debug.LogError("CurrentUnit is not standing on a tile!");
+            return;
+        }
+
+        rangeFinderTiles = rangeFinder.GetTilesInRange(
+            new Vector2Int(
+                currentUnit.standingOnTile.gridLocation.x,
+                currentUnit.standingOnTile.gridLocation.y
+            ),
+            Mathf.RoundToInt(currentUnit.characterStats.movementRange)
+        );
+
+        foreach (var tile in rangeFinderTiles)
+        {
+            tile.ShowTile(color, TileType.Movement); // Visualize the range
+        }
+
+        Debug.Log($"Highlighted {rangeFinderTiles.Count} tiles for movement.");
     }
 
-    // SetUnit method to be used by SpawningManager
     public void SetUnit(Unit newUnit)
     {
+        Debug.Log($"Assigning {newUnit.name} to currentUnit.");
         currentUnit = newUnit;
+        GetInRangeTiles(); // Initialize range tiles for the new unit
     }
 }

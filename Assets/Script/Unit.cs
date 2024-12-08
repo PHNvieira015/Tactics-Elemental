@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TacticsToolkit;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static TurnStateManager;
 
 [System.Serializable]
 [RequireComponent(typeof(CharacterStat))]
@@ -11,7 +13,8 @@ public class Unit : MonoBehaviour
     #region variables
     // Reference to CharacterStat MonoBehaviour for accessing stats and data
     public CharacterStat characterStats;  // Now a component of the same GameObject
-
+    public TurnStateManager turnStateManager;  // Reference to TurnStateManager
+    public GameObject unitGameObject;  // Add a reference to the GameObject if not already present
     // Control player properties
     public int teamID; // Team 1 or 2
     public int playerOwner; // 1 for Player 1, 2 for Player 2
@@ -25,6 +28,7 @@ public class Unit : MonoBehaviour
     public GameObject SelectionCircle;  // Add this declaration at the beginning of your class
     public bool isTarget; //is being target
     public int attackRange; // AttackRange
+    public OverlayTile standingOnTile;
 
     List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range
 
@@ -43,8 +47,18 @@ public class Unit : MonoBehaviour
     #region skills
     private void Awake()
     {
+        if (turnStateManager == null)
+        {
+            turnStateManager = FindObjectOfType<TurnStateManager>();  // Automatically find the TurnStateManager in the scene
+        }
+
+        if (turnStateManager == null)
+        {
+            Debug.LogError("TurnStateManager is not found in the scene.");
+        }
         // Hard-code the reference to CharacterStat by directly referencing the same GameObject
         characterStats = this.gameObject.GetComponent<CharacterStat>();
+        unitGameObject = this.gameObject; // Make sure this is updated when the Unit is created
 
         if (characterStats == null)
         {
@@ -54,7 +68,7 @@ public class Unit : MonoBehaviour
         }
         else
         {
-            Debug.Log(characterStats.name +"CharacterStat found on this GameObject.");
+            Debug.Log(characterStats.name + "CharacterStat found on this GameObject.");
         }
 
         unitSkills = new UnitSkills();
@@ -102,10 +116,10 @@ public class Unit : MonoBehaviour
     }
     #endregion
 
-    public OverlayTile standingOnTile;
 
-    
-   private void Start()
+
+
+    private void Start()
     {
         if (buffs.Count > 0)
         {
@@ -277,4 +291,39 @@ public class Unit : MonoBehaviour
     }
 
     #endregion
+
+    // New method to get the tile under the unit
+    public OverlayTile GetTileUnderUnit()
+    {
+        // Use the GameObject's position (i.e., the actual position in the world) to get the tile
+        Vector2 unitPosition = unitGameObject.transform.position;  // Get position of GameObject
+        RaycastHit2D hit = Physics2D.Raycast(unitGameObject.transform.position, Vector2.down, 20f);
+
+        if (hit.collider != null)
+        {
+            Debug.Log($"Hit collider at: {hit.collider.gameObject.name}");
+            OverlayTile tile = hit.collider.GetComponent<OverlayTile>();
+
+            if (tile)
+            {
+                Debug.Log($"Tile Found: {tile.name}");
+                standingOnTile = tile;  // Set the standingOnTile here
+                return tile;
+            }
+            else
+            {
+                Debug.LogError("Collider does not have OverlayTile attached.");
+            }
+        }
+        else
+        {
+            Debug.LogError("No hit detected under the unit.");
+        }
+
+        return null;
+    }
+    private void Update()
+    {
+    GetTileUnderUnit(); // Update tile only when the turn state is TurnStart
+    }
 }

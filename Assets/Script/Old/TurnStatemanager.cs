@@ -1,4 +1,5 @@
 using System;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class TurnStateManager : MonoBehaviour
@@ -6,6 +7,7 @@ public class TurnStateManager : MonoBehaviour
     private bool turnStarted;
     [SerializeField] public MouseController mouseController; // Use MouseController instead of PathFinder
     [HideInInspector] public Vector3 TurnStartingPosition;
+    private TurnStateManager turnStateManager;
 
     public enum TurnState
     {
@@ -21,7 +23,7 @@ public class TurnStateManager : MonoBehaviour
     private PathFinder pathFinder;
 
     [SerializeField] public Unit currentUnit;
-
+    [SerializeField] public GameObject currentUnitObject;
     public TurnState currentTurnState;
     public event Action<TurnState> OnTurnStateChanged;
 
@@ -57,6 +59,7 @@ public class TurnStateManager : MonoBehaviour
     public void SetCurrentUnit(Unit unit)
     {
         currentUnit = unit;
+        currentUnitObject = unit.gameObject;
         currentTurnState = TurnState.Waiting; // Default state at turn start
         Debug.Log($"Current unit set to {currentUnit.name}");
     }
@@ -67,7 +70,17 @@ public class TurnStateManager : MonoBehaviour
         {
             return; // Avoid redundant state processing
         }
-        UI_ActionBar.SetActive(false); // Deactivate Move button
+        if (currentUnit != null)
+        {
+            OverlayTile tileUnderUnit = currentUnit.GetTileUnderUnit();
+            if (tileUnderUnit != null)
+            {
+                // Do something with the tile
+                Debug.Log($"Tile under the unit: {tileUnderUnit.name}");
+            }
+        }
+
+        UI_ActionBar.SetActive(false); // Deactivate ActionBar (typically Move button will be hidden)
         currentTurnState = newState;
         Debug.Log($"State changed to {currentTurnState}");
 
@@ -93,12 +106,19 @@ public class TurnStateManager : MonoBehaviour
 
             case TurnState.TurnStart:
                 EnableUI_Action();
+                currentUnit.GetTileUnderUnit();
+            //OverlayTile tileUnderUnit = currentUnit.TileUnderUnit();
+
                 if (!turnStarted)
                 {
+                    currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();  // Ensure tile is updated
                     TurnStartingPosition = currentUnit.transform.position;
-                    Debug.Log($"Turn started for {currentUnit.name}! Starting position set to {TurnStartingPosition}.");
+                    //SetStandingOnTile(Unit.standingOnTile);
+                    mouseController.SetUnit(currentUnit);  // Assign unit to MouseController
+                    Debug.Log($"Turn started for {currentUnit.name}! Standing on tile: {currentUnit.standingOnTile?.name}");
                     currentUnit.RefreshStatusEffects();
-
+                    TurnStartingPosition = currentUnit.transform.position;
+                    mouseController.SetUnit(currentUnit);
                     // Deactivate the ActionBar
                     if (UI_ActionBar != null && ActionBar != null)
                     {
@@ -111,31 +131,42 @@ public class TurnStateManager : MonoBehaviour
                     }
 
                     turnStarted = true;
+
+                    // Call UpdateStandingOnTile at the start of the turn
+                    UpdateStandingOnTile();
                 }
                 break;
 
             case TurnState.Moving:
-                if (!currentUnit.hasMoved)
+                // Ensure that currentUnit's standingOnTile is updated when movement starts
+                currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
+                mouseController.SetUnit(currentUnit);  // Pass the unit reference to MouseController
+                mouseController.currentUnit = currentUnit;
+                mouseController.isMoving = true; // Enable movement logic
+                mouseController.GetInRangeTiles(); // Highlight movement tiles
+
+                // Log the coordinates of the standingOnTile
+                if (currentUnit.standingOnTile != null)
                 {
-                    DisableUI_Action();
-                    Debug.Log($"{currentUnit.name} is moving...");
-                    // Now trigger movement via MouseController
-                    if (mouseController != null)
-                    {
-                        mouseController.isMoving = true; // Enable movement in MouseController
-                    }
-                    else
-                    {
-                        Debug.LogError("MouseController not found in the scene.");
-                    }
-                    // After movement ends, mark the unit as moved
-                    currentUnit.hasMoved = true;
+                    Vector3 tilePosition = currentUnit.standingOnTile.transform.position;
+                    Debug.Log($"Tile position: (X: {tilePosition.x}, Y: {tilePosition.y}, Z: {tilePosition.z})");
                 }
+                else
+                {
+                    Debug.LogWarning("Current unit's standingOnTile is null!");
+                }
+
+                // Move the unit
+                currentUnit.hasMoved = true;
+
+                // After moving, update standingOnTile
+                UpdateStandingOnTile(); // Update the tile after the unit has moved
 
                 EnableUI_Action();
                 uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
-                uiActionBar.GameObjectButton_return.SetActive(true); // activate Return button
+                uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
                 break;
+
 
             case TurnState.Attacking:
                 if (!currentUnit.hasAttacked)
@@ -189,6 +220,40 @@ public class TurnStateManager : MonoBehaviour
         }
     }
 
+    // The method to update standingOnTile
+    private void UpdateStandingOnTile()
+    {
+        if (currentUnit != null)
+        {
+            // Log the position of the unit to verify it's being updated
+            Debug.Log($"Unit Position: {currentUnit.transform.position}");
+
+            // Use raycasting or tile-based logic to determine the standing tile
+            RaycastHit2D hit = Physics2D.Raycast(currentUnit.transform.position, Vector2.down);
+
+            if (hit.collider != null)
+            {
+                // Assuming OverlayTile is attached to the tile's collider
+                OverlayTile standingTile = hit.collider.gameObject.GetComponent<OverlayTile>();
+
+                if (standingTile != null)
+                {
+                    // Update the standingOnTile in the Unit class
+                    currentUnit.standingOnTile = standingTile;
+                    Debug.Log($"{currentUnit.name} is standing on tile: {standingTile.name}");
+                }
+                else
+                {
+                    Debug.LogWarning($"No OverlayTile found under {currentUnit.name}.");
+                }
+            }
+            else
+            {
+                Debug.LogError("No tile detected under the unit.");
+            }
+        }
+    }
+
     private void DisableUI_Action()
     {
         // Assuming UI_ActionBar is the GameObject, not the script itself
@@ -214,4 +279,5 @@ public class TurnStateManager : MonoBehaviour
             Debug.LogError("UI_ActionBar is not assigned!");
         }
     }
+
 }

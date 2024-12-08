@@ -9,9 +9,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: isAlive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: characterStats
       value: 
       objectReference: {fileID: 3981150398448303898}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: unitGameObject
+      value: 
+      objectReference: {fileID: 6185480660357975613}
     - target: {fileID: 1808987032276278563, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_Name
       value: Mago da Bolha
@@ -81,6 +89,10 @@ PrefabInstance:
       value: Mago da Bolha
       objectReference: {fileID: 0}
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: movementRange
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: characterClass
       value: 2
       objectReference: {fileID: 0}
@@ -94,9 +106,14 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
   m_PrefabInstance: {fileID: 5534341185368363806}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 6185480660357975613}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 332250c8b76409d46911f327edf5fdf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &6185480660357975613 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1808987032276278563, guid: 626b73c273482804181fce84ca63c097, type: 3}
+  m_PrefabInstance: {fileID: 5534341185368363806}
+  m_PrefabAsset: {fileID: 0}

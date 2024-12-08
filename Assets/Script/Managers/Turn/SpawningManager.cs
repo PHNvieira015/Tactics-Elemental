@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;  // Required for UI components
 
@@ -83,8 +84,19 @@ public class SpawningManager : MonoBehaviour
 
         // Disable the Start button to prevent multiple clicks
         startButton.gameObject.SetActive(false);
-        EnemySpawnerTiles.gameObject.SetActive(false);
-        PlayerSpawningTiles.gameObject.SetActive(false);
+        //EnemySpawnerTiles.gameObject.SetActive(false);
+        //PlayerSpawningTiles.gameObject.SetActive(false);
+        Destroy(EnemySpawnerTiles.gameObject);
+        Destroy(PlayerSpawningTiles.gameObject);
+
+        foreach (var unit in GameMaster.instance.turnQueue)
+        {
+            if (unit != null)
+            {
+                //unit.standingOnTile = unit.standingOnTile;  // Assign the tile to the standingOnTile property
+            }
+        }
+
     }
 
 
@@ -207,7 +219,7 @@ public class SpawningManager : MonoBehaviour
             Debug.LogError("MouseController is not assigned.");
         }
 
-        // Remove the unit from available units and add it to unplayable units
+        // Remove the unit from available units and add it to played units
         playerAvailableUnits.Remove(selectedUnit);
         playedUnits.Add(selectedUnit);
 
@@ -220,7 +232,6 @@ public class SpawningManager : MonoBehaviour
             unitPreview.SetActive(false);
             Destroy(unitPreview);  // Destroy the preview object after placement
         }
-
     }
 
     private static RaycastHit2D? GetFocusedOnTile()

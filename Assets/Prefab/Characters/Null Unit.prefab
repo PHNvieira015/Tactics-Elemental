@@ -58,10 +58,10 @@ MonoBehaviour:
   SelectionCircle: {fileID: 0}
   isTarget: 0
   attackRange: 0
+  standingOnTile: {fileID: 0}
   buffs: []
   debuffs: []
   abilities: []
-  standingOnTile: {fileID: 0}
 --- !u!114 &3310785106208368754
 MonoBehaviour:
   m_ObjectHideFlags: 0

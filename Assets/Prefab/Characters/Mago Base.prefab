@@ -16,6 +16,14 @@ PrefabInstance:
       propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: isAlive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: unitGameObject
+      value: 
+      objectReference: {fileID: 6498419168252256624}
     - target: {fileID: 1808987032276278563, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_Name
       value: Mago Base
@@ -80,6 +88,10 @@ PrefabInstance:
       propertyPath: CharacterName
       value: Mago
       objectReference: {fileID: 0}
+    - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: movementRange
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 9133800873727368985, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_RaycastTarget
       value: 0
@@ -89,3 +101,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 626b73c273482804181fce84ca63c097, type: 3}
+--- !u!1 &6498419168252256624 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1808987032276278563, guid: 626b73c273482804181fce84ca63c097, type: 3}
+  m_PrefabInstance: {fileID: 4843012075370216531}
+  m_PrefabAsset: {fileID: 0}
