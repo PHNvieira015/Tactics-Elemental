@@ -29,6 +29,8 @@ public class Unit : MonoBehaviour
     public bool isTarget; //is being target
     public int attackRange; // AttackRange
     public OverlayTile standingOnTile;
+    public float Xposition;
+    public float Yposition;
 
     List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range
 
@@ -295,9 +297,9 @@ public class Unit : MonoBehaviour
     // New method to get the tile under the unit
     public OverlayTile GetTileUnderUnit()
     {
-        // Use the GameObject's position (i.e., the actual position in the world) to get the tile
-        Vector2 unitPosition = unitGameObject.transform.position;  // Get position of GameObject
-        RaycastHit2D hit = Physics2D.Raycast(unitGameObject.transform.position, Vector2.down, 20f);
+        // Get the world position of the unit (transform.position gives the world position)
+        Vector2 unitPosition = unitGameObject.transform.position;  // World position of the unit
+        RaycastHit2D hit = Physics2D.Raycast(unitPosition, Vector2.down, 20f);
 
         if (hit.collider != null)
         {
@@ -322,8 +324,23 @@ public class Unit : MonoBehaviour
 
         return null;
     }
+
     private void Update()
     {
-    GetTileUnderUnit(); // Update tile only when the turn state is TurnStart
+        // Get the tile under the unit during the update
+        OverlayTile tileUnderUnit = GetTileUnderUnit();
+        Xposition = tileUnderUnit.transform.position.x;
+        Yposition = tileUnderUnit.transform.position.y;
+        if (tileUnderUnit != null)
+        {
+            // Now log the unit's position (ignoring the Z-axis for 2D games)
+            Debug.Log($"Unit Position (X, Y): {unitGameObject.transform.position.x}, {unitGameObject.transform.position.y}");
+
+            // Optionally log the tile's world position, ignoring Z
+            Debug.Log($"Tile Position (X, Y): {tileUnderUnit.transform.position.x}, {tileUnderUnit.transform.position.y}");
+            Debug.Log("Unit Xposition:" + unitGameObject.transform.position.x);
+            Debug.Log("Unit Yposition:" + unitGameObject.transform.position.y);
+
+        }
     }
 }

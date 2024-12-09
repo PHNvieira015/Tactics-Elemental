@@ -546,7 +546,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1178,7 +1178,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1277,6 +1277,8 @@ MonoBehaviour:
   currentUnit: {fileID: 0}
   isMoving: 0
   turnStateManager: {fileID: 1538757723}
+  Xposition: 0
+  Yposition: 0
   color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &635050841
 GameObject:
@@ -6461,7 +6463,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7565,7 +7567,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7961,7 +7963,6 @@ MonoBehaviour:
   mouseController: {fileID: 0}
   TurnStartingPosition: {x: 0, y: 0, z: 0}
   currentUnit: {fileID: 0}
-  currentUnitObject: {fileID: 0}
   currentTurnState: 0
   UI_ActionBar: {fileID: 1661925146}
   ActionBar: {fileID: 636211421}
@@ -8185,7 +8186,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8367,7 +8368,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 1817750338502041432, guid: c504ccb5dfbac0341a5f6bcb30c97014, type: 3}
       propertyPath: m_LocalRotation.w

@@ -137,35 +137,35 @@ public class TurnStateManager : MonoBehaviour
                 }
                 break;
 
-            case TurnState.Moving:
-                // Ensure that currentUnit's standingOnTile is updated when movement starts
-                currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
-                mouseController.SetUnit(currentUnit);  // Pass the unit reference to MouseController
-                mouseController.currentUnit = currentUnit;
-                mouseController.isMoving = true; // Enable movement logic
-                mouseController.GetInRangeTiles(); // Highlight movement tiles
+  case TurnState.Moving:
+    // Ensure that currentUnit's standingOnTile is updated when movement starts
+    currentUnit.standingOnTile = currentUnit.GetTileUnderUnit(); 
+    mouseController.SetUnit(currentUnit);  // Pass the unit reference to MouseController
+    mouseController.currentUnit = currentUnit;
+    mouseController.isMoving = true; // Enable movement logic
+    mouseController.GetInRangeTiles(); // Highlight movement tiles
 
-                // Log the coordinates of the standingOnTile
-                if (currentUnit.standingOnTile != null)
-                {
-                    Vector3 tilePosition = currentUnit.standingOnTile.transform.position;
-                    Debug.Log($"Tile position: (X: {tilePosition.x}, Y: {tilePosition.y}, Z: {tilePosition.z})");
-                }
-                else
-                {
-                    Debug.LogWarning("Current unit's standingOnTile is null!");
-                }
+    // Log the coordinates of the standingOnTile
+    if (currentUnit.standingOnTile != null)
+    {
+        Vector3 tilePosition = currentUnit.standingOnTile.transform.position;
+        Debug.Log($"Tile position: (X: {tilePosition.x}, Y: {tilePosition.y}, Z: {tilePosition.z})");
+    }
+    else
+    {
+        Debug.LogWarning("Current unit's standingOnTile is null!");
+    }
 
-                // Move the unit
-                currentUnit.hasMoved = true;
+    // Move the unit
+    currentUnit.hasMoved = true;
 
-                // After moving, update standingOnTile
-                UpdateStandingOnTile(); // Update the tile after the unit has moved
+    // After moving, update standingOnTile
+    UpdateStandingOnTile(); // Update the tile after the unit has moved
 
-                EnableUI_Action();
-                uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
-                uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
-                break;
+    EnableUI_Action();
+    uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
+    uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
+    break;
 
 
             case TurnState.Attacking:
