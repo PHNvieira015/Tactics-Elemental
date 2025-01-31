@@ -221,7 +221,7 @@ public class SpawningManager : MonoBehaviour
 
         // Remove the unit from available units and add it to played units
         playerAvailableUnits.Remove(selectedUnit);
-        playedUnits.Add(selectedUnit);
+        playedUnits.Add(unitInstance);
 
         // Mark the tile as occupied
         spawningTile.IsOccupied = true;
