@@ -21,7 +21,7 @@ public class Unit : MonoBehaviour
     public int Mitigation; // Damage mitigation
     public bool isAlive = true; // Default value for isAlive
     public bool isDown; // Whether the unit is down (incapacitated)
-    public bool hasMoved; // Whether the unit has moved in this turn
+    public bool hasMoved=false; // Whether the unit has moved in this turn
     public bool hasAttacked; // Whether the unit has attacked in this turn
     public bool selected; // Track if the unit is selected
     public GameObject weaponIcon; // Icon over unit if it's attackable

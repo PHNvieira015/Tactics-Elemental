@@ -9,18 +9,18 @@ public class HealthBar : MonoBehaviour
     private int healthMax;
 
     [SerializeField] public Image HealthBarImage;
-    [SerializeField] public TextMeshProUGUI healthText;
-    [SerializeField] public Button ButtonUI_Reset;
-    [SerializeField] public Button ButtonUI_Damage;
-    [SerializeField] public Button ButtonUI_Heal;
+    //[SerializeField] public TextMeshProUGUI healthText;
+    //[SerializeField] public Button ButtonUI_Reset;
+    //[SerializeField] public Button ButtonUI_Damage;
+    //[SerializeField] public Button ButtonUI_Heal;
 
     // Start is called before the first frame update
     void Start()
     {
-        // Setup button listeners
-        ButtonUI_Reset.onClick.AddListener(ResetHealth);
-        ButtonUI_Damage.onClick.AddListener(DamageHealth);
-        ButtonUI_Heal.onClick.AddListener(HealHealth);
+        // Setup button listeners #used for debug, removed from game.
+        //ButtonUI_Reset.onClick.AddListener(ResetHealth);
+        //ButtonUI_Damage.onClick.AddListener(DamageHealth);
+        //ButtonUI_Heal.onClick.AddListener(HealHealth);
     }
 
     // Method to set up HealthSystem externally from CharacterBattle
@@ -52,7 +52,7 @@ public class HealthBar : MonoBehaviour
     // Method to update the health text (current health / max health)
     private void SetHealthNumber(int health, int healthMax)
     {
-        healthText.text = "Health\n" + health + "/" + healthMax;
+        //healthText.text = "Health\n" + health + "/" + healthMax;
     }
 
     // Reset health to max

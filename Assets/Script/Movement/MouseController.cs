@@ -19,7 +19,7 @@ public class MouseController : MonoBehaviour
     private ArrowTranslator arrowTranslator;
     private List<OverlayTile> path;
     private List<OverlayTile> rangeFinderTiles;
-    public bool isMoving;
+    public bool isMoving=false;
     public TurnStateManager turnStateManager;  // Reference to TurnStateManager
     public float Xposition;
     public float Yposition;
@@ -27,6 +27,8 @@ public class MouseController : MonoBehaviour
 
     public Vector3 TargetPosition { get; private set; } // Property to store the target position
     public Color color = Color.green;  // Default color for the tiles (you can change this)
+
+    private bool _coroutineRunning;
 
     void Start()
     {
@@ -62,24 +64,11 @@ public class MouseController : MonoBehaviour
 
             Xposition = currentUnit.Xposition;
             Yposition = currentUnit.Xposition;
-            //Xposition= currentUnit.unitGameObject.transform.position.x;
-            //Yposition= currentUnit.unitGameObject.transform.position.y;
-            //Xposition = currentUnit.transform.TransformPoint(currentUnit.transform.localPosition).x;
-            //Yposition = currentUnit.transform.TransformPoint(currentUnit.transform.localPosition).y;
-            //Xposition =currentUnit.transform.TransformPoint(currentUnit.gameObject.transform.localPosition).x;
-            //Yposition =currentUnit.transform.TransformPoint(currentUnit.gameObject.transform.localPosition).y;
-            //
-            //Xposition = currentUnit.standingOnTile.transform.position.x;
-            //Yposition = currentUnit.standingOnTile.transform.position.y;
-            //Xposition = currentUnit.transform.position.x + currentUnit.transform.TransformPoint(currentUnit.gameObject.transform.localPosition).x;
-            //Yposition = currentUnit.transform.position.y + currentUnit.transform.TransformPoint(currentUnit.gameObject.transform.localPosition).y;
-            // Log the correct position of the unit, and its standing tile
-            //Debug.Log($"Unit Position: {currentUnit.gameObject.transform.position}, Standing on Tile: {currentUnit.standingOnTile?.name}");
         }
 
         if (isMoving)
         {
-            if (path.Count > 0)
+            if (path.Count > 0 && !_coroutineRunning)
             {
                 StartCoroutine(MoveAlongPathCoroutine());
             }
@@ -123,11 +112,22 @@ public class MouseController : MonoBehaviour
             }
 
             // Move the unit to the clicked position if it's in range
-            if (Input.GetMouseButtonDown(0) && rangeFinderTiles.Contains(tile))
+            if (Input.GetMouseButtonDown(0))
             {
-                path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
-                isMoving = true; // Lock movement state
-                Debug.Log($"Path calculated: {path.Count} tiles.");
+                if (rangeFinderTiles.Contains(tile))
+                {
+                    path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
+
+                    if (path.Count > 0)
+                    {
+                        isMoving = true; // Lock movement state
+                        Debug.Log($"Path calculated: {path.Count} tiles.");
+                    }
+                }
+                else
+                {
+                    Debug.Log("Clicked outside of movement range. Ignoring move command.");
+                }
             }
         }
     }
@@ -135,16 +135,23 @@ public class MouseController : MonoBehaviour
 
     private IEnumerator MoveAlongPathCoroutine()
     {
-        foreach (var tile in path)
+        _coroutineRunning = true;
+
+        for (int i = 0; i < path.Count; i++)
         {
-            while (Vector2.Distance(currentUnit.transform.position, tile.transform.position) > 0.01f)
+            var tile = path[i];
+
+            //error de posição aqui!!
+            while (!Mathf.Approximately(Vector2.Distance(currentUnit.transform.position, tile.transform.position), 0))
             {
                 // Move the unit towards the current tile
                 currentUnit.transform.position = Vector2.MoveTowards(
                     currentUnit.transform.position,
                     tile.transform.position,
-                    speed * Time.deltaTime
+                    Mathf.Min(speed * Time.deltaTime, Vector2.Distance(currentUnit.transform.position, tile.transform.position))
                 );
+
+
                 yield return null;
             }
 
@@ -152,6 +159,8 @@ public class MouseController : MonoBehaviour
             PositionCharacterOnLine(tile);
         }
 
+        path.Clear();
+        _coroutineRunning = false;
         isMoving = false; // End movement
         GetInRangeTiles(); // Refresh range tiles after movement
     }
@@ -162,7 +171,7 @@ public class MouseController : MonoBehaviour
         currentUnit.transform.position = new Vector3(
             tile.transform.position.x,
             tile.transform.position.y + 0.0001f,  // Slightly adjust Y to avoid overlap
-            tile.transform.position.z
+            0
         );
 
         // Set the correct sorting order for the unit based on the tile's sorting order
