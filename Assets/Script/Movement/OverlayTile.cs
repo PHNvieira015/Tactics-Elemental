@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static ArrowTranslator;
 
@@ -49,7 +50,7 @@ public class OverlayTile : MonoBehaviour
 
     public void ShowTile(Color color, TileType type = TileType.Movement)
     {
-        Debug.Log($"Setting tile {name} to color {color} for {type}"); // Debugging
+        //Debug.Log($"Setting tile {name} to color {color} for {type}"); // Debugging
 
         GetComponent<SpriteRenderer>().color = color; // Apply color
 
@@ -96,6 +97,11 @@ public class OverlayTile : MonoBehaviour
                 arrowRenderer.sortingOrder = tileRenderer.sortingOrder; // Match the tile's sorting order
             }
         }
+    }
+    public Unit GetUnit()
+    {
+        // Assuming your units are NOT children of OverlayTile, we find the unit that is standing on this tile
+        return FindObjectsOfType<Unit>().FirstOrDefault(unit => unit.standingOnTile == this);
     }
 }
 

@@ -14,13 +14,13 @@ public class DamagePopup : MonoBehaviour
 
     public static DamagePopup Create(Vector3 position, int damageAmount)
     {
-        Debug.Log($"Creating DamagePopup at position: {position}, with damage: {damageAmount}");
+        //Debug.Log($"Creating DamagePopup at position: {position}, with damage: {damageAmount}");
 
         // Instantiate the DamagePopup prefab and get the transform.
         Transform damagePopupTransform = Instantiate(GameAssets.instance.DamagePopup, position, Quaternion.identity).transform;
         
         // Log the instantiated object
-        Debug.Log("DamagePopup instantiated.");
+        //Debug.Log("DamagePopup instantiated.");
 
         // Get the DamagePopup component.
         DamagePopup damagePopup = damagePopupTransform.GetComponent<DamagePopup>();

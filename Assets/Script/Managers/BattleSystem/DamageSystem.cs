@@ -97,7 +97,7 @@ public class DamageSystem : MonoBehaviour
         return distance <= attacker.attackRange;
     }
 
-    private void Attack(Unit attacker, Unit target)
+    public void Attack(Unit attacker, Unit target)
     {
         if (attacker.IsAlive() && target.IsAlive())
         {

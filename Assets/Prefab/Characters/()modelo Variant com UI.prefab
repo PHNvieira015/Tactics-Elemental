@@ -729,8 +729,10 @@ MonoBehaviour:
   weaponIcon: {fileID: 6808402186744926048}
   SelectionCircle: {fileID: 0}
   isTarget: 0
-  attackRange: 0
+  attackRange: 1
   standingOnTile: {fileID: 0}
+  Xposition: 0
+  Yposition: 0
   buffs: []
   debuffs: []
   abilities: []
@@ -2693,10 +2695,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HealthBarImage: {fileID: 482745956249446707}
-  healthText: {fileID: 940967221578519855}
-  ButtonUI_Reset: {fileID: 5210354741879611013}
-  ButtonUI_Damage: {fileID: 4855827738089958925}
-  ButtonUI_Heal: {fileID: 748203018827818024}
 --- !u!1 &7887507716342215382
 GameObject:
   m_ObjectHideFlags: 0

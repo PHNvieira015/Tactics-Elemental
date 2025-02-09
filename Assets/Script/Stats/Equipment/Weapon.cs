@@ -11,7 +11,7 @@ public class Weapon : Equipment
     [Header("Offensive Stats")]
     public ItemClass weapon;
     public float WeaponDamageModifier;
-    public float WeaponRange;
+    public int WeaponRange;
 
     // Weapon and Armor Types
     public enum WeaponType { Sword, Bow, Staff, Axe }

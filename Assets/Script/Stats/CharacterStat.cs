@@ -30,6 +30,7 @@ public class CharacterStat : MonoBehaviour
     public int agility;
     public int intellect;
     public AttackType PrimaryAttackType;
+    public int AttackRange;
 
     // Defensive stats (Editable)
     public int armorValue;
@@ -82,6 +83,10 @@ public class CharacterStat : MonoBehaviour
                 weaknessElement = ElementType.Fire; // Thunder is weak to Fire
                 break;
         }
+    }
+    public void SetCharacterAttackRange(int AttackRange)
+    {
+        this.AttackRange = AttackRange+ equippedWeapon.WeaponRange;
     }
 
     // Set Character Level

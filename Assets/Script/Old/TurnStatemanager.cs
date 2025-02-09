@@ -62,6 +62,9 @@ public class TurnStateManager : MonoBehaviour
         currentUnitObject = unit.gameObject;
         currentTurnState = TurnState.Waiting; // Default state at turn start
         Debug.Log($"Current unit set to {currentUnit.name}");
+        // Trigger the UI update after setting the current unit
+        OnTurnStateChanged?.Invoke(currentTurnState);
+        Debug.Log("UI update triggered");
     }
 
     public void ChangeState(TurnState newState)
@@ -171,6 +174,8 @@ public class TurnStateManager : MonoBehaviour
             case TurnState.Attacking:
                 if (!currentUnit.hasAttacked)
                 {
+                mouseController.GetAttackRangeTiles(); // Show attack range
+                Debug.Log($"{currentUnit.name} is attacking...");
                     DisableUI_Action();
                     Debug.Log($"{currentUnit.name} is attacking...");
                     // Attack logic

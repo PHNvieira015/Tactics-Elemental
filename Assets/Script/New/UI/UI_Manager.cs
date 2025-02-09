@@ -4,35 +4,53 @@ using UnityEngine;
 
 public class UI_Manager : MonoBehaviour
 {
-    //[SerializeField] private LevelWindow levelWindow;
-    [SerializeField] private Unit Currentunit;
     //[SerializeField] private targetUnit Targettunit;
+    [SerializeField] private TurnStateManager turnStateManager; // Reference to TurnStateManager
+    [SerializeField] private Unit currentUnit;
     public Transform UI_Health;
-    public Transform UI_Level;
     public Transform ActionMenu;
 
     // Start is called before the first frame update
     private void Awake()
     {
-        //LevelSystem levelSystem = new LevelSystem();
-        //levelWindow.SetLevelSystem(levelSystem);
-        //unit.SetLevelSystem(levelSystem);
+
     }
 
     private void Start()
     {
-        HealthBar healthBar = UI_Health.GetComponent<HealthBar>();
-        LevelWindow levelWindow = UI_Level.GetComponent<LevelWindow>();
-        
+        // Ensure turnStateManager is not null
+        if (turnStateManager == null)
+        {
+            turnStateManager = FindObjectOfType<TurnStateManager>();
+        }
 
+        // Ensure OnTurnStateChanged is subscribed
+        if (turnStateManager != null)
+        {
+            turnStateManager.OnTurnStateChanged += OnTurnStateChanged;
+        }
     }
+
     public void DisplayUnitInfo(Unit unit)
     {
+
+
         Debug.Log("UI_Manager: Unit information updated for " + unit.name);
-        // Here update your UI elements with properties from 'unit'
-        // For example, update the health bar using the unit's current health
-        HealthBar healthBar = UI_Health.GetComponent<HealthBar>();
-        // healthBar.SetValue(unit.characterStats.currentHealth);
-        // Similarly, update the level window and any other info from unit
     }
+    private void OnTurnStateChanged(TurnStateManager.TurnState newState)
+    {
+        if (turnStateManager.currentUnit != null)
+        {
+            // Set currentUnit from turnStateManager
+            currentUnit = turnStateManager.currentUnit;
+
+            // Only update the UI if the currentUnit is not null
+            DisplayUnitInfo(turnStateManager.currentUnit);
+        }
+        else
+        {
+            Debug.LogWarning("Current unit is still null in UI_Manager!");
+        }
+    }
+
 }

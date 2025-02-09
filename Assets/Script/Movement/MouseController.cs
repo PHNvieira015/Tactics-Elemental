@@ -5,6 +5,7 @@ using TacticsToolkit;
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UIElements;
+using UnityEngine.EventSystems;
 using static TurnStateManager;
 
 public class MouseController : MonoBehaviour
@@ -25,6 +26,10 @@ public class MouseController : MonoBehaviour
     public float Xposition;
     public float Yposition;
 
+    //AttackRange
+    private List<OverlayTile> attackRangeTiles; // Store attack range tiles
+    public Color attackColor = Color.red;  // Red color for attack range
+
 
     public Vector3 TargetPosition { get; private set; } // Property to store the target position
     public Color color = Color.blue;  // Default color for the tiles (you can change this)
@@ -33,6 +38,7 @@ public class MouseController : MonoBehaviour
 
     void Start()
     {
+        //Pathfinder
         pathFinder = new PathFinder();
         rangeFinder = new RangeFinder();
         arrowTranslator = new ArrowTranslator();
@@ -56,13 +62,20 @@ public class MouseController : MonoBehaviour
         {
             GetInRangeTiles(); // Initialize range tiles for the unit
         }
+        //AttackRange
+        attackRangeTiles = new List<OverlayTile>(); // Initialize attack range list
     }
 
     void LateUpdate()
     {
+        // Check if the mouse is over a UI element (e.g., a button)
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return; // Skip further processing if the mouse is over a UI element
+        }
+
         if (currentUnit != null)
         {
-
             Xposition = currentUnit.Xposition;
             Yposition = currentUnit.Xposition;
         }
@@ -112,10 +125,8 @@ public class MouseController : MonoBehaviour
                     {
                         MapManager.Instance.map[item.grid2DLocation].SetSprite(ArrowDirection.None);
                     }
-                    if( turnStateManager.currentTurnState == TurnState.Moving)
+                    if (turnStateManager.currentTurnState == TurnState.Moving)
                     {
-
-                    
                         for (int i = 0; i < path.Count; i++)
                         {
                             var previousTile = i > 0 ? path[i - 1] : currentUnit.standingOnTile;
@@ -129,7 +140,7 @@ public class MouseController : MonoBehaviour
             }
 
             // Move the unit to the clicked position if it's in range
-            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving)
+            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving && rangeFinderTiles.Contains(tile))
             {
                 if (rangeFinderTiles.Contains(tile))
                 {
@@ -138,15 +149,11 @@ public class MouseController : MonoBehaviour
                     if (path.Count > 0)
                     {
                         isMoving = true; // Lock movement state
-                        //Debug.Log($"Path calculated: {path.Count} tiles.");
                     }
-                }
-                else
-                {
-                    Debug.Log("Clicked outside of movement range. Ignoring move command.");
                 }
             }
         }
+
     }
 
 
@@ -257,4 +264,39 @@ public class MouseController : MonoBehaviour
         currentUnit = newUnit;
         GetInRangeTiles(); // Initialize range tiles for the new unit
     }
+    // Call this method when the attack state is activated
+    public void GetAttackRangeTiles()
+    {
+        if (currentUnit == null)
+        {
+            Debug.LogError("CurrentUnit is null! Cannot determine attack range.");
+            return;
+        }
+
+        if (currentUnit.standingOnTile == null)
+        {
+            Debug.LogError("CurrentUnit is not standing on a tile!");
+            return;
+        }
+
+        attackRangeTiles = rangeFinder.GetTilesInRange(
+            new Vector2Int(
+                currentUnit.standingOnTile.gridLocation.x,
+                currentUnit.standingOnTile.gridLocation.y
+            ),
+            Mathf.RoundToInt(currentUnit.attackRange) // Use attackRange variable
+        );
+
+        // Only visualize if in Attack state
+        if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Attacking)
+        {
+            foreach (var tile in attackRangeTiles)
+            {
+                tile.ShowTile(attackColor, TileType.AttackRangeColor); // Show red attack tiles
+            }
+
+            Debug.Log($"Highlighted {attackRangeTiles.Count} tiles for attack range.");
+        }
+    }
+
 }

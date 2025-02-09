@@ -77,6 +77,8 @@ public class Unit : MonoBehaviour
         unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
         levelSystem = new LevelSystem(characterStats);
         levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
+        attackRange = attackRange + characterStats.AttackRange;
+
     }
 
     private void UnitSkills_OnSkillUnlocked(object sender, UnitSkills.OnSkillUnlockedEventArgs e)

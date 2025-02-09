@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2dc16548d0b2af94da409af52005eb0f, type: 3}
-  m_Name: WeaponModel
+  m_Name: Mace
   m_EditorClassIdentifier: 
   itemName: 
   itemDescription: 
@@ -18,13 +18,13 @@ MonoBehaviour:
   strengthBonus: 0
   agilityBonus: 0
   intellectBonus: 0
-  WeightBonus: 0
+  WeightBonus: 1
   MovementBonus: 0
   itemClass: 0
   value: 0
   requiredClass: 0
   weapon: 0
-  WeaponDamageModifier: 0
-  WeaponRange: 0
-  weaponType: 0
-  PrimaryAttackType: 1
+  WeaponDamageModifier: 1
+  WeaponRange: 1
+  weaponType: 2
+  PrimaryAttackType: 3
