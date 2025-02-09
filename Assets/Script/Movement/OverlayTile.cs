@@ -49,22 +49,23 @@ public class OverlayTile : MonoBehaviour
 
     public void ShowTile(Color color, TileType type = TileType.Movement)
     {
-        gameObject.GetComponent<SpriteRenderer>().color = color;
+        Debug.Log($"Setting tile {name} to color {color} for {type}"); // Debugging
 
-        // Additional behavior based on the tile type
+        GetComponent<SpriteRenderer>().color = color; // Apply color
+
         switch (type)
         {
             case TileType.Movement:
-                // Behavior for movement tiles
+                // Movement tile behavior
                 break;
             case TileType.AttackRangeColor:
-                // Behavior for attack range tiles
+                // Attack range tile behavior
                 break;
             case TileType.AttackColor:
-                // Behavior for attack color tiles
+                // Attack color tile behavior
                 break;
             case TileType.Blocked:
-                // Behavior for blocked tiles
+                // Blocked tile behavior
                 break;
         }
     }

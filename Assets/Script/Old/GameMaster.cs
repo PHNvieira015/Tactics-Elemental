@@ -129,7 +129,7 @@ public class GameMaster : MonoBehaviour
                 if (tileUnderEnemy != null)
                 {
                     spawnedUnit.standingOnTile = tileUnderEnemy;
-                    Debug.Log($"Enemy {spawnedUnit.name} spawned on tile at position {tileUnderEnemy.transform.position}");
+                    //Debug.Log($"Enemy {spawnedUnit.name} spawned on tile at position {tileUnderEnemy.transform.position}");
                 }
                 else
                 {

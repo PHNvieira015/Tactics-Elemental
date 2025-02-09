@@ -5,6 +5,7 @@ using TacticsToolkit;
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UIElements;
+using static TurnStateManager;
 
 public class MouseController : MonoBehaviour
 {
@@ -19,14 +20,14 @@ public class MouseController : MonoBehaviour
     private ArrowTranslator arrowTranslator;
     private List<OverlayTile> path;
     private List<OverlayTile> rangeFinderTiles;
-    public bool isMoving=false;
+    public bool isMoving = false;
     public TurnStateManager turnStateManager;  // Reference to TurnStateManager
     public float Xposition;
     public float Yposition;
 
 
     public Vector3 TargetPosition { get; private set; } // Property to store the target position
-    public Color color = Color.green;  // Default color for the tiles (you can change this)
+    public Color color = Color.blue;  // Default color for the tiles (you can change this)
 
     private bool _coroutineRunning;
 
@@ -79,6 +80,18 @@ public class MouseController : MonoBehaviour
 
         if (hit.HasValue)
         {
+            // Attempt to get the Unit component on the hit object
+            Unit hitUnit = hit.Value.collider.gameObject.GetComponent<Unit>();
+            if (hitUnit != null)
+            {
+                // Found a Unit; now notify the UI_Manager.
+                UI_Manager uiManager = FindObjectOfType<UI_Manager>();
+                Debug.Log("Unit name is" + hitUnit.name);
+                if (uiManager != null)
+                {
+                    uiManager.DisplayUnitInfo(hitUnit);
+                }
+            }
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>();
             cursor.transform.position = tile.transform.position;
             cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder;
@@ -99,20 +112,24 @@ public class MouseController : MonoBehaviour
                     {
                         MapManager.Instance.map[item.grid2DLocation].SetSprite(ArrowDirection.None);
                     }
-
-                    for (int i = 0; i < path.Count; i++)
+                    if( turnStateManager.currentTurnState == TurnState.Moving)
                     {
-                        var previousTile = i > 0 ? path[i - 1] : currentUnit.standingOnTile;
-                        var futureTile = i < path.Count - 1 ? path[i + 1] : null;
 
-                        var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
-                        path[i].SetSprite(arrow);
+                    
+                        for (int i = 0; i < path.Count; i++)
+                        {
+                            var previousTile = i > 0 ? path[i - 1] : currentUnit.standingOnTile;
+                            var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+
+                            var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
+                            path[i].SetSprite(arrow);
+                        }
                     }
                 }
             }
 
             // Move the unit to the clicked position if it's in range
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving)
             {
                 if (rangeFinderTiles.Contains(tile))
                 {
@@ -121,7 +138,7 @@ public class MouseController : MonoBehaviour
                     if (path.Count > 0)
                     {
                         isMoving = true; // Lock movement state
-                        Debug.Log($"Path calculated: {path.Count} tiles.");
+                        //Debug.Log($"Path calculated: {path.Count} tiles.");
                     }
                 }
                 else
@@ -202,6 +219,7 @@ public class MouseController : MonoBehaviour
 
     public void GetInRangeTiles()
     {
+
         if (currentUnit == null)
         {
             Debug.LogError("CurrentUnit is null! Ensure SetUnit() is called before moving.");
@@ -221,13 +239,16 @@ public class MouseController : MonoBehaviour
             ),
             Mathf.RoundToInt(currentUnit.characterStats.movementRange)
         );
-
-        foreach (var tile in rangeFinderTiles)
+        // Only visualize the range if the turn state allows movement.
+        if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Moving)
         {
-            tile.ShowTile(color, TileType.Movement); // Visualize the range
-        }
+            foreach (var tile in rangeFinderTiles)
+            {
+                tile.ShowTile(color, TileType.Movement); // Visualize the range
+            }
 
-        Debug.Log($"Highlighted {rangeFinderTiles.Count} tiles for movement.");
+            Debug.Log($"Highlighted {rangeFinderTiles.Count} tiles for movement.");
+        }
     }
 
     public void SetUnit(Unit newUnit)

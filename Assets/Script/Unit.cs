@@ -70,7 +70,7 @@ public class Unit : MonoBehaviour
         }
         else
         {
-            Debug.Log(characterStats.name + "CharacterStat found on this GameObject.");
+            //Debug.Log(characterStats.name + "CharacterStat found on this GameObject.");
         }
 
         unitSkills = new UnitSkills();
@@ -324,23 +324,4 @@ public class Unit : MonoBehaviour
 
         return null;
     }
-
-    //private void Update()
-    //{
-    //    // Get the tile under the unit during the update
-    //    OverlayTile tileUnderUnit = GetTileUnderUnit();
-    //    Xposition = tileUnderUnit.transform.position.x;
-    //    Yposition = tileUnderUnit.transform.position.y;
-    //    if (tileUnderUnit != null)
-    //    {
-    //        // Now log the unit's position (ignoring the Z-axis for 2D games)
-    //        Debug.Log($"Unit Position (X, Y): {unitGameObject.transform.position.x}, {unitGameObject.transform.position.y}");
-
-    //        // Optionally log the tile's world position, ignoring Z
-    //        Debug.Log($"Tile Position (X, Y): {tileUnderUnit.transform.position.x}, {tileUnderUnit.transform.position.y}");
-    //        Debug.Log("Unit Xposition:" + unitGameObject.transform.position.x);
-    //        Debug.Log("Unit Yposition:" + unitGameObject.transform.position.y);
-
-    //    }
-    //}
 }

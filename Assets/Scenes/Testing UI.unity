@@ -7963,6 +7963,7 @@ MonoBehaviour:
   mouseController: {fileID: 0}
   TurnStartingPosition: {x: 0, y: 0, z: 0}
   currentUnit: {fileID: 0}
+  currentUnitObject: {fileID: 0}
   currentTurnState: 0
   UI_ActionBar: {fileID: 1661925146}
   ActionBar: {fileID: 636211421}

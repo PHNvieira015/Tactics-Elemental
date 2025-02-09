@@ -44,6 +44,7 @@ public class UI_ActionBar : MonoBehaviour
 
     private void ReturnTurnStart()
     {
+        //add the go back to starting position
         Debug.Log("Returning to Turn Start...");
         turnStateManager.ChangeState(TurnStateManager.TurnState.TurnStart);
         GameObjectButton_return.gameObject.SetActive(false);
