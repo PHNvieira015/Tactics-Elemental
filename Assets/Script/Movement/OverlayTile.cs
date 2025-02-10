@@ -33,9 +33,9 @@ public class OverlayTile : MonoBehaviour
     {
         if (tileData != null)
         {
-            return tileData.MoveCost; // Assuming tileData references a TileData instance with MoveCost
+            return tileData.MoveCost;
         }
-        return 1; // Default move cost if no data is available
+        return 1;
     }
 
     public void Reset()
@@ -50,58 +50,82 @@ public class OverlayTile : MonoBehaviour
 
     public void ShowTile(Color color, TileType type = TileType.Movement)
     {
-        //Debug.Log($"Setting tile {name} to color {color} for {type}"); // Debugging
-
-        GetComponent<SpriteRenderer>().color = color; // Apply color
+        GetComponent<SpriteRenderer>().color = color;
 
         switch (type)
         {
             case TileType.Movement:
-                // Movement tile behavior
                 break;
             case TileType.AttackRangeColor:
-                // Attack range tile behavior
                 break;
             case TileType.AttackColor:
-                // Attack color tile behavior
                 break;
             case TileType.Blocked:
-                // Blocked tile behavior
                 break;
         }
     }
 
     public void SetSprite(ArrowDirection d, bool highlight = false)
     {
-        var arrowRenderer = GetComponentsInChildren<SpriteRenderer>()[1]; // Assuming this is the arrow sprite renderer
+        var arrowRenderer = GetComponentsInChildren<SpriteRenderer>()[1];
         var tileRenderer = gameObject.GetComponent<SpriteRenderer>();
 
         if (d == ArrowDirection.None)
         {
-            arrowRenderer.color = new Color(1, 1, 1, 0); // Hide the arrow
+            arrowRenderer.color = new Color(1, 1, 1, 0);
         }
         else
         {
-            arrowRenderer.color = new Color(1, 1, 1, 1); // Show the arrow
+            arrowRenderer.color = new Color(1, 1, 1, 1);
             arrowRenderer.sprite = arrows[(int)d];
 
-            // Adjust sorting layer and order
             if (highlight)
             {
-                arrowRenderer.sortingLayerName = "Highlight"; // Change to "Highlight" sorting layer
-                arrowRenderer.sortingOrder = 1; // Optional: Set a consistent sorting order in "Highlight" layer
+                arrowRenderer.sortingLayerName = "Highlight";
+                arrowRenderer.sortingOrder = 1;
             }
             else
             {
-                arrowRenderer.sortingLayerName = tileRenderer.sortingLayerName; // Match the tile's sorting layer
-                arrowRenderer.sortingOrder = tileRenderer.sortingOrder; // Match the tile's sorting order
+                arrowRenderer.sortingLayerName = tileRenderer.sortingLayerName;
+                arrowRenderer.sortingOrder = tileRenderer.sortingOrder;
             }
         }
     }
+
     public Unit GetUnit()
     {
-        // Assuming your units are NOT children of OverlayTile, we find the unit that is standing on this tile
         return FindObjectsOfType<Unit>().FirstOrDefault(unit => unit.standingOnTile == this);
+    }
+
+    public void SetUnit(Unit unit)
+    {
+        activeCharacter = unit;
+        isBlocked = true;
+
+        if (unit.teamID == 1)
+        {
+            tileData.type = TileTypes.PlayerUnitBlocked;
+        }
+        else if (unit.teamID == 2)
+        {
+            tileData.type = TileTypes.EnemyUnitBlocked;
+        }
+    }
+
+    public void ClearUnit()
+    {
+        activeCharacter = null;
+        isBlocked = false;
+        tileData.type = TileTypes.Traversable;
+    }
+
+    public bool CanMoveThrough(Unit unit)
+    {
+        if (isBlocked && activeCharacter != null)
+        {
+            return activeCharacter.teamID == unit.teamID;
+        }
+        return true;
     }
 }
 
@@ -112,5 +136,6 @@ public enum TileType
     AttackColor,
     Blocked,
     Spawn,
-
+    EnemyunitBlocked,
+    PlayerunitBlocked
 }
