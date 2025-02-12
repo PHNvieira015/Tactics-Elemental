@@ -25,11 +25,10 @@ public class MouseController : MonoBehaviour
     public TurnStateManager turnStateManager;  // Reference to TurnStateManager
     public float Xposition;
     public float Yposition;
-
+    public DamageSystem damageSystem;
     //AttackRange
     public List<OverlayTile> attackRangeTiles; // Store attack range tiles
     public Color attackColor = Color.red;  // Red color for attack range
-
 
     public Vector3 TargetPosition { get; private set; } // Property to store the target position
     public Color color = Color.blue;  // Default color for the tiles (you can change this)
@@ -93,6 +92,7 @@ public class MouseController : MonoBehaviour
 
         if (hit.HasValue)
         {
+#region movement
             // Attempt to get the Unit component on the hit object
             Unit hitUnit = hit.Value.collider.gameObject.GetComponent<Unit>();
             if (hitUnit != null)
@@ -153,6 +153,51 @@ public class MouseController : MonoBehaviour
 
                 }
             }
+#endregion
+
+            #region attack indevelopment
+            if (attackRangeTiles.Contains(tile))
+            {
+                // Look for units at this position
+                Unit[] units = FindObjectsOfType<Unit>();
+                Unit targetUnit = null;
+
+                foreach (Unit unit in units)
+                {
+                    if (unit.standingOnTile == tile)
+                    {
+                        targetUnit = unit;
+                        break;
+                    }
+                }
+
+                Debug.Log("Attempting to attack. Target unit found: " + (targetUnit != null));
+
+                if (targetUnit != null && targetUnit != currentUnit && !currentUnit.hasAttacked)
+                {
+                    Debug.Log($"Attack conditions met! Current unit: {currentUnit.name}, Target: {targetUnit.name}");
+                    Debug.Log($"Player owners - Attacker: {currentUnit.playerOwner}, Target: {targetUnit.playerOwner}");
+
+                    damageSystem.Attack(currentUnit, targetUnit);
+
+                    Debug.Log("Attack performed!");
+
+                    foreach (var rangeTile in attackRangeTiles)
+                    {
+                        rangeTile.HideTile();
+                    }
+
+                    currentUnit.hasAttacked = true;
+                    attackRangeTiles.Clear();
+                }
+                else
+                {
+                    Debug.Log($"Attack conditions not met: " +
+                        $"Has Unit: {targetUnit != null}, " +
+                        $"Haven't Attacked: {!currentUnit.hasAttacked}");
+                }
+            }
+            #endregion
         }
 
     }

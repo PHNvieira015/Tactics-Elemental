@@ -1250,10 +1250,13 @@ MonoBehaviour:
   cursor: {fileID: 1307614554086083607, guid: ba17e771593cc3f46b7462c61213d2ea, type: 3}
   speed: 10
   currentUnit: {fileID: 0}
+  rangeFinderTiles: []
   isMoving: 0
   turnStateManager: {fileID: 1538757723}
   Xposition: 0
   Yposition: 0
+  damageSystem: {fileID: 1878649296}
+  attackRangeTiles: []
   attackColor: {r: 1, g: 0, b: 0, a: 1}
   color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &635050841
@@ -8963,7 +8966,7 @@ MonoBehaviour:
   enemySpawner: {fileID: 1791059474}
   currentUnit: {fileID: 0}
   turnStateManager: {fileID: 1538757723}
-  spawningManager: {fileID: 0}
+  spawningManager: {fileID: 1190875574}
   State: 0
 --- !u!1001 &1866669386
 PrefabInstance:
@@ -9262,9 +9265,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 309249799c741e746a618bdd7751a244, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedUnit: {fileID: 0}
-  selectedUnitSquare: {fileID: 0}
-  playerTurn: 1
 --- !u!1001 &1941171348
 PrefabInstance:
   m_ObjectHideFlags: 0
