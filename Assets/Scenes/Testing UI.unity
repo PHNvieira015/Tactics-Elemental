@@ -641,9 +641,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnStateManager: {fileID: 0}
-  Currentunit: {fileID: 0}
+  currentUnit: {fileID: 0}
   UI_Health: {fileID: 726597619}
-  UI_Level: {fileID: 8449667537553920868, guid: 16d63f52892b9fe428304e8fc518bab6, type: 3}
   ActionMenu: {fileID: 0}
 --- !u!114 &262229001
 MonoBehaviour:
@@ -1255,6 +1254,7 @@ MonoBehaviour:
   turnStateManager: {fileID: 1538757723}
   Xposition: 0
   Yposition: 0
+  attackColor: {r: 1, g: 0, b: 0, a: 1}
   color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &635050841
 GameObject:
@@ -2572,7 +2572,7 @@ Transform:
   m_GameObject: {fileID: 976605031}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.17, y: -0.07, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8354,9 +8354,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnStateManager: {fileID: 1538757723}
-  Currentunit: {fileID: 0}
+  currentUnit: {fileID: 0}
   UI_Health: {fileID: 726597619}
-  UI_Level: {fileID: 651956657}
   ActionMenu: {fileID: 636211415}
 --- !u!1001 &1773873791
 PrefabInstance:

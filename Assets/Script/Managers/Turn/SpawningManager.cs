@@ -74,6 +74,11 @@ public class SpawningManager : MonoBehaviour
             GameMaster.instance.playerList = new List<Unit>(playedUnits); // Ensure we send the list properly
             Debug.Log("Player units assigned to GameMaster.");
         }
+        if (playedUnits.Count == 0)
+        {
+            Debug.LogError("No units to spawn, spawn units to continue.");
+            return; // Stop the method execution
+        }
         else
         {
             Debug.LogError("GameMaster instance is not available.");

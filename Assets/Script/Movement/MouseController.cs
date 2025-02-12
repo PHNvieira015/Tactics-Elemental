@@ -20,14 +20,14 @@ public class MouseController : MonoBehaviour
     private RangeFinder rangeFinder;
     private ArrowTranslator arrowTranslator;
     private List<OverlayTile> path;
-    private List<OverlayTile> rangeFinderTiles;
+    public List<OverlayTile> rangeFinderTiles;
     public bool isMoving = false;
     public TurnStateManager turnStateManager;  // Reference to TurnStateManager
     public float Xposition;
     public float Yposition;
 
     //AttackRange
-    private List<OverlayTile> attackRangeTiles; // Store attack range tiles
+    public List<OverlayTile> attackRangeTiles; // Store attack range tiles
     public Color attackColor = Color.red;  // Red color for attack range
 
 
@@ -150,6 +150,7 @@ public class MouseController : MonoBehaviour
                     {
                         isMoving = true; // Lock movement state
                     }
+
                 }
             }
         }
