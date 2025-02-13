@@ -27,6 +27,22 @@ public class OverlayTile : MonoBehaviour
         {
             HideTile();
         }
+        if (isBlocked = true)
+        {
+        if (activeCharacter.teamID ==1)
+        {
+            tileData.type = TileTypes.PlayerUnitBlocked;
+         }
+        if (activeCharacter.teamID == 2)
+        {
+            tileData.type = TileTypes.EnemyUnitBlocked;
+        }
+        else
+            {
+                return;
+            }
+
+     }
     }
 
     public int GetMoveCost()

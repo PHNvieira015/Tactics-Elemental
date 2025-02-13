@@ -130,7 +130,6 @@ public class GameMaster : MonoBehaviour
                 {
                     // Set the enemy's current tile
                     spawnedUnit.standingOnTile = tileUnderEnemy;
-
                     // Mark the tile as blocked and record the enemy as the occupant
                     tileUnderEnemy.isBlocked = true;
                 }

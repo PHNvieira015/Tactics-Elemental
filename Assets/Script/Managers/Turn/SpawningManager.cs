@@ -9,7 +9,8 @@ public class SpawningManager : MonoBehaviour
     [SerializeField] private GameObject SpawningSelection;
     [SerializeField] private Button startButton;  // Reference to the Start button
     public List<Unit> playerAvailableUnits;  // List of available units for the player
-    public List<Unit> playedUnits;  // List of units that have already been placed
+    public List<Unit> playedUnits;  // List of player units that have already been placed
+    public List<Unit> enemyList;  // List of enemy units that have been placed
     public MouseController mouseController;  // Reference to the MouseController
     public Color spawnTileColor = Color.blue;  // Color for spawn tiles
     private GameObject unitPreview;  // Preview of the unit being placed
@@ -71,8 +72,16 @@ public class SpawningManager : MonoBehaviour
             return;
         }
 
+        // Assign player units to GameMaster
         GameMaster.instance.playerList = new List<Unit>(playedUnits);
         Debug.Log("Player units assigned to GameMaster.");
+
+        // Assign enemy units to GameMaster if any are present
+        if (enemyList != null && enemyList.Count > 0)
+        {
+            GameMaster.instance.enemyList = new List<Unit>(enemyList);
+            Debug.Log("Enemy units assigned to GameMaster.");
+        }
 
         GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
 
@@ -80,19 +89,35 @@ public class SpawningManager : MonoBehaviour
         Destroy(EnemySpawnerTiles.gameObject);
         Destroy(PlayerSpawningTiles.gameObject);
 
+        // Update tile occupancy for player units:
         foreach (Unit unit in playedUnits)
         {
             if (unit.standingOnTile != null)
             {
-                // Block the tile
+                // Block the tile and assign the activeCharacter reference.
                 unit.standingOnTile.isBlocked = true;
-
-                // Record that this unit is occupying the tile.
                 unit.standingOnTile.activeCharacter = unit;
             }
             else
             {
                 Debug.LogWarning($"Unit {unit.name} does not have a standingOnTile assigned!");
+            }
+        }
+
+        // Update tile occupancy for enemy units:
+        if (enemyList != null)
+        {
+            foreach (Unit enemy in enemyList)
+            {
+                if (enemy.standingOnTile != null)
+                {
+                    enemy.standingOnTile.isBlocked = true;
+                    enemy.standingOnTile.activeCharacter = enemy;
+                }
+                else
+                {
+                    Debug.LogWarning($"Enemy {enemy.name} does not have a standingOnTile assigned!");
+                }
             }
         }
     }
@@ -105,7 +130,7 @@ public class SpawningManager : MonoBehaviour
         {
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>();
 
-            #region spawning logic for mouse
+            #region Spawning Logic for Mouse
             if (tile != null && tile.GetComponent<SpawningTile>() != null && !tile.GetComponent<SpawningTile>().IsOccupied)
             {
                 tile.ShowTile(spawnTileColor, TileType.Spawn);
@@ -133,6 +158,7 @@ public class SpawningManager : MonoBehaviour
             {
                 SpawnUnitOnTile(tile);
             }
+            #endregion
         }
         else if (unitPreview != null)
         {
@@ -211,7 +237,6 @@ public class SpawningManager : MonoBehaviour
             Destroy(unitPreview);
         }
     }
-    #endregion
 
     private static RaycastHit2D? GetFocusedOnTile()
     {

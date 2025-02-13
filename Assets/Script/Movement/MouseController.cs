@@ -237,23 +237,33 @@ public class MouseController : MonoBehaviour
         GetInRangeTiles(); // Refresh range tiles after movement
     }
 
-    private void PositionCharacterOnLine(OverlayTile tile)
+    private void PositionCharacterOnLine(OverlayTile newTile)
     {
-        // Correctly place the unit on the tile (centering it)
+        // Free the previous tile (if any) before moving
+        if (currentUnit.standingOnTile != null && currentUnit.standingOnTile != newTile)
+        {
+            currentUnit.standingOnTile.isBlocked = false;
+            currentUnit.standingOnTile.activeCharacter = null;
+        }
+
+        // Snap the unit to the new tile's position (with a slight Y adjustment)
         currentUnit.transform.position = new Vector3(
-            tile.transform.position.x,
-            tile.transform.position.y + 0.0001f,  // Slightly adjust Y to avoid overlap
+            newTile.transform.position.x,
+            newTile.transform.position.y + 0.0001f,  // Slight Y offset
             0
         );
 
-        // Set the correct sorting order for the unit based on the tile's sorting order
-        currentUnit.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
+        // Update the sorting order based on the new tile
+        currentUnit.GetComponent<SpriteRenderer>().sortingOrder = newTile.GetComponent<SpriteRenderer>().sortingOrder;
 
-        // Update the unit's standing tile to the new tile
-        currentUnit.standingOnTile = tile;
+        // Set the new tile as the unit's current tile
+        currentUnit.standingOnTile = newTile;
 
-        // Debug to ensure the unit is placed on the correct tile
-        Debug.Log($"{currentUnit.name} is now standing on tile: {tile.name}");
+        // Mark the new tile as occupied by the unit
+        newTile.isBlocked = true;
+        newTile.activeCharacter = currentUnit;
+
+        Debug.Log($"{currentUnit.name} is now standing on tile: {newTile.name}");
     }
 
     private static RaycastHit2D? GetFocusedOnTile()
