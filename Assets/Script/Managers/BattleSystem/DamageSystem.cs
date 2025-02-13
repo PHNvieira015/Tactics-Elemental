@@ -4,101 +4,14 @@ using UnityEngine;
 
 public class DamageSystem : MonoBehaviour
 {
-    public Unit selectedUnit; // Selected unit for the current turn
-
-    public GameObject selectedUnitSquare; // Visual indicator for the selected unit
-    public int playerTurn = 1; // 1 for Player 1, 2 for Player 2
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            EndTurn();
-        }
-
-        if (selectedUnit != null)
-        {
-            if (selectedUnitSquare != null)
-            {
-                selectedUnitSquare.SetActive(true);
-                selectedUnitSquare.transform.position = selectedUnit.transform.position;
-            }
-            else
-            {
-                Debug.LogWarning("selectedUnitSquare is not assigned. Please assign it in the Inspector.");
-            }
-        }
-        else
-        {
-            if (selectedUnitSquare != null)
-            {
-                selectedUnitSquare.SetActive(false);
-            }
-        }
-    }
-
-    public void HandleTileClick(OverlayTile clickedTile)
-    {
-        Unit clickedUnit = clickedTile.GetComponentInChildren<Unit>();
-
-        // Select attacker if not selected
-        if (selectedUnit == null)
-        {
-            if (clickedUnit != null && clickedUnit.IsAlive() && clickedUnit.playerOwner == playerTurn)
-            {
-                selectedUnit = clickedUnit;
-                selectedUnit.selected = true;
-                Debug.Log($"{selectedUnit.name} selected as attacker.");
-            }
-        }
-        else
-        {
-            // Select target and attack if in range
-            if (clickedUnit != null && clickedUnit != selectedUnit && clickedUnit.IsAlive() && IsWithinAttackRange(selectedUnit, clickedUnit))
-            {
-                Attack(selectedUnit, clickedUnit);
-            }
-        }
-    }
-
-    private void EndTurn()
-    {
-        playerTurn = (playerTurn == 1) ? 2 : 1;
-
-        if (selectedUnit != null)
-        {
-            selectedUnit.selected = false;
-            selectedUnit = null;
-        }
-
-        ResetTiles();
-
-        foreach (Unit unit in FindObjectsOfType<Unit>())
-        {
-            unit.hasMoved = false;
-            unit.hasAttacked = false;
-        }
-    }
-
-    private void ResetTiles()
-    {
-        foreach (OverlayTile tile in FindObjectsOfType<OverlayTile>())
-        {
-            tile.Reset();
-        }
-    }
-
-    private bool IsWithinAttackRange(Unit attacker, Unit target)
-    {
-        Vector2Int attackerPos = attacker.standingOnTile.grid2DLocation;
-        Vector2Int targetPos = target.standingOnTile.grid2DLocation;
-
-        int distance = Mathf.Abs(attackerPos.x - targetPos.x) + Mathf.Abs(attackerPos.y - targetPos.y);
-        return distance <= attacker.attackRange;
-    }
-
     public void Attack(Unit attacker, Unit target)
     {
+        if (!IsWithinAttackRange(attacker, target))
+        {
+            Debug.Log($"{target.name} is out of attack range!");
+            return;
+        }
+
         if (attacker.IsAlive() && target.IsAlive())
         {
             int damageDealt = CalculateDamage(attacker, target);
@@ -111,6 +24,8 @@ public class DamageSystem : MonoBehaviour
             if (!target.IsAlive())
             {
                 Debug.Log($"{target.name} has been defeated!");
+                // You might want to add death handling logic here
+                target.gameObject.SetActive(false); // Or handle death in another way
             }
             else
             {
@@ -119,10 +34,25 @@ public class DamageSystem : MonoBehaviour
         }
     }
 
+    private bool IsWithinAttackRange(Unit attacker, Unit target)
+    {
+        if (attacker.standingOnTile == null || target.standingOnTile == null)
+        {
+            return false;
+        }
+
+        Vector2Int attackerPos = attacker.standingOnTile.grid2DLocation;
+        Vector2Int targetPos = target.standingOnTile.grid2DLocation;
+
+        int distance = Mathf.Abs(attackerPos.x - targetPos.x) + Mathf.Abs(attackerPos.y - targetPos.y);
+        return distance <= attacker.attackRange;
+    }
+
     private int CalculateDamage(Unit attacker, Unit target)
     {
         int baseDamage = 0;
 
+        // Calculate base damage based on class
         switch (attacker.characterStats.characterClass)
         {
             case CharacterStat.CharacterClass.Warrior:
@@ -136,25 +66,31 @@ public class DamageSystem : MonoBehaviour
                 break;
         }
 
-        baseDamage += Mathf.RoundToInt(baseDamage * 2f); // Stat multiplier
+        // Apply stat multiplier
+        baseDamage += Mathf.RoundToInt(baseDamage * 2f);
+
+        // Apply weapon damage modifier
         baseDamage = Mathf.RoundToInt(baseDamage * attacker.characterStats.equippedWeapon.WeaponDamageModifier);
 
-        // Elemental damage modifier
+        // Calculate elemental advantage/disadvantage
         float affinityDamageModifier = 1f;
         if (attacker.characterStats.elementType == target.characterStats.weaknessElement)
         {
             affinityDamageModifier = 1.5f;
+            Debug.Log($"Elemental Advantage! Damage increased by 50%");
         }
         else if (target.characterStats.elementType == attacker.characterStats.weaknessElement)
         {
             affinityDamageModifier = 0.5f;
+            Debug.Log($"Elemental Disadvantage! Damage reduced by 50%");
         }
         baseDamage = Mathf.RoundToInt(baseDamage * affinityDamageModifier);
 
-        // Resistance calculation
+        // Apply target's resistance
         int resistance = Mathf.RoundToInt(target.characterStats.magicalDefense * 0.2f);
         baseDamage -= resistance;
 
+        // Ensure damage doesn't go below 0
         return Mathf.Max(baseDamage, 0);
     }
 }

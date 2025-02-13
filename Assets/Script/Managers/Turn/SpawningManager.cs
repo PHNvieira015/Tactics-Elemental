@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;  // Required for UI components
 
@@ -17,15 +16,12 @@ public class SpawningManager : MonoBehaviour
     [SerializeField] private GameObject EnemySpawnerTiles;
     [SerializeField] private GameObject PlayerSpawningTiles;
 
-
     void Awake()
     {
-        playedUnits = new List<Unit>(); // Initialize the list of played units
+        playedUnits = new List<Unit>();
 
-        // Make sure we have a valid reference to GameMaster
         if (gameMaster != null)
         {
-            // Copy the list from the GameMaster to the SpawningManager
             playerAvailableUnits = new List<Unit>(gameMaster.playerAvailableUnits);
         }
         else
@@ -33,14 +29,12 @@ public class SpawningManager : MonoBehaviour
             Debug.LogError("GameMaster reference is missing!");
         }
 
-        // Subscribe to game state change event
         GameMaster.OnGameStateChanged += GameManagerOnGameStateChanged;
 
-        // Ensure Start Button is hooked up
         if (startButton != null)
         {
             startButton.onClick.AddListener(OnStartButtonClicked);
-            startButton.interactable = true;  // Enable start button immediately
+            startButton.interactable = true;
         }
         else
         {
@@ -50,10 +44,8 @@ public class SpawningManager : MonoBehaviour
 
     void OnDestroy()
     {
-        // Unsubscribe from game state change event
         GameMaster.OnGameStateChanged -= GameManagerOnGameStateChanged;
 
-        // Unsubscribe the button click listener
         if (startButton != null)
         {
             startButton.onClick.RemoveListener(OnStartButtonClicked);
@@ -62,48 +54,48 @@ public class SpawningManager : MonoBehaviour
 
     private void GameManagerOnGameStateChanged(GameMaster.GameState state)
     {
-        // Toggle SpawningSelection visibility based on game state
         SpawningSelection.SetActive(state == GameMaster.GameState.SpawningUnits);
     }
 
-    // Called when the player clicks the Start Button
     private void OnStartButtonClicked()
     {
-        if (GameMaster.instance != null)
+        if (GameMaster.instance == null)
         {
-            GameMaster.instance.playerList = new List<Unit>(playedUnits); // Ensure we send the list properly
-            Debug.Log("Player units assigned to GameMaster.");
+            Debug.LogError("GameMaster instance is not available.");
+            return;
         }
+
         if (playedUnits.Count == 0)
         {
             Debug.LogError("No units to spawn, spawn units to continue.");
-            return; // Stop the method execution
-        }
-        else
-        {
-            Debug.LogError("GameMaster instance is not available.");
+            return;
         }
 
-        Debug.Log("Starting Game Round.");
+        GameMaster.instance.playerList = new List<Unit>(playedUnits);
+        Debug.Log("Player units assigned to GameMaster.");
+
         GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
 
-        // Disable the Start button to prevent multiple clicks
         startButton.gameObject.SetActive(false);
-        //EnemySpawnerTiles.gameObject.SetActive(false);
-        //PlayerSpawningTiles.gameObject.SetActive(false);
         Destroy(EnemySpawnerTiles.gameObject);
         Destroy(PlayerSpawningTiles.gameObject);
 
-        foreach (var unit in GameMaster.instance.turnQueue)
+        foreach (Unit unit in playedUnits)
         {
-            if (unit != null)
+            if (unit.standingOnTile != null)
             {
-                //unit.standingOnTile = unit.standingOnTile;  // Assign the tile to the standingOnTile property
+                // Block the tile
+                unit.standingOnTile.isBlocked = true;
+
+                // Record that this unit is occupying the tile.
+                unit.standingOnTile.activeCharacter = unit;
+            }
+            else
+            {
+                Debug.LogWarning($"Unit {unit.name} does not have a standingOnTile assigned!");
             }
         }
-
     }
-
 
     private void Update()
     {
@@ -113,47 +105,38 @@ public class SpawningManager : MonoBehaviour
         {
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>();
 
-            // Check if we got a valid tile and it's a spawnable tile
+            #region spawning logic for mouse
             if (tile != null && tile.GetComponent<SpawningTile>() != null && !tile.GetComponent<SpawningTile>().IsOccupied)
             {
                 tile.ShowTile(spawnTileColor, TileType.Spawn);
 
-                // If the preview doesn't exist yet, create it
                 if (unitPreview == null && playerAvailableUnits.Count > 0)
                 {
-                    // Preview the first available unit
                     Unit selectedUnit = playerAvailableUnits[0];
                     unitPreview = Instantiate(selectedUnit.gameObject);
                     unitPreview.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
                     unitPreview.transform.position = tile.transform.position;
-                    unitPreview.SetActive(true);  // Show the preview
+                    unitPreview.SetActive(true);
                 }
                 else if (unitPreview != null)
                 {
-                    // Move the preview with the mouse position
                     unitPreview.transform.position = tile.transform.position;
-                    unitPreview.SetActive(true);  // Ensure the preview stays visible
+                    unitPreview.SetActive(true);
                 }
             }
             else if (unitPreview != null)
             {
-                // Hide the preview when hovering over invalid or occupied tiles
                 unitPreview.SetActive(false);
             }
 
-            // Place unit when clicked
             if (Input.GetMouseButtonDown(0) && tile.GetComponent<SpawningTile>() != null)
             {
                 SpawnUnitOnTile(tile);
             }
         }
-        else
+        else if (unitPreview != null)
         {
-            // If the mouse is not over a tile, hide the preview
-            if (unitPreview != null)
-            {
-                unitPreview.SetActive(false);
-            }
+            unitPreview.SetActive(false);
         }
     }
 
@@ -172,34 +155,31 @@ public class SpawningManager : MonoBehaviour
             return;
         }
 
-        // Ensure we have an available unit to spawn
         if (playerAvailableUnits.Count == 0)
         {
             Debug.LogError("No available units to spawn.");
             return;
         }
 
-        // Ensure the tile is not already occupied
         if (spawningTile.IsOccupied)
         {
             return;
         }
 
-        // Select the first available unit
         Unit selectedUnit = playerAvailableUnits[0];
 
-        // Instantiate the unit prefab
         Unit unitInstance = Instantiate(selectedUnit.gameObject).GetComponent<Unit>();
         if (unitInstance == null)
         {
             Debug.LogError("Failed to instantiate the unit.");
             return;
         }
+
         if (unitInstance.characterStats == null)
         {
             Debug.LogError($"CharacterStat is missing for unit: {unitInstance.name}");
         }
-        // Ensure the SpriteRenderer exists and is not null
+
         SpriteRenderer spriteRenderer = unitInstance.GetComponent<SpriteRenderer>();
         if (spriteRenderer == null)
         {
@@ -207,14 +187,10 @@ public class SpawningManager : MonoBehaviour
             return;
         }
 
-        // Position the unit on the spawning tile
         unitInstance.transform.position = tile.transform.position;
         spriteRenderer.sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
-
-        // Set the unit's standingOnTile field
         unitInstance.standingOnTile = tile;
 
-        // If the MouseController is not null, assign the unit
         if (mouseController != null)
         {
             mouseController.SetUnit(unitInstance);
@@ -224,20 +200,18 @@ public class SpawningManager : MonoBehaviour
             Debug.LogError("MouseController is not assigned.");
         }
 
-        // Remove the unit from available units and add it to played units
         playerAvailableUnits.Remove(selectedUnit);
         playedUnits.Add(unitInstance);
 
-        // Mark the tile as occupied
         spawningTile.IsOccupied = true;
 
-        // If there's a unit preview, hide and destroy it
         if (unitPreview != null)
         {
             unitPreview.SetActive(false);
-            Destroy(unitPreview);  // Destroy the preview object after placement
+            Destroy(unitPreview);
         }
     }
+    #endregion
 
     private static RaycastHit2D? GetFocusedOnTile()
     {

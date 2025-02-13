@@ -128,8 +128,11 @@ public class GameMaster : MonoBehaviour
 
                 if (tileUnderEnemy != null)
                 {
+                    // Set the enemy's current tile
                     spawnedUnit.standingOnTile = tileUnderEnemy;
-                    //Debug.Log($"Enemy {spawnedUnit.name} spawned on tile at position {tileUnderEnemy.transform.position}");
+
+                    // Mark the tile as blocked and record the enemy as the occupant
+                    tileUnderEnemy.isBlocked = true;
                 }
                 else
                 {
@@ -156,7 +159,6 @@ public class GameMaster : MonoBehaviour
         }
     }
 
-
     private void SetTeams()
     {
         if (spawningManager == null)
@@ -166,12 +168,11 @@ public class GameMaster : MonoBehaviour
         }
 
         playerList = spawningManager.playedUnits;
-        Debug.Log("player list is"+spawningManager.playedUnits);
+        Debug.Log("Player list is: " + spawningManager.playedUnits);
         enemyList = spawnedUnits.Where(unit => unit.teamID == 2).ToList();
 
         Debug.Log($"Player units: {playerList.Count}, Enemy units: {enemyList.Count}");
     }
-
 
     public void InitializeTurnOrder()
     {
@@ -194,7 +195,7 @@ public class GameMaster : MonoBehaviour
         {
             if (unit == null)
             {
-                Debug.LogError($"Unit is null!");
+                Debug.LogError("Unit is null!");
             }
             else if (unit.characterStats == null)
             {
@@ -277,7 +278,6 @@ public class GameMaster : MonoBehaviour
         if (currentUnit != null)
         {
             Debug.Log($"{currentUnit.name} has finished their turn. Removing from the queue.");
-            // No need to dequeue here, since we are processing the turn with Dequeue on currentUnit
 
             // Log the current state of the queue after the turn
             LogTurnQueueState("After turn ends:");
@@ -372,7 +372,6 @@ public class GameMaster : MonoBehaviour
         }
     }
 
-
     private void OnDisable()
     {
         // Unsubscribe from the event
@@ -392,5 +391,4 @@ public class GameMaster : MonoBehaviour
             ProcessUnitTurn();  // This will either find the next living unit or handle the end of the round.
         }
     }
-
 }
