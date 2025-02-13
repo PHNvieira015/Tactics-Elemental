@@ -7,7 +7,6 @@ using static TurnStateManager;
 
 public class GameMaster : MonoBehaviour
 {
-    #region variables
     // Singleton instance
     public static GameMaster instance;
 
@@ -35,7 +34,6 @@ public class GameMaster : MonoBehaviour
 
     public GameState State;
 
-    #endregion
     private void Awake()
     {
         if (instance == null)
@@ -99,7 +97,7 @@ public class GameMaster : MonoBehaviour
                 break;
         }
     }
-    #region spawning
+
     private void SpawnEnemies()
     {
         if (enemyList.Count > 0 && enemySpawner != null)
@@ -173,9 +171,8 @@ public class GameMaster : MonoBehaviour
 
         Debug.Log($"Player units: {playerList.Count}, Enemy units: {enemyList.Count}");
     }
-    #endregion
 
-    #region turnOrder/Actions
+
     public void InitializeTurnOrder()
     {
         Debug.Log($"Player count: {playerList.Count}, enemyList count: {enemyList.Count}");
@@ -347,7 +344,6 @@ public class GameMaster : MonoBehaviour
             UpdateGameState(GameState.GameRound);  // Continue with the next round
         }
     }
-    #endregion
 
     private void OnEnable()
     {

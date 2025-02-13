@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TurnStateManager : MonoBehaviour
 {
-    #region variables
     private bool turnStarted;
     [SerializeField] public MouseController mouseController; // Use MouseController instead of PathFinder
     [HideInInspector] public Vector3 TurnStartingPosition;
@@ -34,7 +33,6 @@ public class TurnStateManager : MonoBehaviour
     public UI_ActionBar uiActionBar;  // Reference to UI_ActionBar script
     [SerializeField] public GameMaster gameMaster;  // Direct reference to GameMaster
 
-    #endregion
     private void Awake()
     {
         // Optionally find GameMaster if not assigned in the inspector
@@ -141,9 +139,8 @@ public class TurnStateManager : MonoBehaviour
                     UpdateStandingOnTile();
                 }
                 break;
-            #region moving
 
-            case TurnState.Moving:
+  case TurnState.Moving:
     // Ensure that currentUnit's standingOnTile is updated when movement starts
     currentUnit.standingOnTile = currentUnit.GetTileUnderUnit(); 
     mouseController.SetUnit(currentUnit);  // Pass the unit reference to MouseController
@@ -173,9 +170,7 @@ public class TurnStateManager : MonoBehaviour
     uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
     break;
 
-            #endregion
 
-            #region attacking
             case TurnState.Attacking:
                 if (!currentUnit.hasAttacked)
                 {
@@ -228,7 +223,6 @@ public class TurnStateManager : MonoBehaviour
                 Debug.LogWarning($"Unhandled turn state: {state}");
                 break;
         }
-        #endregion
     }
 
     // The method to update standingOnTile
@@ -265,7 +259,6 @@ public class TurnStateManager : MonoBehaviour
         }
     }
 
-    #region UI_Actionbar
     private void DisableUI_Action()
     {
         // Assuming UI_ActionBar is the GameObject, not the script itself
@@ -291,5 +284,5 @@ public class TurnStateManager : MonoBehaviour
             Debug.LogError("UI_ActionBar is not assigned!");
         }
     }
-    #endregion
+
 }
