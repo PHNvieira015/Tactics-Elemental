@@ -5,6 +5,7 @@ using static ArrowTranslator;
 
 public class OverlayTile : MonoBehaviour
 {
+    #region variables
     public int G;
     public int H;
     public int F { get { return G + H; } }
@@ -21,6 +22,9 @@ public class OverlayTile : MonoBehaviour
 
     public List<Sprite> arrows;
 
+    #endregion
+
+    #region indevelopment
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -28,6 +32,7 @@ public class OverlayTile : MonoBehaviour
             HideTile();
         }
     }
+    #endregion
 
     public int GetMoveCost()
     {

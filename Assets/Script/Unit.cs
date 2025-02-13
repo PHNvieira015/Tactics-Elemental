@@ -296,6 +296,8 @@ public class Unit : MonoBehaviour
 
     #endregion
 
+
+#region positionUnit 
     // New method to get the tile under the unit
     public OverlayTile GetTileUnderUnit()
     {
@@ -323,7 +325,16 @@ public class Unit : MonoBehaviour
         {
             Debug.LogError("No hit detected under the unit.");
         }
-
+#endregion
         return null;
     }
+    #region indevelopment 
+    //trying new things
+    public void SetTile(OverlayTile tile)
+    {
+        standingOnTile?.ClearUnit();
+        standingOnTile = tile;
+        standingOnTile.SetUnit(this);
+    }
+    #endregion
 }
