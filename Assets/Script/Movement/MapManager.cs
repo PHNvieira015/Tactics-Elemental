@@ -23,6 +23,8 @@ namespace TacticsToolkit
 
         private Unit activeCharacter;
 
+        private Unit unitOnTile;
+
         public void Awake()
         {
 

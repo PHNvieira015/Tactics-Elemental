@@ -117,6 +117,10 @@ public class MouseController : MonoBehaviour
             // Update TargetPosition
             TargetPosition = tile.transform.position;
             GetInRangeTiles();
+            if (currentUnit == null || currentUnit.standingOnTile == null || currentUnit.characterStats == null)
+            {
+                return; // Exit early if unit, tile, or stats are not ready
+            }
             if (rangeFinderTiles.Contains(tile))
 
             {

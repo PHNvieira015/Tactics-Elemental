@@ -97,6 +97,7 @@ public class SpawningManager : MonoBehaviour
                 // Block the tile and assign the activeCharacter reference.
                 unit.standingOnTile.isBlocked = true;
                 unit.standingOnTile.activeCharacter = unit;
+                unit.standingOnTile.unitOnTile = unit; // Set the unitOnTile during spawn
             }
             else
             {
@@ -113,6 +114,7 @@ public class SpawningManager : MonoBehaviour
                 {
                     enemy.standingOnTile.isBlocked = true;
                     enemy.standingOnTile.activeCharacter = enemy;
+                    enemy.standingOnTile.unitOnTile = enemy; // Set the unitOnTile for enemies
                 }
                 else
                 {
@@ -216,6 +218,7 @@ public class SpawningManager : MonoBehaviour
         unitInstance.transform.position = tile.transform.position;
         spriteRenderer.sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
         unitInstance.standingOnTile = tile;
+        tile.unitOnTile = unitInstance;  // This should update unitOnTile properly
 
         if (mouseController != null)
         {

@@ -299,31 +299,21 @@ public class Unit : MonoBehaviour
     // New method to get the tile under the unit
     public OverlayTile GetTileUnderUnit()
     {
-        // Get the world position of the unit (transform.position gives the world position)
         Vector2 unitPosition = unitGameObject.transform.position;  // World position of the unit
         RaycastHit2D hit = Physics2D.Raycast(unitPosition, Vector2.down, 20f);
 
         if (hit.collider != null)
         {
-            Debug.Log($"Hit collider at: {hit.collider.gameObject.name}");
             OverlayTile tile = hit.collider.GetComponent<OverlayTile>();
 
             if (tile)
             {
-                Debug.Log($"Tile Found: {tile.name}");
-                standingOnTile = tile;  // Set the standingOnTile here
+                standingOnTile = tile;  // Set the standingOnTile
+                tile.unitOnTile = this; // Set the unit on the tile
+                standingOnTile.unitOnTile = this;
                 return tile;
             }
-            else
-            {
-                Debug.LogError("Collider does not have OverlayTile attached.");
-            }
         }
-        else
-        {
-            Debug.LogError("No hit detected under the unit.");
-        }
-
         return null;
     }
 }
