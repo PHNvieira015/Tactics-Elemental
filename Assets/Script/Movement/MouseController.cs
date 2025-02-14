@@ -293,7 +293,7 @@ public class MouseController : MonoBehaviour
 
         if (currentUnit == null)
         {
-            Debug.LogError("CurrentUnit is null! Ensure SetUnit() is called before moving.");
+            //Debug.LogError("CurrentUnit is null! Ensure SetUnit() is called before moving.");
             return;
         }
 

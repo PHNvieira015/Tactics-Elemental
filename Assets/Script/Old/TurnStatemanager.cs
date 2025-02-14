@@ -145,7 +145,7 @@ public class TurnStateManager : MonoBehaviour
     currentUnit.standingOnTile = currentUnit.GetTileUnderUnit(); 
     mouseController.SetUnit(currentUnit);  // Pass the unit reference to MouseController
     mouseController.currentUnit = currentUnit;
-    mouseController.isMoving = true; // Enable movement logic
+    mouseController.isMoving = false; // Enable movement logic
     mouseController.GetInRangeTiles(); // Highlight movement tiles
 
     // Log the coordinates of the standingOnTile

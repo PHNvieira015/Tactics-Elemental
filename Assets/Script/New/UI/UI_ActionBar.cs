@@ -57,7 +57,6 @@ public class UI_ActionBar : MonoBehaviour
     {
         Debug.Log("Move button clicked.");
         turnStateManager.ChangeState(TurnStateManager.TurnState.Moving);
-
     }
 
 
@@ -84,5 +83,4 @@ public class UI_ActionBar : MonoBehaviour
         Debug.Log("Wait button clicked.");
         turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
     }
-
 }
