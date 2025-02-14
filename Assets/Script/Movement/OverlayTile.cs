@@ -27,22 +27,23 @@ public class OverlayTile : MonoBehaviour
         {
             HideTile();
         }
-        if (isBlocked = true)
-        {
-        if (activeCharacter.teamID ==1)
-        {
-            tileData.type = TileTypes.PlayerUnitBlocked;
-         }
-        if (activeCharacter.teamID == 2)
-        {
-            tileData.type = TileTypes.EnemyUnitBlocked;
-        }
-        else
-            {
-                return;
-            }
+        //indevelopment passable tile team1 or passable tile team2
+     //   if (isBlocked = true)
+     //   {
+     //   if (activeCharacter.teamID ==1)
+     //   {
+     //       tileData.type = TileTypes.PlayerUnitBlocked;
+     //    }
+     //   if (activeCharacter.teamID == 2)
+     //   {
+     //       tileData.type = TileTypes.EnemyUnitBlocked;
+     //   }
+     //   else
+     //       {
+     //           return;
+     //       }
 
-     }
+     //}
     }
 
     public int GetMoveCost()
@@ -116,7 +117,7 @@ public class OverlayTile : MonoBehaviour
     public void SetUnit(Unit unit)
     {
         activeCharacter = unit;
-        isBlocked = true;
+        //isBlocked = true;
 
         if (unit.teamID == 1)
         {

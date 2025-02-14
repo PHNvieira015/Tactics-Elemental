@@ -65,9 +65,9 @@ public class MouseController : MonoBehaviour
         attackRangeTiles = new List<OverlayTile>(); // Initialize attack range list
     }
 
-    void LateUpdate()
+    void Update()
     {
-        // Check if the mouse is over a UI element (e.g., a button)
+         //Check if the mouse is over a UI element (e.g., a button)
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return; // Skip further processing if the mouse is over a UI element
@@ -94,9 +94,11 @@ public class MouseController : MonoBehaviour
         //check here if unit 
         if (hit.HasValue)
         {
-#region movement
+            
+            #region movement
             // Attempt to get the Unit component on the hit object
             Unit hitUnit = hit.Value.collider.gameObject.GetComponent<Unit>();
+            
             if (hitUnit != null)
             {
                 // Found a Unit; now notify the UI_Manager.
@@ -110,18 +112,22 @@ public class MouseController : MonoBehaviour
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>();
             cursor.transform.position = tile.transform.position;
             cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder;
+            
 
             // Update TargetPosition
             TargetPosition = tile.transform.position;
+            GetInRangeTiles();
+            if (rangeFinderTiles.Contains(tile))
 
-            if (rangeFinderTiles.Contains(tile) && !isMoving)
             {
+                Debug.Log($"Tile {tile.name} is within range.");
+                Debug.Log($"Path Count Before Calculation: {path.Count}");
                 // Only recalculate path if the target tile is in range
                 if (currentUnit.standingOnTile != tile)
                 {
                     // Calculate the path from the current unit's standing tile to the clicked tile
                     path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
-
+                    
                     // Visualize the path with arrows
                     foreach (var item in rangeFinderTiles)
                     {
@@ -297,7 +303,10 @@ public class MouseController : MonoBehaviour
             return;
         }
 
-        rangeFinderTiles = rangeFinder.GetTilesInRange(
+        if (currentUnit != null)
+        {
+
+            rangeFinderTiles = rangeFinder.GetTilesInRange(
             new Vector2Int(
                 currentUnit.standingOnTile.gridLocation.x,
                 currentUnit.standingOnTile.gridLocation.y
@@ -305,14 +314,15 @@ public class MouseController : MonoBehaviour
             Mathf.RoundToInt(currentUnit.characterStats.movementRange)
         );
         // Only visualize the range if the turn state allows movement.
-        if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Moving)
-        {
-            foreach (var tile in rangeFinderTiles)
+             if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Moving)
             {
-                tile.ShowTile(color, TileType.Movement); // Visualize the range
-            }
+                foreach (var tile in rangeFinderTiles)
+                {
+                    tile.ShowTile(color, TileType.Movement); // Visualize the range
+                }
 
-            Debug.Log($"Highlighted {rangeFinderTiles.Count} tiles for movement.");
+                Debug.Log($"Highlighted {rangeFinderTiles.Count} tiles for movement.");
+            }
         }
     }
 
