@@ -1006,7 +1006,6 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420033}
-  - component: {fileID: 519420034}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1100,25 +1099,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c62e43e0134c3aa409590198ee4bcad1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveThreshold: 1
+  moveThreshold: 4
   cameraMoveSpeed: 1
   mapMin: {x: -10, y: -10, z: 0}
   mapMax: {x: 10, y: 10, z: 0}
---- !u!114 &519420034
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63cfdd5c147042a4c973264123feabaf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCamera: {fileID: 519420031}
-  mapMin: {x: -16, y: -10, z: -10}
-  mapMax: {x: 24, y: 10, z: -10}
 --- !u!1001 &568330208
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6961,6 +6945,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   playedUnits: []
+  enemyList: []
   mouseController: {fileID: 583550734}
   spawnTileColor: {r: 0, g: 0, b: 1, a: 1}
   EnemySpawnerTiles: {fileID: 1791059474}
@@ -10215,7 +10200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5713701847376353197, guid: 06ea723c633fc794f8c88117a402aaac, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -430.5
+      value: -345
       objectReference: {fileID: 0}
     - target: {fileID: 5713701847376353197, guid: 06ea723c633fc794f8c88117a402aaac, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

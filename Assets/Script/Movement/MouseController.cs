@@ -321,7 +321,7 @@ public class MouseController : MonoBehaviour
                     tile.ShowTile(color, TileType.Movement); // Visualize the range
                 }
 
-                Debug.Log($"Highlighted {rangeFinderTiles.Count} tiles for movement.");
+                //Debug.Log($"Highlighted {rangeFinderTiles.Count} tiles for movement.");
             }
         }
     }
