@@ -218,7 +218,12 @@ public class MouseController : MonoBehaviour
     private IEnumerator MoveAlongPathCoroutine()
     {
         _coroutineRunning = true;
-
+        // Clear the unit from the previous tile before moving
+        if (currentUnit.standingOnTile != null)
+        {
+            currentUnit.standingOnTile.activeCharacter = null;  // Clear the reference
+            currentUnit.standingOnTile.isBlocked = false;
+        }
         for (int i = 0; i < path.Count; i++)
         {
             var tile = path[i];
@@ -244,7 +249,7 @@ public class MouseController : MonoBehaviour
         path.Clear();
         _coroutineRunning = false;
         isMoving = false; // End movement
-        GetInRangeTiles(); // Refresh range tiles after movement
+        GetInRangeTiles(); // Refresh range tiles after movement   //possibily change it, don't known.
     }
 
     private void PositionCharacterOnLine(OverlayTile newTile)
@@ -254,6 +259,7 @@ public class MouseController : MonoBehaviour
         {
             currentUnit.standingOnTile.isBlocked = false;
             currentUnit.standingOnTile.activeCharacter = null;
+            currentUnit.standingOnTile.ClearUnit();  // <---- This method resets the tile data.
         }
 
         // Snap the unit to the new tile's position (with a slight Y adjustment)

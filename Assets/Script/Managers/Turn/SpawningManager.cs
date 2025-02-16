@@ -86,6 +86,7 @@ public class SpawningManager : MonoBehaviour
         GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
 
         startButton.gameObject.SetActive(false);
+        //place tile
         Destroy(EnemySpawnerTiles.gameObject);
         Destroy(PlayerSpawningTiles.gameObject);
 

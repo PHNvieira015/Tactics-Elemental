@@ -142,8 +142,10 @@ public class TurnStateManager : MonoBehaviour
                 break;
 
   case TurnState.Moving:
+
+    OverlayTile previousTile = currentUnit.standingOnTile;  //old tile reference
     // Ensure that currentUnit's standingOnTile is updated when movement starts
-    currentUnit.standingOnTile = currentUnit.GetTileUnderUnit(); 
+    currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
     mouseController.SetUnit(currentUnit);  // Pass the unit reference to MouseController
     mouseController.currentUnit = currentUnit;
     mouseController.isMoving = false; // Enable movement logic
@@ -210,6 +212,10 @@ public class TurnStateManager : MonoBehaviour
                 turnStarted = false;
                 currentUnit.hasMoved = false;  // Reset movement status
                 currentUnit.hasAttacked = false;  // Reset attack status
+                if (currentUnit.standingOnTile != null)
+                {
+                    currentUnit.standingOnTile.unitOnTile = null; // Assuming there's a unit reference on the tile
+                }
                 if (gameMaster != null)
                 {
                     gameMaster.HandleEndOfRound();  // Handle end-of-round in GameMaster

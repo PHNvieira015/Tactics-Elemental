@@ -130,6 +130,7 @@ public class OverlayTile : MonoBehaviour
         activeCharacter = null;
         isBlocked = false;
         tileData.type = TileTypes.Traversable;
+        unitOnTile = null;
     }
 
     public bool CanMoveThrough(Unit unit)
