@@ -98,6 +98,18 @@ public class SpawningManager : MonoBehaviour
                 unit.standingOnTile.isBlocked = true;
                 unit.standingOnTile.activeCharacter = unit;
                 unit.standingOnTile.unitOnTile = unit; // Set the unitOnTile during spawn
+
+                // Also set the tile beneath (if exists)
+                Collider2D[] colliders = Physics2D.OverlapPointAll(unit.standingOnTile.transform.position);
+                foreach (var col in colliders)
+                {
+                    OverlayTile underlyingTile = col.GetComponent<OverlayTile>();
+                    if (underlyingTile != null && underlyingTile != unit.standingOnTile)
+                    {
+                        underlyingTile.isBlocked = true;
+                        underlyingTile.unitOnTile = unit;
+                    }
+                }
             }
             else
             {
@@ -106,15 +118,31 @@ public class SpawningManager : MonoBehaviour
         }
 
         // Update tile occupancy for enemy units:
+        // Update tile occupancy for enemy units:
         if (enemyList != null)
         {
             foreach (Unit enemy in enemyList)
             {
                 if (enemy.standingOnTile != null)
                 {
-                    enemy.standingOnTile.isBlocked = true;
-                    enemy.standingOnTile.activeCharacter = enemy;
-                    enemy.standingOnTile.unitOnTile = enemy; // Set the unitOnTile for enemies
+                    // Assign the first tile
+                    enemy.standingOnTile.SetUnit(enemy); // Ensure it calls SetUnit
+
+                    // Raycast downward to find the second tile (if applicable)
+                    RaycastHit2D hit = Physics2D.Raycast(enemy.standingOnTile.transform.position, Vector2.down, 0.5f);
+                    if (hit.collider != null)
+                    {
+                        OverlayTile secondTile = hit.collider.GetComponent<OverlayTile>();
+                        if (secondTile != null)
+                        {
+                            secondTile.SetUnit(enemy);
+                            Debug.Log($"Second tile assigned for enemy {enemy.name} at {secondTile.transform.position}");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No second tile found below enemy {enemy.name} at position {enemy.standingOnTile.transform.position}");
+                    }
                 }
                 else
                 {
@@ -123,6 +151,9 @@ public class SpawningManager : MonoBehaviour
             }
         }
     }
+
+
+
 
     private void Update()
     {

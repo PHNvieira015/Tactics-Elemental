@@ -178,7 +178,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6348172684527120671}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d20d0cb29a5c5c4d9e72f42e10ebc8e, type: 3}
   m_Name: 
@@ -188,7 +188,8 @@ MonoBehaviour:
   isBlocked: 0
   isLocked: 0
   activeCharacter: {fileID: 0}
-  tileData: {fileID: 0}
+  unitOnTile: {fileID: 0}
+  tileData: {fileID: 11400000, guid: 3275d69db3698934ca79e31f0430206b, type: 2}
   Previous: {fileID: 0}
   gridLocation: {x: 0, y: 0, z: 0}
   arrows:

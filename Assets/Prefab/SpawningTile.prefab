@@ -189,7 +189,8 @@ MonoBehaviour:
   isBlocked: 0
   isLocked: 0
   activeCharacter: {fileID: 0}
-  tileData: {fileID: 0}
+  unitOnTile: {fileID: 0}
+  tileData: {fileID: 11400000, guid: 3275d69db3698934ca79e31f0430206b, type: 2}
   Previous: {fileID: 0}
   gridLocation: {x: 0, y: 0, z: 0}
   arrows:
@@ -267,3 +268,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c0372baf6b2d184d9e52771f7260912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitOnTile: {fileID: 0}

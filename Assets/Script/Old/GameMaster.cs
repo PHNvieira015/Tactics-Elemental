@@ -131,7 +131,9 @@ public class GameMaster : MonoBehaviour
                     // Set the enemy's current tile
                     spawnedUnit.standingOnTile = tileUnderEnemy;
                     // Mark the tile as blocked and record the enemy as the occupant
+                    tileUnderEnemy.SetUnit(spawnedUnit); // This ensures unitOnTile is set correctly
                     tileUnderEnemy.isBlocked = true;
+                    Debug.Log($"Enemy {spawnedUnit.name} assigned to tile {tileUnderEnemy.gameObject.name}");
                 }
                 else
                 {

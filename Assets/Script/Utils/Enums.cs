@@ -29,7 +29,8 @@ public enum TileTypes
     NonTraversable,
     Effect,
     PlayerUnitBlocked,
-    EnemyUnitBlocked
+    EnemyUnitBlocked,
+    Spawner
 }
 
 public enum MovementDirection

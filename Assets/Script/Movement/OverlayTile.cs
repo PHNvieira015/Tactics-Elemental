@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static ArrowTranslator;
 
@@ -46,7 +47,11 @@ public class OverlayTile : MonoBehaviour
 
     public void HideTile()
     {
-        gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
+        // Make sure tileData is not null and then check its type property
+        if (tileData != null && tileData.type != TileTypes.Spawner)
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
+        }
     }
 
     public void ShowTile(Color color, TileType type = TileType.Movement)
@@ -101,15 +106,19 @@ public class OverlayTile : MonoBehaviour
 
     public void SetUnit(Unit unit)
     {
+        if (tileData == null)
+        {
+            tileData = ScriptableObject.CreateInstance<TileData>();
+        }
         activeCharacter = unit;
         unitOnTile = unit;
         //isBlocked = true;
 
-        if (unit.teamID == 1)
+        if (unit.teamID == 1 && tileData.type != TileTypes.Spawner)
         {
             tileData.type = TileTypes.PlayerUnitBlocked;
         }
-        else if (unit.teamID == 2)
+        else if (unit.teamID == 2 && tileData.type != TileTypes.Spawner)
         {
             tileData.type = TileTypes.EnemyUnitBlocked;
         }
