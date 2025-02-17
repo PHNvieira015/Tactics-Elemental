@@ -249,7 +249,7 @@ public class MouseController : MonoBehaviour
         path.Clear();
         _coroutineRunning = false;
         isMoving = false; // End movement
-        GetInRangeTiles(); // Refresh range tiles after movement   //possibily change it, don't known.
+        GetInRangeTiles(); // Refresh range tiles after movement   //possibily change it as we should not move twice in a turn.
     }
 
     private void PositionCharacterOnLine(OverlayTile newTile)
@@ -265,8 +265,7 @@ public class MouseController : MonoBehaviour
         // Snap the unit to the new tile's position (with a slight Y adjustment)
         currentUnit.transform.position = new Vector3(
             newTile.transform.position.x,
-            newTile.transform.position.y + 0.0001f,  // Slight Y offset
-            0
+            newTile.transform.position.y + 0.0001f,0  // Slight Y offset
         );
 
         // Update the sorting order based on the new tile
@@ -278,7 +277,7 @@ public class MouseController : MonoBehaviour
         // Mark the new tile as occupied by the unit
         newTile.isBlocked = true;
         newTile.activeCharacter = currentUnit;
-
+        newTile.unitOnTile = currentUnit;
         Debug.Log($"{currentUnit.name} is now standing on tile: {newTile.name}");
     }
 
