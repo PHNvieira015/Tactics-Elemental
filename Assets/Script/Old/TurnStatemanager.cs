@@ -117,7 +117,6 @@ public class TurnStateManager : MonoBehaviour
                 {
                     currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();  // Ensure tile is updated
                     TurnStartingPosition = currentUnit.transform.position;
-                    //SetStandingOnTile(Unit.standingOnTile);
                     mouseController.SetUnit(currentUnit);  // Assign unit to MouseController
                     Debug.Log($"Turn started for {currentUnit.name}! Standing on tile: {currentUnit.standingOnTile?.name}");
                     currentUnit.RefreshStatusEffects();

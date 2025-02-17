@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -60,6 +61,8 @@ public class SpawningManager : MonoBehaviour
 
     private void OnStartButtonClicked()
     {
+        
+
         if (GameMaster.instance == null)
         {
             Debug.LogError("GameMaster instance is not available.");
@@ -71,9 +74,9 @@ public class SpawningManager : MonoBehaviour
             Debug.LogError("No units to spawn, spawn units to continue.");
             return;
         }
-
         // Assign player units to GameMaster
         GameMaster.instance.playerList = new List<Unit>(playedUnits);
+        enemyList = new List<Unit>(enemyList);
         Debug.Log("Player units assigned to GameMaster.");
 
         // Assign enemy units to GameMaster if any are present
@@ -89,72 +92,51 @@ public class SpawningManager : MonoBehaviour
         //place tile
         Destroy(EnemySpawnerTiles.gameObject);
         Destroy(PlayerSpawningTiles.gameObject);
+        foreach (var x in enemyList)
+        {
+            Debug.Log("aqui + " + x.ToString());
+        }
 
-        // Update tile occupancy for player units:
+        foreach (Unit unit in enemyList)
+        {
+            SetStandingOnTile(unit);
+            Debug.Log("aqui2");
+            Debug.Log($"Enemy {unit.name} is now on tile {unit.standingOnTile.name}.");
+        }
+
         foreach (Unit unit in playedUnits)
         {
-            if (unit.standingOnTile != null)
-            {
-                // Block the tile and assign the activeCharacter reference.
-                unit.standingOnTile.isBlocked = true;
-                unit.standingOnTile.activeCharacter = unit;
-                unit.standingOnTile.unitOnTile = unit; // Set the unitOnTile during spawn
-
-                // Also set the tile beneath (if exists)
-                Collider2D[] colliders = Physics2D.OverlapPointAll(unit.standingOnTile.transform.position);
-                foreach (var col in colliders)
-                {
-                    OverlayTile underlyingTile = col.GetComponent<OverlayTile>();
-                    if (underlyingTile != null && underlyingTile != unit.standingOnTile)
-                    {
-                        underlyingTile.isBlocked = true;
-                        underlyingTile.unitOnTile = unit;
-                    }
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"Unit {unit.name} does not have a standingOnTile assigned!");
-            }
+            SetStandingOnTile(unit);
         }
 
-        // Update tile occupancy for enemy units:
-        // Update tile occupancy for enemy units:
-        if (enemyList != null)
-        {
-            foreach (Unit enemy in enemyList)
-            {
-                if (enemy.standingOnTile != null)
-                {
-                    // Assign the first tile
-                    enemy.standingOnTile.SetUnit(enemy); // Ensure it calls SetUnit
-
-                    // Raycast downward to find the second tile (if applicable)
-                    RaycastHit2D hit = Physics2D.Raycast(enemy.standingOnTile.transform.position, Vector2.down, 0.5f);
-                    if (hit.collider != null)
-                    {
-                        OverlayTile secondTile = hit.collider.GetComponent<OverlayTile>();
-                        if (secondTile != null)
-                        {
-                            secondTile.SetUnit(enemy);
-                            Debug.Log($"Second tile assigned for enemy {enemy.name} at {secondTile.transform.position}");
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"No second tile found below enemy {enemy.name} at position {enemy.standingOnTile.transform.position}");
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"Enemy {enemy.name} does not have a standingOnTile assigned!");
-                }
-            }
-        }
     }
 
+    private void SetStandingOnTile(Unit unit)
+    {
+        if (unit.standingOnTile != null)
+        {
+            // Block the tile and assign the activeCharacter reference.
+            unit.standingOnTile.isBlocked = true;
+            unit.standingOnTile.activeCharacter = unit;
+            unit.standingOnTile.unitOnTile = unit; // Set the unitOnTile during spawn
 
-
+            // Also set the tile beneath (if exists)
+            Collider2D[] colliders = Physics2D.OverlapPointAll(unit.standingOnTile.transform.position);
+            foreach (var col in colliders)
+            {
+                OverlayTile underlyingTile = col.GetComponent<OverlayTile>();
+                if (underlyingTile != null && underlyingTile != unit.standingOnTile)
+                {
+                    underlyingTile.isBlocked = true;
+                    underlyingTile.unitOnTile = unit;
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Unit {unit.name} does not have a standingOnTile assigned!");
+        }
+    }
 
     private void Update()
     {
