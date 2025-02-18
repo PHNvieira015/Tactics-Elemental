@@ -54,7 +54,7 @@ public class GameMaster : MonoBehaviour
     public void UpdateGameState(GameState newState)
     {
         State = newState;
-        Debug.Log($"Game state changed to: {newState}");
+        //Debug.Log($"Game state changed to: {newState}");
 
         switch (newState)
         {

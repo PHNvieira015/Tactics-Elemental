@@ -124,8 +124,8 @@ public class MouseController : MonoBehaviour
             if (rangeFinderTiles.Contains(tile))
 
             {
-                Debug.Log($"Tile {tile.name} is within range.");
-                Debug.Log($"Path Count Before Calculation: {path.Count}");
+                //Debug.Log($"Tile {tile.name} is within range.");
+                //Debug.Log($"Path Count Before Calculation: {path.Count}");
                 // Only recalculate path if the target tile is in range
                 if (currentUnit.standingOnTile != tile)
                 {

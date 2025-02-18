@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Dialogue : MonoBehaviour
 {
     public TextMeshProUGUI textComponent;
-    public TextMeshProUGUI nameComponent;
-    public string[] names;
+    public Image framesComponent;
+    public Sprite[] frames;
     [TextArea(2, 5)]
     public string[] lines;
     public float textSpeed;
@@ -44,7 +45,7 @@ public class Dialogue : MonoBehaviour
     
     IEnumerator TypeLine()
     {
-        nameComponent.text = names[index];
+        framesComponent.sprite = frames[index];
         foreach (char c in lines[index].ToCharArray())
         {
             textComponent.text += c;
@@ -63,7 +64,6 @@ public class Dialogue : MonoBehaviour
         else
         {
             gameObject.SetActive(false);
-            nameComponent.gameObject.SetActive(false);
         }
     }
 }

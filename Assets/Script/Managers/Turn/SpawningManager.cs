@@ -18,13 +18,24 @@ public class SpawningManager : MonoBehaviour
     [SerializeField] private GameObject EnemySpawnerTiles;
     [SerializeField] private GameObject PlayerSpawningTiles;
 
-    void Awake()
+    void Start()
     {
         playedUnits = new List<Unit>();
+        enemyList = gameMaster.enemyList;
 
         if (gameMaster != null)
         {
             playerAvailableUnits = new List<Unit>(gameMaster.playerAvailableUnits);
+
+            if (enemyList == null)
+            {
+                enemyList = new List<Unit>();
+            }
+            else
+            {
+                enemyList = new List<Unit>(enemyList);
+            }
+
         }
         else
         {
@@ -61,7 +72,7 @@ public class SpawningManager : MonoBehaviour
 
     private void OnStartButtonClicked()
     {
-        
+
 
         if (GameMaster.instance == null)
         {
@@ -76,7 +87,7 @@ public class SpawningManager : MonoBehaviour
         }
         // Assign player units to GameMaster
         GameMaster.instance.playerList = new List<Unit>(playedUnits);
-        enemyList = new List<Unit>(enemyList);
+        //enemyList = new List<Unit>(enemyList);  did not do anything
         Debug.Log("Player units assigned to GameMaster.");
 
         // Assign enemy units to GameMaster if any are present
@@ -100,8 +111,16 @@ public class SpawningManager : MonoBehaviour
         foreach (Unit unit in enemyList)
         {
             SetStandingOnTile(unit);
+
             Debug.Log("aqui2");
-            Debug.Log($"Enemy {unit.name} is now on tile {unit.standingOnTile.name}.");
+            if (unit.standingOnTile != null)
+            {
+                Debug.Log($"Enemy {unit.name} is now on tile {unit.standingOnTile.name}.");
+            }
+            else
+            {
+                Debug.LogWarning($"Enemy {unit.name} does not have a standingOnTile assigned!");
+            }
         }
 
         foreach (Unit unit in playedUnits)

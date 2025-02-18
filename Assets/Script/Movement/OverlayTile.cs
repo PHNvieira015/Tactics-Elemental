@@ -122,7 +122,7 @@ public class OverlayTile : MonoBehaviour
         {
             tileData.type = TileTypes.EnemyUnitBlocked;
         }
-        Debug.Log($"Unit {unit.name} is now on tile {gameObject.name}.");
+        //Debug.Log($"Unit {unit.name} is now on tile {gameObject.name}.");
     }
 
     public void ClearUnit()
