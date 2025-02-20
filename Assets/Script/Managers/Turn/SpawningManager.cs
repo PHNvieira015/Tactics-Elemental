@@ -88,21 +88,21 @@ public class SpawningManager : MonoBehaviour
         // Assign player units to GameMaster
         GameMaster.instance.playerList = new List<Unit>(playedUnits);
         //enemyList = new List<Unit>(enemyList);  did not do anything
-        Debug.Log("Player units assigned to GameMaster.");
+        //Debug.Log("Player units assigned to GameMaster.");
 
         // Assign enemy units to GameMaster if any are present
         if (enemyList != null && enemyList.Count > 0)
         {
             GameMaster.instance.enemyList = new List<Unit>(enemyList);
-            Debug.Log("Enemy units assigned to GameMaster.");
+            //Debug.Log("Enemy units assigned to GameMaster.");
         }
 
         GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
 
         startButton.gameObject.SetActive(false);
         //place tile
-        Destroy(EnemySpawnerTiles.gameObject);
         Destroy(PlayerSpawningTiles.gameObject);
+        Destroy(EnemySpawnerTiles.gameObject);
         foreach (var x in enemyList)
         {
             Debug.Log("aqui + " + x.ToString());

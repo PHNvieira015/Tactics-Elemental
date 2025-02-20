@@ -77,7 +77,7 @@ public class GameMaster : MonoBehaviour
                 break;
             case GameState.UnitTurn:
                 {
-                    Debug.Log("Unit Turn for " + currentUnit.name);
+                    //Debug.Log("Unit Turn for " + currentUnit.name);
 
                     // Initialize TurnStateManager with the current unit
                     if (turnStateManager != null && currentUnit != null)
@@ -133,7 +133,7 @@ public class GameMaster : MonoBehaviour
                     // Mark the tile as blocked and record the enemy as the occupant
                     tileUnderEnemy.SetUnit(spawnedUnit); // This ensures unitOnTile is set correctly
                     tileUnderEnemy.isBlocked = true;
-                    Debug.Log($"Enemy {spawnedUnit.name} assigned to tile {tileUnderEnemy.gameObject.name}");
+                    //Debug.Log($"Enemy {spawnedUnit.name} assigned to tile {tileUnderEnemy.gameObject.name}");
                 }
                 else
                 {
@@ -169,21 +169,21 @@ public class GameMaster : MonoBehaviour
         }
 
         playerList = spawningManager.playedUnits;
-        Debug.Log("Player list is: " + spawningManager.playedUnits);
+        //Debug.Log("Player list is: " + spawningManager.playedUnits);
         enemyList = spawnedUnits.Where(unit => unit.teamID == 2).ToList();
 
-        Debug.Log($"Player units: {playerList.Count}, Enemy units: {enemyList.Count}");
+        //Debug.Log($"Player units: {playerList.Count}, Enemy units: {enemyList.Count}");
     }
 
     public void InitializeTurnOrder()
     {
-        Debug.Log($"Player count: {playerList.Count}, enemyList count: {enemyList.Count}");
+        //Debug.Log($"Player count: {playerList.Count}, enemyList count: {enemyList.Count}");
 
         // Combine all units into a single list
         var allUnits = new List<Unit>(playerList);
         allUnits.AddRange(enemyList);
 
-        Debug.Log($"Total units before sorting and filtering: {allUnits.Count}");
+        //Debug.Log($"Total units before sorting and filtering: {allUnits.Count}");
 
         if (allUnits.Count == 0)
         {
@@ -204,7 +204,7 @@ public class GameMaster : MonoBehaviour
             }
             else
             {
-                Debug.Log($"Unit: {unit.name}, Initiative: {unit.characterStats.initiative}");
+                //Debug.Log($"Unit: {unit.name}, Initiative: {unit.characterStats.initiative}");
             }
         }
 

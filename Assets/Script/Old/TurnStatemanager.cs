@@ -61,7 +61,7 @@ public class TurnStateManager : MonoBehaviour
         currentUnit = unit;
         currentUnitObject = unit.gameObject;
         currentTurnState = TurnState.Waiting; // Default state at turn start
-        Debug.Log($"Current unit set to {currentUnit.name}");
+        //Debug.Log($"Current unit set to {currentUnit.name}");
         // Trigger the UI update after setting the current unit
         OnTurnStateChanged?.Invoke(currentTurnState);
         Debug.Log("UI update triggered");
@@ -79,7 +79,7 @@ public class TurnStateManager : MonoBehaviour
             if (tileUnderUnit != null)
             {
                 // Do something with the tile
-                Debug.Log($"Tile under the unit: {tileUnderUnit.name}");
+                //Debug.Log($"Tile under the unit: {tileUnderUnit.name}");
             }
         }
 
@@ -237,7 +237,7 @@ public class TurnStateManager : MonoBehaviour
         if (currentUnit != null)
         {
             // Log the position of the unit to verify it's being updated
-            Debug.Log($"Unit Position: {currentUnit.transform.position}");
+            //Debug.Log($"Unit Position: {currentUnit.transform.position}");
 
             // Use raycasting or tile-based logic to determine the standing tile
             RaycastHit2D hit = Physics2D.Raycast(currentUnit.transform.position, Vector2.down);
@@ -251,7 +251,7 @@ public class TurnStateManager : MonoBehaviour
                 {
                     // Update the standingOnTile in the Unit class
                     currentUnit.standingOnTile = standingTile;
-                    Debug.Log($"{currentUnit.name} is standing on tile: {standingTile.name}");
+                    //Debug.Log($"{currentUnit.name} is standing on tile: {standingTile.name}");
                 }
                 else
                 {

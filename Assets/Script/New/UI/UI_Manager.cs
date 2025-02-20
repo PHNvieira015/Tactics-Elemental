@@ -35,7 +35,7 @@ public class UI_Manager : MonoBehaviour
     {
 
 
-        Debug.Log("UI_Manager: Unit information updated for " + unit.name);
+        //Debug.Log("UI_Manager: Unit information updated for " + unit.name);
     }
     private void OnTurnStateChanged(TurnStateManager.TurnState newState)
     {
