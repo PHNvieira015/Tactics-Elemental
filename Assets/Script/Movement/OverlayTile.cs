@@ -114,6 +114,7 @@ public class OverlayTile : MonoBehaviour
         unitOnTile = unit;
         //isBlocked = true;
 
+        //indevelopment not working currently
         if (unit.teamID == 1 && tileData.type != TileTypes.Spawner)
         {
             tileData.type = TileTypes.PlayerUnitBlocked;

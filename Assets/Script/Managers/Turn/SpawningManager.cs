@@ -87,7 +87,7 @@ public class SpawningManager : MonoBehaviour
         }
         // Assign player units to GameMaster
         GameMaster.instance.playerList = new List<Unit>(playedUnits);
-        //enemyList = new List<Unit>(enemyList);  did not do anything
+        enemyList = new List<Unit>(enemyList);
         //Debug.Log("Player units assigned to GameMaster.");
 
         // Assign enemy units to GameMaster if any are present
@@ -97,37 +97,52 @@ public class SpawningManager : MonoBehaviour
             //Debug.Log("Enemy units assigned to GameMaster.");
         }
 
-        GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
-
-        startButton.gameObject.SetActive(false);
-        //place tile
-        Destroy(PlayerSpawningTiles.gameObject);
-        Destroy(EnemySpawnerTiles.gameObject);
-        foreach (var x in enemyList)
+        // Transfer enemy units to main grid tiles BEFORE destroying spawning tiles
+        foreach (Unit enemy in enemyList)
         {
-            Debug.Log("aqui + " + x.ToString());
-        }
+            // Find the main grid tile under the enemy's position
+            RaycastHit2D[] hits = Physics2D.RaycastAll(enemy.transform.position, Vector2.zero);
+            OverlayTile mainGridTile = hits
+            .Select(hit => hit.collider.GetComponent<OverlayTile>())
 
-        foreach (Unit unit in enemyList)
-        {
-            SetStandingOnTile(unit);
+            //.FirstOrDefault(tile => tile != null && tile.GetComponent<SpawningTile>() == null); // Exclude spawning tiles for allied units
+            .FirstOrDefault(tile => tile != null && tile.tileData != null && tile.tileData.type != TileTypes.Spawner);
 
-            Debug.Log("aqui2");
-            if (unit.standingOnTile != null)
+
+
+
+            GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
+
+            startButton.gameObject.SetActive(false);
+            //place tile
+            Destroy(PlayerSpawningTiles.gameObject);
+            Destroy(EnemySpawnerTiles.gameObject);
+            foreach (Unit unit in enemyList)
             {
-                Debug.Log($"Enemy {unit.name} is now on tile {unit.standingOnTile.name}.");
+                Debug.Log("aqui + " + unit.ToString());
             }
-            else
+
+            foreach (Unit unit in enemyList)
             {
-                Debug.LogWarning($"Enemy {unit.name} does not have a standingOnTile assigned!");
+                SetStandingOnTile(unit);
+
+                Debug.Log("aqui2");
+                if (unit.standingOnTile != null)
+                {
+                    Debug.Log($"Enemy {unit.name} is now on tile {unit.standingOnTile.name}.");
+                }
+                else
+                {
+                    Debug.LogWarning($"Enemy {unit.name} does not have a standingOnTile assigned!");
+                }
             }
-        }
 
-        foreach (Unit unit in playedUnits)
-        {
-            SetStandingOnTile(unit);
-        }
+            foreach (Unit unit in playedUnits)
+            {
+                SetStandingOnTile(unit);
+            }
 
+        }
     }
 
     private void SetStandingOnTile(Unit unit)
