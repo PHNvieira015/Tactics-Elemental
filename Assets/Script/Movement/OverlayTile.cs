@@ -100,7 +100,7 @@ public class OverlayTile : MonoBehaviour
 
     public Unit GetUnit()
     {
-        //return FindObjectsOfType<Unit>().FirstOrDefault(unit => unit.standingOnTile == this);
+        //return FindObjectsOfType<Unit>().FirstOrDefault(unit => unit.standingOnTile == this);  //changed nothing (same as under appareantly)
         return FindObjectsOfType<Unit>().FirstOrDefault(unit => unit.standingOnTile);
     }
 
@@ -110,7 +110,7 @@ public class OverlayTile : MonoBehaviour
         {
             tileData = ScriptableObject.CreateInstance<TileData>();
         }
-        activeCharacter = unit;
+        //activeCharacter = unit;
         unitOnTile = unit;
         //isBlocked = true;
 

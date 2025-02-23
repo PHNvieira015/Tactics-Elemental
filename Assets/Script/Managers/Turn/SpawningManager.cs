@@ -21,7 +21,7 @@ public class SpawningManager : MonoBehaviour
     void Start()
     {
         playedUnits = new List<Unit>();
-        enemyList = gameMaster.enemyList;
+        enemyList = new List<Unit>(GameMaster.instance.spawnedUnits);
 
         if (gameMaster != null)
         {
@@ -72,8 +72,7 @@ public class SpawningManager : MonoBehaviour
 
     private void OnStartButtonClicked()
     {
-
-
+        
         if (GameMaster.instance == null)
         {
             Debug.LogError("GameMaster instance is not available.");
@@ -87,15 +86,8 @@ public class SpawningManager : MonoBehaviour
         }
         // Assign player units to GameMaster
         GameMaster.instance.playerList = new List<Unit>(playedUnits);
-        enemyList = new List<Unit>(enemyList);
+        enemyList = new List<Unit>(GameMaster.instance.spawnedUnits);
         //Debug.Log("Player units assigned to GameMaster.");
-
-        // Assign enemy units to GameMaster if any are present
-        if (enemyList != null && enemyList.Count > 0)
-        {
-            GameMaster.instance.enemyList = new List<Unit>(enemyList);
-            //Debug.Log("Enemy units assigned to GameMaster.");
-        }
 
         // Transfer enemy units to main grid tiles BEFORE destroying spawning tiles
         foreach (Unit enemy in enemyList)
