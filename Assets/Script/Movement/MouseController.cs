@@ -84,6 +84,7 @@ public class MouseController : MonoBehaviour
             if (path.Count > 0 && !_coroutineRunning)
             {
                 StartCoroutine(MoveAlongPathCoroutine());
+                currentUnit.hasMoved = true;
             }
             return; // Prevent further path recalculation if already moving
         }
