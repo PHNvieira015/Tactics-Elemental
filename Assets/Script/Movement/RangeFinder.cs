@@ -5,10 +5,8 @@ using UnityEngine;
 
 public class RangeFinder
 {
-    public MapManager mapManager;
-    public List<OverlayTile> GetTilesInRange(Vector2Int location, int range)
+    public List<OverlayTile> GetTilesInRange(Vector2Int location, int range, bool ignoreObstacles = false)
     {
-        // Find MapManager instance using FindObjectOfType (works if there's only one MapManager in the scene)
         MapManager mapManager = GameObject.FindObjectOfType<MapManager>();
 
         if (mapManager == null)
@@ -17,23 +15,24 @@ public class RangeFinder
             return new List<OverlayTile>();
         }
 
+        if (!mapManager.map.ContainsKey(location))
+        {
+            Debug.LogError($"No tile found at location {location}");
+            return new List<OverlayTile>();
+        }
 
-        var startingTile = mapManager.map[location];  // Access map data directly
-        var inRangeTiles = new List<OverlayTile>();
+        var startingTile = mapManager.map[location];
+        var inRangeTiles = new List<OverlayTile> { startingTile };
+        var tilesForPreviousStep = new List<OverlayTile> { startingTile };
         int stepCount = 0;
 
-        inRangeTiles.Add(startingTile);
-
-        // Should contain the surroundingTiles of the previous step
-        var tilesForPreviousStep = new List<OverlayTile>();
-        tilesForPreviousStep.Add(startingTile);
         while (stepCount < range)
         {
             var surroundingTiles = new List<OverlayTile>();
 
-            foreach (var item in tilesForPreviousStep)
+            foreach (var tile in tilesForPreviousStep)
             {
-                surroundingTiles.AddRange(mapManager.GetNeighbourTiles(item, new List<OverlayTile>(), ignoreObstacles: false));
+                surroundingTiles.AddRange(mapManager.GetNeighbourTiles(tile, new List<OverlayTile>(), ignoreObstacles));
             }
 
             inRangeTiles.AddRange(surroundingTiles);
@@ -41,6 +40,6 @@ public class RangeFinder
             stepCount++;
         }
 
-        return inRangeTiles.Distinct().ToList();  // Return distinct tiles in range
+        return inRangeTiles.Distinct().ToList();
     }
 }

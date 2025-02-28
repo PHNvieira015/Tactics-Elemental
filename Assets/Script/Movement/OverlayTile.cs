@@ -13,7 +13,7 @@ public class OverlayTile : MonoBehaviour
     public bool isBlocked = false;
     public bool isLocked = false;
     public Unit activeCharacter;
-    public Unit unitOnTile; //testing 
+    public Unit unitOnTile;
     public TileData tileData;
     public int MoveCost => tileData != null ? tileData.MoveCost : 1;
 
@@ -106,15 +106,16 @@ public class OverlayTile : MonoBehaviour
 
     public void SetUnit(Unit unit)
     {
+        if (unit == null) return; // Prevent null references
+
         if (tileData == null)
         {
             tileData = ScriptableObject.CreateInstance<TileData>();
         }
-        //activeCharacter = unit;
-        unitOnTile = unit;
-        //isBlocked = true;
 
-        //indevelopment not working currently
+        unitOnTile = unit;
+        unit.standingOnTile = this; // Ensure unit knows the tile it's standing on
+
         if (unit.teamID == 1 && tileData.type != TileTypes.Spawner)
         {
             tileData.type = TileTypes.PlayerUnitBlocked;
@@ -123,7 +124,8 @@ public class OverlayTile : MonoBehaviour
         {
             tileData.type = TileTypes.EnemyUnitBlocked;
         }
-        //Debug.Log($"Unit {unit.name} is now on tile {gameObject.name}.");
+
+        //Debug.Log($"Unit {unit.name} is now on tile {grid2DLocation}.");
     }
 
     public void ClearUnit()

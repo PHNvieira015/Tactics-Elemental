@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;  // Required for UI components
 
 public class SpawningManager : MonoBehaviour
@@ -109,32 +110,32 @@ public class SpawningManager : MonoBehaviour
             //place tile
             Destroy(PlayerSpawningTiles.gameObject);
             Destroy(EnemySpawnerTiles.gameObject);
-            foreach (Unit unit in enemyList)
-            {
-                Debug.Log("aqui + " + unit.ToString());
-            }
-
-            foreach (Unit unit in enemyList)
-            {
-                SetStandingOnTile(unit);
-
-                Debug.Log("aqui2");
-                if (unit.standingOnTile != null)
-                {
-                    Debug.Log($"Enemy {unit.name} is now on tile {unit.standingOnTile.name}.");
-                }
-                else
-                {
-                    Debug.LogWarning($"Enemy {unit.name} does not have a standingOnTile assigned!");
-                }
-            }
-
-            foreach (Unit unit in playedUnits)
-            {
-                SetStandingOnTile(unit);
-            }
-
         }
+
+
+        // let's try to set the spawn
+        foreach (Unit unit in enemyList)
+        {
+            SetStandingOnTile(unit);
+            //unit.standingOnTile
+
+            //Debug.Log("aqui2");
+            if (unit.standingOnTile != null)
+            {
+                //Debug.Log($"Enemy {unit.name} is now on tile {unit.standingOnTile.name}.");
+
+            }
+            else
+            {
+                //Debug.LogWarning($"Enemy {unit.name} does not have a standingOnTile assigned!");
+            }
+        }
+
+        foreach (Unit unit in playedUnits)
+        {
+            SetStandingOnTile(unit);
+        }
+
     }
 
     private void SetStandingOnTile(Unit unit)
@@ -142,6 +143,7 @@ public class SpawningManager : MonoBehaviour
         if (unit.standingOnTile != null)
         {
             // Block the tile and assign the activeCharacter reference.
+            unit.standingOnTile = unit.GetTileUnderUnit(); // Set the standingOnTile broke the traversable stuff indevelopment
             unit.standingOnTile.isBlocked = true;
             unit.standingOnTile.activeCharacter = unit;
             unit.standingOnTile.unitOnTile = unit; // Set the unitOnTile during spawn
@@ -160,6 +162,7 @@ public class SpawningManager : MonoBehaviour
         }
         else
         {
+            unit.standingOnTile = unit.GetTileUnderUnit();
             Debug.LogWarning($"Unit {unit.name} does not have a standingOnTile assigned!");
         }
     }

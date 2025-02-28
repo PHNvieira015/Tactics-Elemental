@@ -62,7 +62,7 @@ public class UI_ActionBar : MonoBehaviour
 
     private void OnAttackButtonClicked()
     {
-        Debug.Log("Attack button clicked.");
+        //Debug.Log("Attack button clicked.");
         turnStateManager.ChangeState(TurnStateManager.TurnState.Attacking);
     }
 

@@ -64,7 +64,7 @@ public class TurnStateManager : MonoBehaviour
         //Debug.Log($"Current unit set to {currentUnit.name}");
         // Trigger the UI update after setting the current unit
         OnTurnStateChanged?.Invoke(currentTurnState);
-        Debug.Log("UI update triggered");
+        //Debug.Log("UI update triggered");
     }
 
     public void ChangeState(TurnState newState)
@@ -85,7 +85,7 @@ public class TurnStateManager : MonoBehaviour
 
         UI_ActionBar.SetActive(false); // Deactivate ActionBar (typically Move button will be hidden)
         currentTurnState = newState;
-        Debug.Log($"State changed to {currentTurnState}");
+        //Debug.Log($"State changed to {currentTurnState}");
 
         // Notify listeners of the state change
         OnTurnStateChanged?.Invoke(currentTurnState);
@@ -156,7 +156,7 @@ public class TurnStateManager : MonoBehaviour
     if (currentUnit.standingOnTile != null)
     {
         Vector3 tilePosition = currentUnit.standingOnTile.transform.position;
-        Debug.Log($"Tile position: (X: {tilePosition.x}, Y: {tilePosition.y}, Z: {tilePosition.z})");
+        //Debug.Log($"Tile position: (X: {tilePosition.x}, Y: {tilePosition.y}, Z: {tilePosition.z})");
     }
     else
     {
@@ -179,7 +179,7 @@ public class TurnStateManager : MonoBehaviour
                 if (!currentUnit.hasAttacked)
                 {
                 mouseController.GetAttackRangeTiles(); // Show attack range
-                Debug.Log($"{currentUnit.name} is attacking...");
+                //Debug.Log($"{currentUnit.name} is attacking...");
                     DisableUI_Action();
                     Debug.Log($"{currentUnit.name} is attacking...");
                     // Attack logic

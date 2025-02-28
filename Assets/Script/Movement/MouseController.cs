@@ -166,51 +166,58 @@ public class MouseController : MonoBehaviour
 
                 }
             }
-#endregion
+            #endregion
 
             #region attack indevelopment
-            if (attackRangeTiles.Contains(tile))
+            // When the mouse button is clicked
+            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking)
             {
-                // Look for units at this position
-                Unit[] units = FindObjectsOfType<Unit>();
-                Unit targetUnit = null;
-
-                foreach (Unit unit in units)
+                if (attackRangeTiles.Contains(tile))
                 {
-                    if (unit.standingOnTile == tile)
+                    // Look for units at this position
+                    Unit targetUnit = tile.unitOnTile;  // Directly access the unit from the tile
+
+                    Debug.Log($"Attempting to attack. Target unit found: {targetUnit != null}");
+
+                    // Check if there's a valid unit and it's not the current player unit
+                    if (targetUnit != null && targetUnit != currentUnit && !currentUnit.hasAttacked)
                     {
-                        targetUnit = unit;
-                        break;
+                        Debug.Log($"Attack conditions met! Current unit: {currentUnit.name}, Target: {targetUnit.name}");
+
+                        // Optionally check if it's an enemy unit (if you have a player-owner system)
+                        if (targetUnit.playerOwner != currentUnit.playerOwner)
+                        {
+                            // Trigger the attack
+                            damageSystem.Attack(currentUnit, targetUnit);
+                            Debug.Log("Attack performed!");
+
+                            // Clear attack range tiles after attack
+                            foreach (var rangeTile in attackRangeTiles)
+                            {
+                                rangeTile.HideTile();
+                            }
+
+                            // Mark the current unit as having attacked
+                            currentUnit.hasAttacked = true;
+
+                            // Clear the attack range tiles
+                            attackRangeTiles.Clear();
+                        }
+                        else
+                        {
+                            Debug.Log("Cannot attack your own unit.");
+                        }
                     }
-                }
-
-                Debug.Log("Attempting to attack. Target unit found: " + (targetUnit != null));
-
-                if (targetUnit != null && targetUnit != currentUnit && !currentUnit.hasAttacked)
-                {
-                    Debug.Log($"Attack conditions met! Current unit: {currentUnit.name}, Target: {targetUnit.name}");
-                    Debug.Log($"Player owners - Attacker: {currentUnit.playerOwner}, Target: {targetUnit.playerOwner}");
-
-                    damageSystem.Attack(currentUnit, targetUnit);
-
-                    Debug.Log("Attack performed!");
-
-                    foreach (var rangeTile in attackRangeTiles)
+                    else
                     {
-                        rangeTile.HideTile();
+                        Debug.Log($"Attack conditions not met: " +
+                                  $"Has Unit: {targetUnit != null}, " +
+                                  $"Haven't Attacked: {!currentUnit.hasAttacked}");
                     }
-
-                    currentUnit.hasAttacked = true;
-                    attackRangeTiles.Clear();
-                }
-                else
-                {
-                    Debug.Log($"Attack conditions not met: " +
-                        $"Has Unit: {targetUnit != null}, " +
-                        $"Haven't Attacked: {!currentUnit.hasAttacked}");
                 }
             }
             #endregion
+
         }
 
     }
@@ -279,7 +286,7 @@ public class MouseController : MonoBehaviour
         newTile.isBlocked = true;
         newTile.activeCharacter = currentUnit;
         newTile.unitOnTile = currentUnit;
-        Debug.Log($"{currentUnit.name} is now standing on tile: {newTile.name}");
+        //Debug.Log($"{currentUnit.name} is now standing on tile: {newTile.name}");
     }
 
     private static RaycastHit2D? GetFocusedOnTile()
@@ -321,7 +328,8 @@ public class MouseController : MonoBehaviour
                 currentUnit.standingOnTile.gridLocation.x,
                 currentUnit.standingOnTile.gridLocation.y
             ),
-            Mathf.RoundToInt(currentUnit.characterStats.movementRange)
+            Mathf.RoundToInt(currentUnit.characterStats.movementRange),
+            false // Do not ignore obstacles (movement is blocked by obstacles)
         );
         // Only visualize the range if the turn state allows movement.
              if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Moving)
@@ -338,7 +346,7 @@ public class MouseController : MonoBehaviour
 
     public void SetUnit(Unit newUnit)
     {
-        Debug.Log($"Assigning {newUnit.name} to currentUnit.");
+        //Debug.Log($"Assigning {newUnit.name} to currentUnit.");
         currentUnit = newUnit;
         // Optionally, you can check or set the starting tile here:
         if (currentUnit.standingOnTile == null)
@@ -350,36 +358,31 @@ public class MouseController : MonoBehaviour
     // Call this method when the attack state is activated
     public void GetAttackRangeTiles()
     {
-        if (currentUnit == null)
+        if (currentUnit == null || currentUnit.standingOnTile == null)
         {
-            Debug.LogError("CurrentUnit is null! Cannot determine attack range.");
+            Debug.LogError("CurrentUnit is null or not standing on a tile! Cannot determine attack range.");
             return;
         }
 
-        if (currentUnit.standingOnTile == null)
-        {
-            Debug.LogError("CurrentUnit is not standing on a tile!");
-            return;
-        }
-
+        // Calculate attack range tiles
         attackRangeTiles = rangeFinder.GetTilesInRange(
             new Vector2Int(
                 currentUnit.standingOnTile.gridLocation.x,
                 currentUnit.standingOnTile.gridLocation.y
             ),
-            Mathf.RoundToInt(currentUnit.attackRange) // Use attackRange variable
+            Mathf.RoundToInt(currentUnit.attackRange),
+            true // Ignore obstacles for attack range
         );
 
-        // Only visualize if in Attack state
+        // Only visualize attack range when in Attack state
         if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Attacking)
         {
             foreach (var tile in attackRangeTiles)
             {
                 tile.ShowTile(attackColor, TileType.AttackRangeColor); // Show red attack tiles
             }
-
-            Debug.Log($"Highlighted {attackRangeTiles.Count} tiles for attack range.");
         }
     }
+
 
 }
