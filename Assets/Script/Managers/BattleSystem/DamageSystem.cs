@@ -5,9 +5,13 @@ using UnityEngine;
 public class DamageSystem : MonoBehaviour
 {
     public BattleHandler battleHandler; // Reference to BattleHandler for handling battle logic
+    public int baseDamage = 1;
 
     public void Attack(Unit attacker, Unit target)
     {
+        battleHandler.attackerCharacterBattle = attacker.GetComponent<CharacterBattle>();
+        battleHandler.targetCharacterBattle = target.GetComponent<CharacterBattle>();
+
         if (!IsWithinAttackRange(attacker, target))
         {
             Debug.Log($"{target.name} is out of attack range!");
@@ -19,15 +23,14 @@ public class DamageSystem : MonoBehaviour
             int damageDealt = CalculateDamage(attacker, target);
 
             // Apply the damage to the target
-            target.TakeDamage(damageDealt);
+            target.TakeDamage(damageDealt, this);
 
             Debug.Log($"{attacker.name} attacked {target.name} and dealt {damageDealt} damage!");
 
             if (!target.IsAlive())
             {
                 Debug.Log($"{target.name} has been defeated!");
-                // You might want to add death handling logic here
-                target.gameObject.SetActive(false); // Or handle death in another way
+                target.gameObject.SetActive(false);
             }
             else
             {
@@ -50,11 +53,10 @@ public class DamageSystem : MonoBehaviour
         return distance <= attacker.attackRange;
     }
 
-    private int CalculateDamage(Unit attacker, Unit target)
+    public int CalculateDamage(Unit attacker, Unit target)
     {
         int baseDamage = 0;
 
-        // Calculate base damage based on class
         switch (attacker.characterStats.characterClass)
         {
             case CharacterStat.CharacterClass.Warrior:
@@ -68,31 +70,28 @@ public class DamageSystem : MonoBehaviour
                 break;
         }
 
-        // Apply stat multiplier
         baseDamage += Mathf.RoundToInt(baseDamage * 2f);
+        baseDamage = Mathf.RoundToInt(baseDamage *1 + attacker.characterStats.equippedWeapon.WeaponDamageModifier);
 
-        // Apply weapon damage modifier
-        baseDamage = Mathf.RoundToInt(baseDamage * attacker.characterStats.equippedWeapon.WeaponDamageModifier);
-
-        // Calculate elemental advantage/disadvantage
         float affinityDamageModifier = 1f;
         if (attacker.characterStats.elementType == target.characterStats.weaknessElement)
         {
             affinityDamageModifier = 1.5f;
-            Debug.Log($"Elemental Advantage! Damage increased by 50%");
+            Debug.Log($"Elemental Advantage! Magic Damage increased by 50%");
         }
         else if (target.characterStats.elementType == attacker.characterStats.weaknessElement)
         {
             affinityDamageModifier = 0.5f;
-            Debug.Log($"Elemental Disadvantage! Damage reduced by 50%");
+            Debug.Log($"Elemental Disadvantage! Magic Damage reduced by 50%");
         }
         baseDamage = Mathf.RoundToInt(baseDamage * affinityDamageModifier);
 
-        // Apply target's resistance
         int resistance = Mathf.RoundToInt(target.characterStats.magicalDefense * 0.2f);
         baseDamage -= resistance;
 
-        // Ensure damage doesn't go below 0
+        battleHandler.attackerCharacterBattle = null;
+        battleHandler.targetCharacterBattle = null;
+
         return Mathf.Max(baseDamage, 0);
     }
 }

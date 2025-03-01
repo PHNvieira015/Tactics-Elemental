@@ -13,7 +13,7 @@ public class BattleHandler : MonoBehaviour
     }
 
     // References to both character battle units (player and enemy)
-    public CharacterBattle attackCharacterBattle;
+    public CharacterBattle attackerCharacterBattle;
     public CharacterBattle targetCharacterBattle;
 
     private CharacterBattle activeCharacterBattle;
@@ -33,7 +33,7 @@ public class BattleHandler : MonoBehaviour
     private void Start()
     {
         // Set the active character at the start (attacker will be the first active character)
-        activeCharacterBattle = attackCharacterBattle;
+        activeCharacterBattle = attackerCharacterBattle;
         state = State.WaitingForPlayer;
     }
 
@@ -94,19 +94,19 @@ public class BattleHandler : MonoBehaviour
             return;
         }
 
-        if (activeCharacterBattle == attackCharacterBattle)
+        if (activeCharacterBattle == attackerCharacterBattle)
         {
             SetActiveCharacterBattle(targetCharacterBattle);
             state = State.Busy;
 
-            targetCharacterBattle.Attack(attackCharacterBattle, () =>
+            targetCharacterBattle.Attack(attackerCharacterBattle, () =>
             {
                 ChooseNextActiveCharacter();
             });
         }
         else
         {
-            SetActiveCharacterBattle(attackCharacterBattle);
+            SetActiveCharacterBattle(attackerCharacterBattle);
             state = State.WaitingForPlayer;
         }
     }
@@ -114,7 +114,7 @@ public class BattleHandler : MonoBehaviour
     // Test if the battle is over
     private bool TestBattleOver()
     {
-        if (attackCharacterBattle.IsDead())
+        if (attackerCharacterBattle.IsDead())
         {
             // Player dead, enemy wins
             battleOverWindow.ShowBattleResult(false); // Show losing message

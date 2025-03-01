@@ -4,7 +4,7 @@ using UnityEngine;
 public class CharacterBattle : MonoBehaviour
 {
     private Unit unit;
-    private CharacterStat characterStat; // Declare characterStat at the class level
+    private CharacterStat characterStat;
     private State state;
     private Vector3 slideTargetPosition;
     private Action onSlideComplete;
@@ -14,7 +14,7 @@ public class CharacterBattle : MonoBehaviour
     private GameObject selectionCircle;
     private HealthSystem healthSystem;
     private HealthBar healthBar;
-    [SerializeField] int damage=10;
+    public DamageSystem damageSystem;
 
     private enum State
     {
@@ -30,33 +30,32 @@ public class CharacterBattle : MonoBehaviour
         selectionCircle = transform.Find("SelectionCircle").gameObject;
         HideSelectionCircle();
         state = State.Idle;
-        Setup(true); // This should initialize the health system properly
+        Setup(true);
     }
 
     public void Setup(bool isPlayerTeam)
-{
-    this.isPlayerTeam = isPlayerTeam;
-
-    int initialHealth = characterStat.currentHealth;  // Get current health from characterStats
-    int maxHealth = characterStat.maxBaseHealth;  // Get max health from characterStats
-    healthSystem = new HealthSystem(initialHealth, maxHealth, characterStat);  // Pass characterStats
-
-    healthBar = GetComponentInChildren<HealthBar>();
-    healthBar.SetupHealthSystem(healthSystem);
-
-    healthSystem.OnHealthChange += HealthSystem_OnHealthChanged;
-}
-
-public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
-{
-    if (this == null) return;
-    if (healthBar != null)
     {
-        float healthPercent = healthSystem.GetHealthPercent();
-        healthBar.SetHealthBarSize(healthPercent);
-    }
-}
+        this.isPlayerTeam = isPlayerTeam;
 
+        int initialHealth = characterStat.currentHealth;
+        int maxHealth = characterStat.maxBaseHealth;
+        healthSystem = new HealthSystem(initialHealth, maxHealth, characterStat);
+
+        healthBar = GetComponentInChildren<HealthBar>();
+        healthBar.SetupHealthSystem(healthSystem);
+
+        healthSystem.OnHealthChange += HealthSystem_OnHealthChanged;
+    }
+
+    public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
+    {
+        if (this == null) return;
+        if (healthBar != null)
+        {
+            float healthPercent = healthSystem.GetHealthPercent();
+            healthBar.SetHealthBarSize(healthPercent);
+        }
+    }
 
     private void Update()
     {
@@ -81,48 +80,25 @@ public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
         }
     }
 
-    public void Damage(int damageAmount)
-    {
-        if (this == null) return; // Check if object is destroyed before applying damage
-
-        healthSystem.Damage(damageAmount);
-        DamagePopup.Create(GetPosition(), damageAmount);
-        if (healthSystem.IsDead())  // Check if the character is dead
-        {
-            Destroy(this.gameObject); // Destroy the object if health is zero
-        }
-    }
-
-    public Vector3 GetPosition()
-    {
-        // Ensure that the object is not destroyed
-        if (this == null) return Vector3.zero;
-
-        return transform.position;
-    }
-
     public void Attack(CharacterBattle targetCharacterBattle, Action onAttackComplete)
     {
         if (this == null || targetCharacterBattle == null) return;
+        if (targetCharacterBattle.healthSystem.IsDead()) return;
 
-        // Check if either character is destroyed
-        if (targetCharacterBattle == null || targetCharacterBattle.healthSystem.IsDead()) return;
+        int calculatedDamage = damageSystem.CalculateDamage(unit, targetCharacterBattle.unit);
 
         Vector3 targetPosition = targetCharacterBattle.GetPosition();
         Vector3 slideDirection = (targetPosition - GetPosition()).normalized;
         float slideDistance = Vector3.Distance(GetPosition(), targetPosition);
         Vector3 slideTargetPosition = GetPosition() + slideDirection * slideDistance;
 
-        targetCharacterBattle.Damage(damage);
+        targetCharacterBattle.Damage(calculatedDamage);
 
         Vector3 startingPosition = GetPosition();
 
         SlideToPosition(slideTargetPosition, () =>
         {
             state = State.Busy;
-
-            Vector3 attackDir = (targetCharacterBattle.GetPosition() - GetPosition()).normalized;
-
             SlideToPosition(startingPosition, () =>
             {
                 state = State.Idle;
@@ -131,9 +107,25 @@ public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
         });
     }
 
+    public void Damage(int damageAmount)
+    {
+        if (this == null) return;
+
+        healthSystem.Damage(damageAmount);
+        DamagePopup.Create(GetPosition(), damageAmount);
+        if (healthSystem.IsDead())
+        {
+            HandleDeath();
+        }
+    }
+
+    public Vector3 GetPosition()
+    {
+        return this == null ? Vector3.zero : transform.position;
+    }
+
     private void SlideToPosition(Vector3 slideTargetPosition, Action onSlideComplete)
     {
-        // Check if the object is destroyed before starting the slide
         if (this == null) return;
 
         this.slideTargetPosition = slideTargetPosition;
@@ -157,10 +149,16 @@ public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
         }
     }
 
-    // Add this method to check if the character is dead
     public bool IsDead()
     {
-        if (healthSystem == null) return true;
-        return healthSystem.IsDead();  // Checks the health system for death
+        return healthSystem == null || healthSystem.IsDead();
+    }
+
+    public void HandleDeath()
+    {
+        if (this == null) return;
+
+        Debug.Log($"{gameObject.name} has died.");
+        gameObject.SetActive(false);
     }
 }

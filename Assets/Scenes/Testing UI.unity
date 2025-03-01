@@ -1244,6 +1244,7 @@ MonoBehaviour:
   Xposition: 0
   Yposition: 0
   damageSystem: {fileID: 1878649296}
+  battleHandler: {fileID: 839183661}
   attackRangeTiles: []
   attackColor: {r: 1, g: 0, b: 0, a: 1}
   color: {r: 1, g: 1, b: 1, a: 1}
@@ -2178,7 +2179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleOverWindow: {fileID: 1471965404}
-  attackCharacterBattle: {fileID: 0}
+  attackerCharacterBattle: {fileID: 0}
   targetCharacterBattle: {fileID: 0}
 --- !u!114 &839183662
 MonoBehaviour:
@@ -9267,7 +9268,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 309249799c741e746a618bdd7751a244, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  battleHandler: {fileID: 0}
+  battleHandler: {fileID: 839183661}
+  baseDamage: 1
 --- !u!1001 &1941171348
 PrefabInstance:
   m_ObjectHideFlags: 0

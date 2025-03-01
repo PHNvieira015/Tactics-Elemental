@@ -139,6 +139,17 @@ public class TurnStateManager : MonoBehaviour
 
                     // Call UpdateStandingOnTile at the start of the turn
                     UpdateStandingOnTile();
+
+
+                    //deactivating butons
+                    if(currentUnit.hasMoved==true)
+                    {
+                        uiActionBar.GameObjectButton_move.SetActive(false);
+                    }
+                    if (currentUnit.hasAttacked == true)
+                    {
+                        uiActionBar.GameObjectButton_attack.SetActive(false);
+                    }
                 }
                 break;
 
@@ -172,6 +183,7 @@ public class TurnStateManager : MonoBehaviour
     EnableUI_Action();
     uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
     uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
+    //turnStateManager.ChangeState(TurnState.TurnStart);
     break;
 
 
@@ -190,8 +202,12 @@ public class TurnStateManager : MonoBehaviour
                 else
                 {
                     Debug.Log($"{currentUnit.name} has already attacked.");
+                    uiActionBar.GameObjectButton_attack.SetActive(false); // Deactivate attack button
+                    EnableUI_Action();
                 }
                 break;
+
+
 
             case TurnState.UsingSkill:
                 DisableUI_Action();

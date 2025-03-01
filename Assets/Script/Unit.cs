@@ -31,6 +31,8 @@ public class Unit : MonoBehaviour
     public OverlayTile standingOnTile;
     public float Xposition;
     public float Yposition;
+    public BattleHandler battleHandler;
+    public DamageSystem damageSystem;
 
     List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range
 
@@ -49,36 +51,27 @@ public class Unit : MonoBehaviour
     #region skills
     private void Awake()
     {
-        if (turnStateManager == null)
-        {
-            turnStateManager = FindObjectOfType<TurnStateManager>();  // Automatically find the TurnStateManager in the scene
-        }
+        turnStateManager ??= FindObjectOfType<TurnStateManager>();
+        characterStats = GetComponent<CharacterStat>();
+        unitGameObject = gameObject;
 
-        if (turnStateManager == null)
-        {
-            Debug.LogError("TurnStateManager is not found in the scene.");
-        }
-        // Hard-code the reference to CharacterStat by directly referencing the same GameObject
-        characterStats = this.gameObject.GetComponent<CharacterStat>();
-        unitGameObject = this.gameObject; // Make sure this is updated when the Unit is created
+        // Ensure damageSystem is assigned
+        damageSystem ??= FindObjectOfType<DamageSystem>();
+        battleHandler ??= FindObjectOfType<BattleHandler>();
 
         if (characterStats == null)
         {
-            // If it's not attached, you can add it dynamically (optional)
             characterStats = gameObject.AddComponent<CharacterStat>();
-            Debug.Log(characterStats.name + "CharacterStat was not found, so it has been added automatically.");
-        }
-        else
-        {
-            //Debug.Log(characterStats.name + "CharacterStat found on this GameObject.");
+            Debug.Log(characterStats.name + " CharacterStat was not found, so it has been added automatically.");
         }
 
         unitSkills = new UnitSkills();
         unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
         levelSystem = new LevelSystem(characterStats);
         levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
-        attackRange = attackRange + characterStats.AttackRange;
-
+        attackRange += characterStats.AttackRange;
+        battleHandler = GetComponent<BattleHandler>();
+        damageSystem ??= FindObjectOfType<DamageSystem>();
     }
 
     private void UnitSkills_OnSkillUnlocked(object sender, UnitSkills.OnSkillUnlockedEventArgs e)
@@ -137,12 +130,18 @@ public class Unit : MonoBehaviour
         return isAlive && !isDown; // Unit is alive if isAlive is true and isDown is false
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, DamageSystem damageSystem)
     {
-        int effectiveDamage = Mathf.Max(damage - Mitigation, 1);
-        characterStats.currentHealth -= effectiveDamage;
+        if (damageSystem == null)
+        {
+            Debug.LogError("DamageSystem is null! Ensure it is assigned before calling TakeDamage.");
+            return;
+        }
+        Debug.Log("possivel dano: " + damage);
+        int calculatedDamage = Mathf.Max(damage - Mitigation, 1);
+        characterStats.currentHealth -= calculatedDamage;
 
-        Debug.Log($"{gameObject.name} took {effectiveDamage} damage. Remaining HP: {characterStats.currentHealth}");
+        Debug.Log($"{gameObject.name} took {calculatedDamage} damage. Remaining HP: {characterStats.currentHealth}");
 
         if (characterStats.currentHealth <= 0)
         {
@@ -153,8 +152,8 @@ public class Unit : MonoBehaviour
     }
     #endregion
 
-    #region Buff/Debuff
-    public void ApplyBuff(Buff newBuff)
+#region Buff/Debuff
+public void ApplyBuff(Buff newBuff)
     {
         if (!buffs.Contains(newBuff)) // Prevent applying duplicates
         {

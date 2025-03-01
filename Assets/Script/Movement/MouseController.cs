@@ -26,6 +26,7 @@ public class MouseController : MonoBehaviour
     public float Xposition;
     public float Yposition;
     public DamageSystem damageSystem;
+    public BattleHandler battleHan;
     //AttackRange
     public List<OverlayTile> attackRangeTiles; // Store attack range tiles
     public Color attackColor = Color.red;  // Red color for attack range
@@ -257,7 +258,9 @@ public class MouseController : MonoBehaviour
         path.Clear();
         _coroutineRunning = false;
         isMoving = false; // End movement
-        GetInRangeTiles(); // Refresh range tiles after movement   //possibily change it as we should not move twice in a turn.
+        currentUnit.hasMoved = true;
+        turnStateManager.ChangeState(TurnState.TurnStart);
+        //GetInRangeTiles(); // Refresh range tiles after movement   //possibily change it as we should not move twice in a turn.
     }
 
     private void PositionCharacterOnLine(OverlayTile newTile)
