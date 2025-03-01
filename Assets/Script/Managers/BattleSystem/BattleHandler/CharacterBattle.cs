@@ -14,6 +14,7 @@ public class CharacterBattle : MonoBehaviour
     private GameObject selectionCircle;
     private HealthSystem healthSystem;
     private HealthBar healthBar;
+    [SerializeField] int damage=10;
 
     private enum State
     {
@@ -112,7 +113,7 @@ public void HealthSystem_OnHealthChanged(object sender, EventArgs e)
         float slideDistance = Vector3.Distance(GetPosition(), targetPosition);
         Vector3 slideTargetPosition = GetPosition() + slideDirection * slideDistance;
 
-        targetCharacterBattle.Damage(10);
+        targetCharacterBattle.Damage(damage);
 
         Vector3 startingPosition = GetPosition();
 

@@ -2142,6 +2142,7 @@ GameObject:
   m_Component:
   - component: {fileID: 839183660}
   - component: {fileID: 839183661}
+  - component: {fileID: 839183662}
   m_Layer: 0
   m_Name: BattleHandler
   m_TagString: Untagged
@@ -2179,6 +2180,18 @@ MonoBehaviour:
   battleOverWindow: {fileID: 1471965404}
   attackCharacterBattle: {fileID: 0}
   targetCharacterBattle: {fileID: 0}
+--- !u!114 &839183662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839183659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81cc933493326b04fb35cf69560d0640, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &842386232
 GameObject:
   m_ObjectHideFlags: 0
@@ -8921,8 +8934,8 @@ Transform:
   - {fileID: 1747299870}
   - {fileID: 1190875573}
   - {fileID: 1878649295}
-  - {fileID: 1538757722}
   - {fileID: 839183660}
+  - {fileID: 1538757722}
   - {fileID: 1824528133}
   - {fileID: 583550733}
   - {fileID: 1832702931}
@@ -9254,6 +9267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 309249799c741e746a618bdd7751a244, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  battleHandler: {fileID: 0}
 --- !u!1001 &1941171348
 PrefabInstance:
   m_ObjectHideFlags: 0

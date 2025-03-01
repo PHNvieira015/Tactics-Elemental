@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class DamageSystem : MonoBehaviour
 {
+    public BattleHandler battleHandler; // Reference to BattleHandler for handling battle logic
+
     public void Attack(Unit attacker, Unit target)
     {
         if (!IsWithinAttackRange(attacker, target))
