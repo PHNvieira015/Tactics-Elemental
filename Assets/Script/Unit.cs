@@ -142,6 +142,9 @@ public class Unit : MonoBehaviour
         characterStats.currentHealth -= calculatedDamage;
 
         Debug.Log($"{gameObject.name} took {calculatedDamage} damage. Remaining HP: {characterStats.currentHealth}");
+        // Create damage popup above the unit
+        Vector3 popupPosition = transform.position + new Vector3(0, 1, 0); // Slightly above the unit
+        DamagePopup.Create(popupPosition, calculatedDamage);  //creating damage popup indevelopment
 
         if (characterStats.currentHealth <= 0)
         {
