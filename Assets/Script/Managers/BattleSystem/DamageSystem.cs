@@ -103,8 +103,8 @@ public void Attack(Unit attacker, Unit target)
         int resistance = Mathf.RoundToInt(target.characterStats.magicalDefense * 0.2f);
         baseDamage -= resistance;
 
-        battleHandler.attackerCharacterBattle = null;
-        battleHandler.targetCharacterBattle = null;
+        //battleHandler.attackerCharacterBattle = null;
+        //battleHandler.targetCharacterBattle = null;
 
         return Mathf.Max(baseDamage, 0);
     }

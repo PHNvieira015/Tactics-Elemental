@@ -8,8 +8,8 @@ public class CharacterBattle : MonoBehaviour
     private State state;
     private Vector3 slideTargetPosition;
     private Action onSlideComplete;
-    [SerializeField] float slideSpeed = 5f;
-    [SerializeField] float reachedDistance = 1f;
+    [SerializeField] float slideSpeed = 10f;
+    [SerializeField] float reachedDistance = 0.5f;
     private bool isPlayerTeam;
     private GameObject selectionCircle;
     private HealthSystem healthSystem;
@@ -187,4 +187,24 @@ public class CharacterBattle : MonoBehaviour
         Debug.Log($"{gameObject.name} has died.");
         gameObject.SetActive(false);
     }
+    public void TriggerAttackAnimation(CharacterBattle targetCharacterBattle)
+    {
+        // Calculate the target position and slide parameters
+        Vector3 targetPosition = targetCharacterBattle.GetPosition();
+        Vector3 slideDirection = (targetPosition - GetPosition()).normalized;
+        float slideDistance = Vector3.Distance(GetPosition(), targetPosition);
+        Vector3 slideTargetPosition = GetPosition() + slideDirection * slideDistance;
+        Vector3 startingPosition = GetPosition();
+
+        // Start sliding to the target position
+        SlideToPosition(slideTargetPosition, () =>
+        {
+            // When reached, slide back to starting position
+            SlideToPosition(startingPosition, () =>
+            {
+                state = State.Idle; // Reset state after sliding back
+            });
+        });
+    }
+
 }

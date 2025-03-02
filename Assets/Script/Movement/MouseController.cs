@@ -26,7 +26,7 @@ public class MouseController : MonoBehaviour
     public float Xposition;
     public float Yposition;
     public DamageSystem damageSystem;
-    public BattleHandler battleHan;
+    public BattleHandler battleHandler;
     //AttackRange
     public List<OverlayTile> attackRangeTiles; // Store attack range tiles
     public Color attackColor = Color.red;  // Red color for attack range
@@ -170,39 +170,49 @@ public class MouseController : MonoBehaviour
             #endregion
 
             #region attack indevelopment
-            // When the mouse button is clicked
             if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking)
             {
                 if (attackRangeTiles.Contains(tile))
                 {
-                    // Look for units at this position
-                    Unit targetUnit = tile.unitOnTile;  // Directly access the unit from the tile
-
+                    // Get the target unit from the tile
+                    Unit targetUnit = tile.unitOnTile;
                     Debug.Log($"Attempting to attack. Target unit found: {targetUnit != null}");
 
-                    // Check if there's a valid unit and it's not the current player unit
+                    // Ensure we have a valid target, not the current unit, and it hasn't already attacked
                     if (targetUnit != null && targetUnit != currentUnit && !currentUnit.hasAttacked)
                     {
                         Debug.Log($"Attack conditions met! Current unit: {currentUnit.name}, Target: {targetUnit.name}");
 
-                        // Optionally check if it's an enemy unit (if you have a player-owner system)
+                        // Optionally check if the target is an enemy (using playerOwner)
                         if (targetUnit.playerOwner != currentUnit.playerOwner)
                         {
-                            // Trigger the attack
-                            damageSystem.Attack(currentUnit, targetUnit);
-                            Debug.Log("Attack performed!");
+                            // Retrieve the CharacterBattle components from both units
+                            CharacterBattle attackerBattle = currentUnit.GetComponent<CharacterBattle>();
+                            CharacterBattle targetBattle = targetUnit.GetComponent<CharacterBattle>();
 
-                            // Clear attack range tiles after attack
-                            foreach (var rangeTile in attackRangeTiles)
+                            if (attackerBattle != null && targetBattle != null)
                             {
-                                rangeTile.HideTile();
+                                // Trigger only the attack animation
+                                attackerBattle.TriggerAttackAnimation(targetBattle);
+                                Debug.Log("Attack animation triggered!");
+
+                                // Damage part remains as it is (damageSystem.Attack is already working)
+                                damageSystem.Attack(currentUnit, targetUnit);
+
+                                // Mark the current unit as having attacked
+                                currentUnit.hasAttacked = true;
+
+                                // Clear the attack range tiles
+                                foreach (var rangeTile in attackRangeTiles)
+                                {
+                                    rangeTile.HideTile();
+                                }
+                                attackRangeTiles.Clear();
                             }
-
-                            // Mark the current unit as having attacked
-                            currentUnit.hasAttacked = true;
-
-                            // Clear the attack range tiles
-                            attackRangeTiles.Clear();
+                            else
+                            {
+                                Debug.LogWarning("CharacterBattle component not found on one of the units.");
+                            }
                         }
                         else
                         {
@@ -212,12 +222,13 @@ public class MouseController : MonoBehaviour
                     else
                     {
                         Debug.Log($"Attack conditions not met: " +
-                                  $"Has Unit: {targetUnit != null}, " +
-                                  $"Haven't Attacked: {!currentUnit.hasAttacked}");
+                                  $"Target exists: {targetUnit != null}, " +
+                                  $"Hasn't Attacked: {!currentUnit.hasAttacked}");
                     }
                 }
             }
             #endregion
+
 
         }
 

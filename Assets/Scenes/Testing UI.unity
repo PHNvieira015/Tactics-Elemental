@@ -1244,7 +1244,7 @@ MonoBehaviour:
   Xposition: 0
   Yposition: 0
   damageSystem: {fileID: 1878649296}
-  battleHan: {fileID: 0}
+  battleHandler: {fileID: 839183661}
   attackRangeTiles: []
   attackColor: {r: 1, g: 0, b: 0, a: 1}
   color: {r: 1, g: 1, b: 1, a: 1}
@@ -2150,7 +2150,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &839183660
 Transform:
   m_ObjectHideFlags: 0
