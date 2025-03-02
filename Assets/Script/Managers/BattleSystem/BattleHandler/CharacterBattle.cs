@@ -14,6 +14,8 @@ public class CharacterBattle : MonoBehaviour
     private GameObject selectionCircle;
     private HealthSystem healthSystem;
     private HealthBar healthBar;
+    //testing to make unit health decrease
+    public GameObject damageManager;
     public DamageSystem damageSystem;
 
     private enum State
@@ -25,6 +27,30 @@ public class CharacterBattle : MonoBehaviour
 
     private void Awake()
     {
+        #region testing to make unit health decrease
+        GameObject damageManager = GameObject.Find("DamageManager");
+
+        if (damageManager != null)
+        {
+            DamageSystem damageSystem = damageManager.GetComponent<DamageSystem>();
+
+            if (damageSystem != null)
+            {
+                // Successfully got the DamageSystem component
+                Debug.Log("DamageSystem component found!");
+            }
+            else
+            {
+                Debug.LogWarning("DamageSystem component not found on DamageManager.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("DamageManager GameObject not found.");
+        }
+#endregion
+
+        //damageSystem = GetComponent<DamageSystem>();
         unit = GetComponent<Unit>();
         characterStat = GetComponent<CharacterStat>();
         selectionCircle = transform.Find("SelectionCircle").gameObject;
@@ -112,7 +138,7 @@ public class CharacterBattle : MonoBehaviour
         if (this == null) return;
 
         healthSystem.Damage(damageAmount);
-        DamagePopup.Create(GetPosition(), damageAmount);
+        //DamagePopup.Create(GetPosition(), damageAmount);  //check because it changed nothing
         if (healthSystem.IsDead())
         {
             HandleDeath();

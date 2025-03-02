@@ -32,7 +32,7 @@ public class TurnStateManager : MonoBehaviour
     public GameObject ActionBar;
     public UI_ActionBar uiActionBar;  // Reference to UI_ActionBar script
     [SerializeField] public GameMaster gameMaster;  // Direct reference to GameMaster
-
+    public OverlayTile previousTile; // Store the tile before movement
     private void Awake()
     {
         // Optionally find GameMaster if not assigned in the inspector

@@ -7,7 +7,21 @@ public class DamageSystem : MonoBehaviour
     public BattleHandler battleHandler; // Reference to BattleHandler for handling battle logic
     public int baseDamage = 1;
 
-    public void Attack(Unit attacker, Unit target)
+    public static DamageSystem Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Prevent duplicate instances
+        }
+    }
+
+public void Attack(Unit attacker, Unit target)
     {
         battleHandler.attackerCharacterBattle = attacker.GetComponent<CharacterBattle>();
         battleHandler.targetCharacterBattle = target.GetComponent<CharacterBattle>();
