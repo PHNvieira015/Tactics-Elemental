@@ -16,6 +16,6 @@ MonoBehaviour:
   hasTooltip: 0
   tooltipName: 
   tooltipDescription: EnemyUnitonTile
-  type: 0
+  type: 3
   MoveCost: 1
   effect: {fileID: 0}

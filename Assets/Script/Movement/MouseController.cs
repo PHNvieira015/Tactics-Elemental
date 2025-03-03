@@ -27,6 +27,7 @@ public class MouseController : MonoBehaviour
     public float Yposition;
     public DamageSystem damageSystem;
     public BattleHandler battleHandler;
+    public UnitManager UnitManager;
     //AttackRange
     public List<OverlayTile> attackRangeTiles; // Store attack range tiles
     public Color attackColor = Color.red;  // Red color for attack range
@@ -100,9 +101,14 @@ public class MouseController : MonoBehaviour
             #region movement
             // Attempt to get the Unit component on the hit object
             Unit hitUnit = hit.Value.collider.gameObject.GetComponent<Unit>();
-            
+
+
+            //WIP getting the mouseouverunit to the UI
             if (hitUnit != null)
             {
+                UnitManager.SetSelectedUnit(hitUnit);
+
+
                 // Found a Unit; now notify the UI_Manager.
                 UI_Manager uiManager = FindObjectOfType<UI_Manager>();
                 Debug.Log("Unit name is" + hitUnit.name);
@@ -396,6 +402,4 @@ public class MouseController : MonoBehaviour
             }
         }
     }
-
-
 }

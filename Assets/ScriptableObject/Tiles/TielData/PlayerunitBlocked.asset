@@ -16,6 +16,6 @@ MonoBehaviour:
   hasTooltip: 0
   tooltipName: 
   tooltipDescription: PlayerUnitonTile
-  type: 0
+  type: 4
   MoveCost: 1
   effect: {fileID: 0}

@@ -18,6 +18,8 @@ public class SpawningManager : MonoBehaviour
     private GameObject unitPreview;  // Preview of the unit being placed
     [SerializeField] private GameObject EnemySpawnerTiles;
     [SerializeField] private GameObject PlayerSpawningTiles;
+    [SerializeField] private UnitManager unitManager;
+
 
     void Start()
     {
@@ -73,7 +75,6 @@ public class SpawningManager : MonoBehaviour
 
     private void OnStartButtonClicked()
     {
-        
         if (GameMaster.instance == null)
         {
             Debug.LogError("GameMaster instance is not available.");
@@ -110,6 +111,7 @@ public class SpawningManager : MonoBehaviour
             //place tile
             Destroy(PlayerSpawningTiles.gameObject);
             Destroy(EnemySpawnerTiles.gameObject);
+            unitManager.SetTurnOrderList();
         }
 
 

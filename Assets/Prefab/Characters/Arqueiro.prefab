@@ -13,6 +13,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: unitName
+      value: Arqueiro
+      objectReference: {fileID: 0}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: characterStats
       value: 
       objectReference: {fileID: 8029492332361214859}
@@ -31,15 +35,15 @@ PrefabInstance:
     - target: {fileID: 1870194359036316205, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: healthText
       value: 
-      objectReference: {fileID: 1842692176677294752}
+      objectReference: {fileID: 0}
     - target: {fileID: 1870194359036316205, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: ButtonUI_Heal
       value: 
-      objectReference: {fileID: 2233315752505500583}
+      objectReference: {fileID: 0}
     - target: {fileID: 1870194359036316205, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: ButtonUI_Reset
       value: 
-      objectReference: {fileID: 6688571667125704970}
+      objectReference: {fileID: 0}
     - target: {fileID: 1870194359036316205, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: HealthBarImage
       value: 
@@ -47,7 +51,7 @@ PrefabInstance:
     - target: {fileID: 1870194359036316205, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: ButtonUI_Damage
       value: 
-      objectReference: {fileID: 6340839507882125698}
+      objectReference: {fileID: 0}
     - target: {fileID: 2295914053566022050, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.529139
@@ -136,50 +140,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1842692176677294752 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 940967221578519855, guid: 626b73c273482804181fce84ca63c097, type: 3}
-  m_PrefabInstance: {fileID: 1485187829704460175}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2233315752505500583 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 748203018827818024, guid: 626b73c273482804181fce84ca63c097, type: 3}
-  m_PrefabInstance: {fileID: 1485187829704460175}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &6340839507882125698 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4855827738089958925, guid: 626b73c273482804181fce84ca63c097, type: 3}
-  m_PrefabInstance: {fileID: 1485187829704460175}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &6688571667125704970 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5210354741879611013, guid: 626b73c273482804181fce84ca63c097, type: 3}
-  m_PrefabInstance: {fileID: 1485187829704460175}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &8029492332361214859 stripped

@@ -11,6 +11,7 @@ using static TurnStateManager;
 public class Unit : MonoBehaviour
 {
     #region variables
+    public string unitName; // Name of the unit
     // Reference to CharacterStat MonoBehaviour for accessing stats and data
     public CharacterStat characterStats;  // Now a component of the same GameObject
     public TurnStateManager turnStateManager;  // Reference to TurnStateManager
@@ -33,7 +34,7 @@ public class Unit : MonoBehaviour
     public float Yposition;
     public BattleHandler battleHandler;
     public DamageSystem damageSystem;
-
+    [SerializeField] private SpriteRenderer unitSpriteRenderer;
     List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range
 
     private LevelSystem levelSystem;  //leveling system, stat growth
@@ -51,6 +52,10 @@ public class Unit : MonoBehaviour
     #region skills
     private void Awake()
     {
+        {
+            if (unitSpriteRenderer == null)
+                unitSpriteRenderer = transform.Find("UnitSprite")?.GetComponent<SpriteRenderer>();
+        }
         turnStateManager ??= FindObjectOfType<TurnStateManager>();
         characterStats = GetComponent<CharacterStat>();
         unitGameObject = gameObject;
@@ -321,5 +326,14 @@ public void ApplyBuff(Buff newBuff)
             }
         }
         return null;
+    }
+    // Helper property to access the sprite
+    public Sprite UnitSprite
+    {
+        get
+        {
+            var sr = transform.Find("UnitSprite")?.GetComponent<SpriteRenderer>();
+            return sr != null ? sr.sprite : null;
+        }
     }
 }
