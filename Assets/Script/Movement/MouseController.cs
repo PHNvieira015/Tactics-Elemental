@@ -193,14 +193,13 @@ public class MouseController : MonoBehaviour
                             if (attackerBattle != null && targetBattle != null)
                             {
                                 // Trigger only the attack animation
-                                attackerBattle.TriggerAttackAnimation(targetBattle);
+                                attackerBattle.TriggerAttackAnimationnearattacker(targetBattle);
                                 Debug.Log("Attack animation triggered!");
 
                                 // Damage part remains as it is (damageSystem.Attack is already working)
                                 damageSystem.Attack(currentUnit, targetUnit);
-
                                 // Mark the current unit as having attacked
-                                currentUnit.hasAttacked = true;
+                                //currentUnit.hasAttacked = true;  invedelopment  turn on after testing.
 
                                 // Clear the attack range tiles
                                 foreach (var rangeTile in attackRangeTiles)

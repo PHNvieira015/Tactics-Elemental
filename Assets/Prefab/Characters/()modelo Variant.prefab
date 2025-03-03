@@ -204,6 +204,8 @@ MonoBehaviour:
   standingOnTile: {fileID: 0}
   Xposition: 0
   Yposition: 0
+  battleHandler: {fileID: 0}
+  damageSystem: {fileID: 0}
   buffs: []
   debuffs: []
   abilities: []
@@ -235,6 +237,7 @@ MonoBehaviour:
   agility: 0
   intellect: 0
   PrimaryAttackType: 0
+  AttackRange: 0
   armorValue: 0
   physicalDefense: 0
   magicalDefense: 0
@@ -262,6 +265,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slideSpeed: 5
   reachedDistance: 1
+  damageManager: {fileID: 0}
+  damageSystem: {fileID: 0}
 --- !u!1 &2002893845217513422
 GameObject:
   m_ObjectHideFlags: 0
@@ -387,7 +392,7 @@ GameObject:
   - component: {fileID: 1104708409995229830}
   - component: {fileID: 4863774529889658577}
   m_Layer: 5
-  m_Name: HealthBar
+  m_Name: ()HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

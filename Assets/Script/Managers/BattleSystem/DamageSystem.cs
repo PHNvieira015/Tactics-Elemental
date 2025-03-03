@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class DamageSystem : MonoBehaviour
         }
     }
 
-public void Attack(Unit attacker, Unit target)
+    public void Attack(Unit attacker, Unit target)
     {
         battleHandler.attackerCharacterBattle = attacker.GetComponent<CharacterBattle>();
         battleHandler.targetCharacterBattle = target.GetComponent<CharacterBattle>();
@@ -41,6 +42,13 @@ public void Attack(Unit attacker, Unit target)
 
             Debug.Log($"{attacker.name} attacked {target.name} and dealt {damageDealt} damage!");
 
+            // Update the health bar after applying damage
+            CharacterBattle targetBattle = target.GetComponent<CharacterBattle>();
+            if (targetBattle != null)
+            {
+                targetBattle.HealthSystem_OnHealthChanged(targetBattle, EventArgs.Empty);
+            }
+
             if (!target.IsAlive())
             {
                 Debug.Log($"{target.name} has been defeated!");
@@ -52,6 +60,7 @@ public void Attack(Unit attacker, Unit target)
             }
         }
     }
+
 
     private bool IsWithinAttackRange(Unit attacker, Unit target)
     {
@@ -103,8 +112,8 @@ public void Attack(Unit attacker, Unit target)
         int resistance = Mathf.RoundToInt(target.characterStats.magicalDefense * 0.2f);
         baseDamage -= resistance;
 
-        //battleHandler.attackerCharacterBattle = null;
-        //battleHandler.targetCharacterBattle = null;
+        battleHandler.attackerCharacterBattle = null;
+        battleHandler.targetCharacterBattle = null;
 
         return Mathf.Max(baseDamage, 0);
     }

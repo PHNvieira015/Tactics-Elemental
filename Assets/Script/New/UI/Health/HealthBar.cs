@@ -46,7 +46,15 @@ public class HealthBar : MonoBehaviour
     // Method to update the health bar size based on normalized health value
     public void SetHealthBarSize(float healthNormalized)
     {
-        HealthBarImage.fillAmount = healthNormalized;  // Update the health bar's fill amount
+        if (HealthBarImage != null)
+        {
+            Debug.Log($"Setting health bar size to {healthNormalized}");
+            HealthBarImage.fillAmount = healthNormalized;
+        }
+        else
+        {
+            Debug.LogError("healthBarImage is missing on HealthBar!");
+        }
     }
 
     // Method to update the health text (current health / max health)

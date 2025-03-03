@@ -12,8 +12,8 @@ public class CharacterBattle : MonoBehaviour
     [SerializeField] float reachedDistance = 0.5f;
     private bool isPlayerTeam;
     private GameObject selectionCircle;
-    private HealthSystem healthSystem;
-    private HealthBar healthBar;
+    public HealthSystem healthSystem;
+    public HealthBar healthBar;
     //testing to make unit health decrease
     public GameObject damageManager;
     public DamageSystem damageSystem;
@@ -48,7 +48,7 @@ public class CharacterBattle : MonoBehaviour
         {
             Debug.LogWarning("DamageManager GameObject not found.");
         }
-#endregion
+        #endregion
 
         //damageSystem = GetComponent<DamageSystem>();
         unit = GetComponent<Unit>();
@@ -67,8 +67,15 @@ public class CharacterBattle : MonoBehaviour
         int maxHealth = characterStat.maxBaseHealth;
         healthSystem = new HealthSystem(initialHealth, maxHealth, characterStat);
 
-        healthBar = GetComponentInChildren<HealthBar>();
-        healthBar.SetupHealthSystem(healthSystem);
+        healthBar = GetComponentInChildren<HealthBar>(); // Ensure this is correctly assigned
+        if (healthBar != null)
+        {
+            healthBar.SetupHealthSystem(healthSystem);
+        }
+        else
+        {
+            Debug.LogError($"{gameObject.name} is missing a HealthBar component!");
+        }
 
         healthSystem.OnHealthChange += HealthSystem_OnHealthChanged;
     }
@@ -133,17 +140,37 @@ public class CharacterBattle : MonoBehaviour
         });
     }
 
-    public void Damage(int damageAmount)
+    public void UpdateHealthbar(int damageAmount)
     {
         if (this == null) return;
 
         healthSystem.Damage(damageAmount);
-        //DamagePopup.Create(GetPosition(), damageAmount);  //check because it changed nothing
+
+        // Immediately update health bar
+        HealthSystem_OnHealthChanged(this, EventArgs.Empty);
+
         if (healthSystem.IsDead())
         {
             HandleDeath();
         }
     }
+
+
+    public void Damage(int damageAmount)
+    {
+        if (this == null) return;
+
+        healthSystem.Damage(damageAmount);
+
+        // Immediately update health bar
+        HealthSystem_OnHealthChanged(this, EventArgs.Empty);
+
+        if (healthSystem.IsDead())
+        {
+            HandleDeath();
+        }
+    }
+
 
     public Vector3 GetPosition()
     {
@@ -187,7 +214,7 @@ public class CharacterBattle : MonoBehaviour
         Debug.Log($"{gameObject.name} has died.");
         gameObject.SetActive(false);
     }
-    public void TriggerAttackAnimation(CharacterBattle targetCharacterBattle)
+    public void TriggerAttackAnimationtothetarget(CharacterBattle targetCharacterBattle)
     {
         // Calculate the target position and slide parameters
         Vector3 targetPosition = targetCharacterBattle.GetPosition();
@@ -206,5 +233,28 @@ public class CharacterBattle : MonoBehaviour
             });
         });
     }
+    public void TriggerAttackAnimationnearattacker(CharacterBattle targetCharacterBattle)
+    {
+        // Calculate the target position and slide parameters
+        Vector3 targetPosition = targetCharacterBattle.GetPosition();
+        Vector3 slideDirection = (targetPosition - GetPosition()).normalized;
 
+        // Fixed movement distance (adjust this value)
+        float slideDistance = 1.5f;
+
+        Vector3 slideTargetPosition = GetPosition() + slideDirection * slideDistance;
+        Vector3 startingPosition = GetPosition();
+
+
+        // Start sliding to the target position
+        SlideToPosition(slideTargetPosition, () =>
+        {
+            // When reached, slide back to starting position
+            SlideToPosition(startingPosition, () =>
+            {
+                state = State.Idle; // Reset state after sliding back
+            });
+        });
+
+    }
 }

@@ -130,22 +130,26 @@ public class Unit : MonoBehaviour
         return isAlive && !isDown; // Unit is alive if isAlive is true and isDown is false
     }
 
-    public void TakeDamage(int damage, DamageSystem damageSystem)
+    public void TakeDamage(int damageAmount, DamageSystem damageSystem)
     {
-        if (damageSystem == null)
+        CharacterBattle characterBattle = GetComponent<CharacterBattle>();
+        if (characterBattle != null)
         {
-            Debug.LogError("DamageSystem is null! Ensure it is assigned before calling TakeDamage.");
-            return;
+            characterBattle.HealthSystem_OnHealthChanged(characterBattle, EventArgs.Empty);
         }
-        Debug.Log("possivel dano: " + damage);
-        int calculatedDamage = Mathf.Max(damage - Mitigation, 1);
-        characterStats.currentHealth -= calculatedDamage;
 
-        Debug.Log($"{gameObject.name} took {calculatedDamage} damage. Remaining HP: {characterStats.currentHealth}");
-        // Create damage popup above the unit
-        Vector3 popupPosition = transform.position + new Vector3(0, 1, 0); // Slightly above the unit
-        DamagePopup.Create(popupPosition, calculatedDamage);  //creating damage popup indevelopment
-
+        if (characterBattle.healthSystem != null)
+        {
+            characterBattle.healthSystem.Damage(damageAmount); // Properly update health via HealthSystem
+        }
+        else
+        {
+            Debug.LogError($"HealthSystem is missing on {gameObject.name}");
+        }
+        // damage popup
+        DamagePopup.Create(transform.position, damageAmount);
+        //  Update health bar after taking damage
+  
         if (characterStats.currentHealth <= 0)
         {
             isAlive = false;
