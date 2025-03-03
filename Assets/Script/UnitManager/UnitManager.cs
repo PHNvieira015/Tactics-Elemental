@@ -7,14 +7,20 @@ using UnityEngine.UI;
 public class UnitManager : MonoBehaviour
 {
     public List<Unit> turnOrderList;
-    private Unit activeUnit;
-    private Unit selectedUnit;
+    [SerializeField]private Unit selectedUnit;
     private GameMaster gameMaster;
-    private Unit mouseOverUnit;
 
     [Header("UI References")]
     [SerializeField] private Button[] unitButtons;
     [SerializeField] private float cameraMoveDuration = 0.2f;
+
+    [Header("Selected Unit UI")]
+    [SerializeField] private Image healthBarImage;
+    [SerializeField] private TMP_Text healthText_TMP;
+    [SerializeField] private Image manaBarImage;
+    [SerializeField] private TMP_Text manaText_TMP;
+    [SerializeField] private TMP_Text characterName_TMP;
+    [SerializeField] private TMP_Text LvL_NumberText_TMP;
 
     private void Awake()
     {
@@ -25,23 +31,68 @@ public class UnitManager : MonoBehaviour
     private void Start()
     {
         SetTurnOrderList();
+        InitializeUI();
     }
 
-    private void SetActiveUnit(Unit unit)
+    private void InitializeUI()
     {
-        activeUnit = unit;
-        Debug.Log("Active Unit set to: " + unit.name);
+        if (healthBarImage) healthBarImage.fillAmount = 1f;
+        if (manaBarImage) manaBarImage.fillAmount = 1f;
+        if (characterName_TMP) characterName_TMP.text = "";
+        if (LvL_NumberText_TMP) LvL_NumberText_TMP.text = "";
     }
 
     public void SetSelectedUnit(Unit unit)
     {
         selectedUnit = unit;
         Vector3 targetPosition = new Vector3(
-            selectedUnit.transform.position.x,
-            selectedUnit.transform.position.y,
+            unit.transform.position.x,
+            unit.transform.position.y,
             Camera.main.transform.position.z
         );
         Camera.main.transform.position = targetPosition;
+        UpdateSelectedUnitUI(unit);
+    }
+
+    private void UpdateSelectedUnitUI(Unit unit)
+    {
+        if (unit == null) return;
+
+        // Update character info
+        if (characterName_TMP) characterName_TMP.text = unit.characterStats.CharacterName;
+        if (LvL_NumberText_TMP) LvL_NumberText_TMP.text = unit.characterStats.CharacterLevel.ToString();
+
+        // Update health UI
+        UpdateHealthUI(unit.characterStats.currentHealth, unit.characterStats.maxBaseHealth);
+
+        // Update mana UI
+        UpdateManaUI(unit.characterStats.currentMana, unit.characterStats.maxMana);
+    }
+
+    private void UpdateHealthUI(float current, float max)
+    {
+        if (healthBarImage)
+        {
+            healthBarImage.fillAmount = current / max;
+        }
+
+        if (healthText_TMP)
+        {
+            healthText_TMP.text = $"{current}/{max}";
+        }
+    }
+
+    private void UpdateManaUI(float current, float max)
+    {
+        if (manaBarImage)
+        {
+            manaBarImage.fillAmount = current / max;
+        }
+
+        if (manaText_TMP)
+        {
+            manaText_TMP.text = $"{current}/{max}";
+        }
     }
 
     public void SetTurnOrderList()
@@ -73,27 +124,14 @@ public class UnitManager : MonoBehaviour
         Image icon = btn.GetComponent<Image>();
         if (icon != null)
         {
-            // Get the UnitSprite child
             Transform unitSpriteTransform = unit.transform.Find("UnitSprite");
             if (unitSpriteTransform != null && unitSpriteTransform.TryGetComponent<SpriteRenderer>(out var sr))
             {
-                SpriteRenderer spriteRenderer = unitSpriteTransform.GetComponent<SpriteRenderer>();
-                if (spriteRenderer != null)
-                {
-                    icon.sprite = spriteRenderer.sprite;
-                    icon.preserveAspect = true;
-                }
-                else
-                {
-                    Debug.LogWarning($"Unit {unit.name} has UnitSprite child but no SpriteRenderer");
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"Unit {unit.name} is missing UnitSprite child object");
+                icon.sprite = sr.sprite;
+                icon.preserveAspect = true;
             }
         }
-        // Set unit name text
+
         TMP_Text buttonText = btn.GetComponentInChildren<TMP_Text>();
         if (buttonText != null)
         {
@@ -110,17 +148,14 @@ public class UnitManager : MonoBehaviour
         {
             Unit unit = turnOrderList[unitIndex];
             SetSelectedUnit(unit);
-            Debug.Log($"Selected {unit.name} at position {unit.transform.position}");
         }
     }
-
 
     public void RemoveUnitFromTurnOrder(Unit unit)
     {
         if (turnOrderList.Remove(unit))
         {
             UpdateTurnOrderUI();
-            Debug.Log($"Removed {unit.name} from turn order");
         }
     }
 }

@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 482745956249446707, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: m_Maskable
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1329943020165565385, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_Sprite
       value: 

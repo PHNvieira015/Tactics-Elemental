@@ -31,6 +31,7 @@ public class MouseController : MonoBehaviour
     //AttackRange
     public List<OverlayTile> attackRangeTiles; // Store attack range tiles
     public Color attackColor = Color.red;  // Red color for attack range
+    public GameObject SelectedUnitInfo;
 
     public Vector3 TargetPosition { get; private set; } // Property to store the target position
     public Color color = Color.blue;  // Default color for the tiles (you can change this)
@@ -39,6 +40,7 @@ public class MouseController : MonoBehaviour
 
     void Start()
     {
+        //SelectedUnitInfo.SetActive(false);
         //Pathfinder
         pathFinder = new PathFinder();
         rangeFinder = new RangeFinder();
@@ -101,11 +103,12 @@ public class MouseController : MonoBehaviour
             #region movement
             // Attempt to get the Unit component on the hit object
             Unit hitUnit = hit.Value.collider.gameObject.GetComponent<Unit>();
-
+            Debug.Log("Unit name is" + hitUnit);
 
             //WIP getting the mouseouverunit to the UI
             if (hitUnit != null)
             {
+                SelectedUnitInfo.SetActive(true);
                 UnitManager.SetSelectedUnit(hitUnit);
 
 
@@ -115,6 +118,10 @@ public class MouseController : MonoBehaviour
                 if (uiManager != null)
                 {
                     uiManager.DisplayUnitInfo(hitUnit);
+                }
+                else
+                {
+                    SelectedUnitInfo.SetActive(false);
                 }
             }
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>();
