@@ -415,4 +415,19 @@ public class MouseController : MonoBehaviour
             }
         }
     }
+    public void ClearPathArrows()
+    {
+        foreach (var tile in path)
+        {
+            tile.SetSprite(ArrowDirection.None);
+        }
+        path.Clear();
+
+        // Also clear any range highlights
+        foreach (var tile in rangeFinderTiles)
+        {
+            tile.HideTile();
+        }
+        rangeFinderTiles.Clear();
+    }
 }

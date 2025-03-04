@@ -119,12 +119,22 @@ public class TurnStateManager : MonoBehaviour
                 break;
             #region TurnStart
             case TurnState.TurnStart:
+                // Clear existing path arrows first
+                if (mouseController != null)
+                {
+                    mouseController.ClearPathArrows();
+                }
+                else
+                {
+                    Debug.LogWarning("MouseController reference missing - arrows not cleared");
+                }
+
                 currentUnit.hasMoved = false;  // Reset movement status
                 EnableUI_Action();
                 currentUnit.GetTileUnderUnit();
-                Camera.main.transform.position = new Vector3(currentUnit.transform.position.x, currentUnit.transform.position.y, Camera.main.transform.position.z);
-                
-                //OverlayTile tileUnderUnit = currentUnit.TileUnderUnit();
+                Camera.main.transform.position = new Vector3(currentUnit.transform.position.x,
+                                                            currentUnit.transform.position.y,
+                                                            Camera.main.transform.position.z);
 
                 if (!turnStarted)
                 {
