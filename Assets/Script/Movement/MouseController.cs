@@ -89,6 +89,7 @@ public class MouseController : MonoBehaviour
             {
                 StartCoroutine(MoveAlongPathCoroutine());
                 currentUnit.hasMoved = true;
+
             }
             return; // Prevent further path recalculation if already moving
         }
@@ -276,6 +277,11 @@ public class MouseController : MonoBehaviour
 
             // After reaching the tile, position the character correctly on top of the tile
             PositionCharacterOnLine(tile);
+        }
+        // Clear arrow sprites after movement
+        foreach (var tile in path)
+        {
+            tile.SetSprite(ArrowDirection.None);
         }
 
         path.Clear();
