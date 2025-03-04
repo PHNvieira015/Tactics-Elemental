@@ -148,10 +148,6 @@ public class TurnStateManager : MonoBehaviour
 
                     turnStarted = true;
 
-                    // Call UpdateStandingOnTile at the start of the turn
-                    UpdateStandingOnTile();
-
-
                     //deactivating butons
                     if(currentUnit.hasMoved==true)
                     {
