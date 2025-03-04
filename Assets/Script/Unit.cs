@@ -77,6 +77,7 @@ public class Unit : MonoBehaviour
         attackRange += characterStats.AttackRange;
         battleHandler = GetComponent<BattleHandler>();
         damageSystem ??= FindObjectOfType<DamageSystem>();
+        characterStats.SetRoundInitiative();
     }
 
     private void UnitSkills_OnSkillUnlocked(object sender, UnitSkills.OnSkillUnlockedEventArgs e)

@@ -51,7 +51,8 @@ public class CharacterStat : MonoBehaviour
 
     // Movement stats (Editable)
     public int weight;
-    public int initiative;
+    public float initiative;
+    [HideInInspector] public float RoundInitiative;
     public float movementRange;
 
     // Character Stats
@@ -249,5 +250,13 @@ public class CharacterStat : MonoBehaviour
     {
         accessory2 = null;
         Debug.Log("Accessory 2 unequipped.");
+    }
+    public void SetRoundInitiative()
+    {
+        RoundInitiative = initiative;  // Set the RoundInitiative to initiative value.
+    }
+    public void EndTurnRoundInitiative()
+    {
+        RoundInitiative=RoundInitiative/100;  // Divide RountInitiative by 100
     }
 }

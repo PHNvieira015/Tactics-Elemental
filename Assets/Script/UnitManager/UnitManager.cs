@@ -42,6 +42,7 @@ public class UnitManager : MonoBehaviour
         if (LvL_NumberText_TMP) LvL_NumberText_TMP.text = "";
     }
 
+    #region TurnOrder/UnitSelection
     public void SetSelectedUnit(Unit unit)
     {
         selectedUnit = unit;
@@ -54,6 +55,29 @@ public class UnitManager : MonoBehaviour
         UpdateSelectedUnitUI(unit);
     }
 
+ 
+
+    public void SetTurnOrderList()
+    {
+        turnOrderList.Clear();
+        turnOrderList.AddRange(GameMaster.instance.playerList);
+        turnOrderList.AddRange(GameMaster.instance.spawnedUnits);
+        turnOrderList.Sort((x, y) => y.characterStats.RoundInitiative.CompareTo(x.characterStats.RoundInitiative));
+        UpdateTurnOrderUI();
+    }
+
+    public void RemoveUnitFromTurnOrder(Unit unit)
+    {
+        if (turnOrderList.Remove(unit))
+        {
+            UpdateTurnOrderUI();
+        }
+    }
+
+
+    #endregion
+
+    #region UI
     private void UpdateSelectedUnitUI(Unit unit)
     {
         if (unit == null) return;
@@ -94,16 +118,6 @@ public class UnitManager : MonoBehaviour
             manaText_TMP.text = $"{current}/{max}";
         }
     }
-
-    public void SetTurnOrderList()
-    {
-        turnOrderList.Clear();
-        turnOrderList.AddRange(GameMaster.instance.playerList);
-        turnOrderList.AddRange(GameMaster.instance.spawnedUnits);
-        turnOrderList.Sort((x, y) => y.characterStats.initiative.CompareTo(x.characterStats.initiative));
-        UpdateTurnOrderUI();
-    }
-
     void UpdateTurnOrderUI()
     {
         for (int i = 0; i < unitButtons.Length; i++)
@@ -150,12 +164,6 @@ public class UnitManager : MonoBehaviour
             SetSelectedUnit(unit);
         }
     }
+#endregion
 
-    public void RemoveUnitFromTurnOrder(Unit unit)
-    {
-        if (turnOrderList.Remove(unit))
-        {
-            UpdateTurnOrderUI();
-        }
-    }
 }

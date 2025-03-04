@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class TurnStateManager : MonoBehaviour
 {
+    #region Variables
+
     private bool turnStarted;
     [SerializeField] public MouseController mouseController; // Use MouseController instead of PathFinder
     [HideInInspector] public Vector3 TurnStartingPosition;
     private TurnStateManager turnStateManager;
+    [SerializeField] private UnitManager unitManager;
 
     public enum TurnState
     {
         None,
         TurnStart,
+        Spawning,
         Moving,
         Attacking,
         UsingSkill,
@@ -33,6 +37,7 @@ public class TurnStateManager : MonoBehaviour
     public UI_ActionBar uiActionBar;  // Reference to UI_ActionBar script
     [SerializeField] public GameMaster gameMaster;  // Direct reference to GameMaster
     public OverlayTile previousTile; // Store the tile before movement
+    #endregion
     private void Awake()
     {
         // Optionally find GameMaster if not assigned in the inspector
@@ -55,17 +60,19 @@ public class TurnStateManager : MonoBehaviour
             }
         }
     }
-
+    #region SetCurrentUnit
     public void SetCurrentUnit(Unit unit)
     {
+
         currentUnit = unit;
         currentUnitObject = unit.gameObject;
         currentTurnState = TurnState.Waiting; // Default state at turn start
-        //Debug.Log($"Current unit set to {currentUnit.name}");
+        Debug.Log($"Current unit set to {currentUnit.name}");
         // Trigger the UI update after setting the current unit
         OnTurnStateChanged?.Invoke(currentTurnState);
         //Debug.Log("UI update triggered");
     }
+    #endregion
 
     public void ChangeState(TurnState newState)
     {
@@ -107,6 +114,10 @@ public class TurnStateManager : MonoBehaviour
             case TurnState.None:
                 break;
 
+            case TurnState.Spawning:
+
+                break;
+            #region TurnStart
             case TurnState.TurnStart:
                 currentUnit.hasMoved = false;  // Reset movement status
                 EnableUI_Action();
@@ -152,8 +163,10 @@ public class TurnStateManager : MonoBehaviour
                     }
                 }
                 break;
+            #endregion
 
-  case TurnState.Moving:
+            #region Moving
+            case TurnState.Moving:
 
     OverlayTile previousTile = currentUnit.standingOnTile;  //old tile reference
     // Ensure that currentUnit's standingOnTile is updated when movement starts
@@ -185,8 +198,9 @@ public class TurnStateManager : MonoBehaviour
     uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
     //turnStateManager.ChangeState(TurnState.TurnStart);
     break;
+            #endregion
 
-
+            #region Attacking
             case TurnState.Attacking:
                 if (!currentUnit.hasAttacked)
                 {
@@ -206,9 +220,10 @@ public class TurnStateManager : MonoBehaviour
                     EnableUI_Action();
                 }
                 break;
+            #endregion
 
 
-
+            #region UsingSkill
             case TurnState.UsingSkill:
                 DisableUI_Action();
                 Debug.Log($"{currentUnit.name} is using a skill...");
@@ -216,22 +231,38 @@ public class TurnStateManager : MonoBehaviour
                 EnableUI_Action();
                 uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
                 break;
+            #endregion
 
+            #region Waiting
             case TurnState.Waiting:
                 DisableUI_Action();
                 Debug.Log($"{currentUnit.name} is waiting...");
                 currentUnit.SetFaceDirectionAtTurnEnd();
                 currentUnit.selected = false;
+                ChangeState(TurnState.EndTurn);
+                uiActionBar.GameObjectButton_move.SetActive(true); // Deactivate Move button
+                uiActionBar.GameObjectButton_attack.SetActive(true); // Deactivate Move button
+                uiActionBar.GameObjectButton_return.SetActive(false); // Activate Return button
+//                UpdateStandingOnTile();
                 break;
+            #endregion
 
+            #region endTurn
             case TurnState.EndTurn:
                 Debug.Log($"Turn ended for {currentUnit.name}.");
                 turnStarted = false;
                 currentUnit.hasMoved = false;  // Reset movement status
                 currentUnit.hasAttacked = false;  // Reset attack status
+                currentUnit.characterStats.EndTurnRoundInitiative();
+                
+
                 if (currentUnit.standingOnTile != null)
                 {
-                    currentUnit.standingOnTile.unitOnTile = null; // Assuming there's a unit reference on the tile
+                    if (currentUnit.standingOnTile.unitOnTile == currentUnit)
+                    {
+                        Debug.Log($"Clearing unitOnTile for {currentUnit.name} on {currentUnit.standingOnTile}");
+                        currentUnit.standingOnTile.unitOnTile = null;
+                    }
                 }
                 if (gameMaster != null)
                 {
@@ -241,14 +272,23 @@ public class TurnStateManager : MonoBehaviour
                 {
                     Debug.LogError("GameMaster is not assigned!");
                 }
+                unitManager.SetTurnOrderList();
+                if (unitManager.turnOrderList.Count > 0)
+                {
+                    SetCurrentUnit(unitManager.turnOrderList[0]);
+                }
+                ChangeState(TurnState.TurnStart); // Start the new turn
                 break;
 
             default:
                 Debug.LogWarning($"Unhandled turn state: {state}");
                 break;
         }
+#endregion
     }
 
+
+    #region StandingOnTile
     // The method to update standingOnTile
     private void UpdateStandingOnTile()
     {
@@ -282,7 +322,9 @@ public class TurnStateManager : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region UI actionBar
     private void DisableUI_Action()
     {
         // Assuming UI_ActionBar is the GameObject, not the script itself
@@ -308,5 +350,5 @@ public class TurnStateManager : MonoBehaviour
             Debug.LogError("UI_ActionBar is not assigned!");
         }
     }
-
+    #endregion
 }
