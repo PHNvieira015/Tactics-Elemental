@@ -239,7 +239,6 @@ public class TurnStateManager : MonoBehaviour
                 uiActionBar.GameObjectButton_move.SetActive(true); // Deactivate Move button
                 uiActionBar.GameObjectButton_attack.SetActive(true); // Deactivate Move button
                 uiActionBar.GameObjectButton_return.SetActive(false); // Activate Return button
-//                UpdateStandingOnTile();
                 break;
             #endregion
 
@@ -252,14 +251,14 @@ public class TurnStateManager : MonoBehaviour
                 currentUnit.characterStats.EndTurnRoundInitiative();
                 
 
-                if (currentUnit.standingOnTile != null)
-                {
-                    if (currentUnit.standingOnTile.unitOnTile == currentUnit)
-                    {
-                        Debug.Log($"Clearing unitOnTile for {currentUnit.name} on {currentUnit.standingOnTile}");
-                        currentUnit.standingOnTile.unitOnTile = null;
-                    }
-                }
+                //if (currentUnit.standingOnTile != null)
+                //{
+                //    if (currentUnit.standingOnTile.unitOnTile == currentUnit)
+                //    {
+                //        Debug.Log($"Clearing unitOnTile for {currentUnit.name} on {currentUnit.standingOnTile}");
+                //        currentUnit.standingOnTile.unitOnTile = null;
+                //    }
+                //}
                 if (gameMaster != null)
                 {
                     gameMaster.HandleEndOfRound();  // Handle end-of-round in GameMaster
