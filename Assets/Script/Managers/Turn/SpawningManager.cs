@@ -145,7 +145,8 @@ public class SpawningManager : MonoBehaviour
         if (unit.standingOnTile != null)
         {
             // Block the tile and assign the activeCharacter reference.
-            unit.standingOnTile = unit.GetTileUnderUnit(); // Set the standingOnTile broke the traversable stuff indevelopment
+            unit.standingOnTile = unit.GetTileUnderUnit(); // Set the standingOnTile broke the
+                                                           // stuff indevelopment
             unit.standingOnTile.isBlocked = true;
             unit.standingOnTile.activeCharacter = unit;
             unit.standingOnTile.unitOnTile = unit; // Set the unitOnTile during spawn

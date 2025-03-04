@@ -11,7 +11,6 @@ namespace TacticsToolkit
 
         public OverlayTile overlayTilePrefab;
         public GameObject overlayContainer;
-        public TileDataRuntimeSet tileTypeList;
         public Dictionary<Vector2Int, OverlayTile> map;
         public Dictionary<TileBase, TileData> dataFromTiles = new Dictionary<TileBase, TileData>();
         [SerializeField] private int ZHeigh;
@@ -27,7 +26,6 @@ namespace TacticsToolkit
 
         public void Awake()
         {
-
             if (_instance != null && _instance != this)
             {
                 Destroy(this.gameObject);
@@ -42,16 +40,8 @@ namespace TacticsToolkit
 
         public virtual void SetMap()
         {
-            if (tileTypeList)
-            {
-                foreach (var tileData in tileTypeList.items)
-                {
-                    foreach (var item in tileData.baseTiles)
-                    {
-                        dataFromTiles.Add(item, tileData);
-                    }
-                }
-            }
+            // Initialize dataFromTiles if needed (e.g., from a configuration file or manually in the Inspector)
+            // Example: dataFromTiles.Add(someTileBase, new TileData { MoveCost = 1, type = TileTypes.Traversable, isTraversable = false });
 
             tilemap = gameObject.GetComponentInChildren<Tilemap>();
             map = new Dictionary<Vector2Int, OverlayTile>();
@@ -59,7 +49,7 @@ namespace TacticsToolkit
 
             mapBounds = new MapBounds(bounds.xMax, bounds.yMax, bounds.xMin, bounds.yMin);
 
-            //loop through the tilemap and create all the overlay tiles
+            // Loop through the tilemap and create all the overlay tiles
             for (int z = bounds.max.z; z > bounds.min.z; z--)
             {
                 for (int y = bounds.min.y; y < bounds.max.y; y++)
@@ -73,15 +63,21 @@ namespace TacticsToolkit
                             var overlayTile = Instantiate(overlayTilePrefab, overlayContainer.transform);
                             var cellWorldPosition = tilemap.GetCellCenterWorld(tileLocation);
                             var baseTile = tilemap.GetTile(tileLocation);
-                            overlayTile.transform.position = new Vector3(cellWorldPosition.x, cellWorldPosition.y, cellWorldPosition.z +ZHeigh);// was -4 , but had issues with World Canvas and this Z axis so changed to +10, solved
+                            overlayTile.transform.position = new Vector3(cellWorldPosition.x, cellWorldPosition.y, cellWorldPosition.z + ZHeigh);
                             overlayTile.GetComponent<SpriteRenderer>().sortingOrder = tilemap.GetComponent<TilemapRenderer>().sortingOrder;
                             overlayTile.gridLocation = tileLocation;
 
+                            // Assign TileData if it exists in the dictionary
                             if (dataFromTiles.ContainsKey(baseTile))
                             {
                                 overlayTile.tileData = dataFromTiles[baseTile];
-                                if (dataFromTiles[baseTile].type == TileTypes.NonTraversable)
-                                    overlayTile.isBlocked = true;
+                                overlayTile.isBlocked = !overlayTile.tileData.isTraversable; // Set isBlocked based on isTraversable
+                            }
+                            else
+                            {
+                                // Assign default TileData if no specific data is found
+                                overlayTile.tileData = new TileData { MoveCost = 1, type = TileTypes.Traversable, isTraversable = true };
+                                overlayTile.isBlocked = false; // Default to traversable
                             }
 
                             map.Add(tileKey, overlayTile);
@@ -96,7 +92,7 @@ namespace TacticsToolkit
             this.activeCharacter = activeCharacter.GetComponent<Unit>();
         }
 
-        //Get all tiles next to a tile
+        // Get all tiles next to a tile
         public List<OverlayTile> GetNeighbourTiles(OverlayTile currentOverlayTile, List<OverlayTile> searchableTiles, bool ignoreObstacles = false, bool walkThroughAllies = true, int remainingRange = 10)
         {
             Dictionary<Vector2Int, OverlayTile> tileToSearch = new Dictionary<Vector2Int, OverlayTile>();
@@ -126,16 +122,14 @@ namespace TacticsToolkit
             return neighbours;
         }
 
-        //Check the neighbouring tile is valid.
         private static void ValidateNeighbour(OverlayTile currentOverlayTile, bool ignoreObstacles, bool walkThroughAllies, Dictionary<Vector2Int, OverlayTile> tilesToSearch, List<OverlayTile> neighbours, Vector2Int locationToCheck, int remainingRange)
         {
-
             bool canAccessLocation = false;
 
             if (tilesToSearch.ContainsKey(locationToCheck))
             {
                 OverlayTile tile = tilesToSearch[locationToCheck];
-                bool isBlocked = tile.isBlocked;
+                bool isBlocked = tile.isBlocked || !tile.IsTraversable; // Check both isBlocked and IsTraversable
                 bool isActiveCharacter = tile.activeCharacter != null && Instance.activeCharacter != null;
                 bool isSameTeam = isActiveCharacter && tile.activeCharacter.teamID == Instance.activeCharacter.teamID;
                 bool canWalkThroughAllies = walkThroughAllies && isSameTeam;
@@ -150,13 +144,11 @@ namespace TacticsToolkit
 
                 if (canAccessLocation)
                 {
-                    //artificial jump height. 
+                    // Artificial jump height.
                     if (Mathf.Abs(currentOverlayTile.gridLocation.z - tile.gridLocation.z) <= 1)
                         neighbours.Add(tilesToSearch[locationToCheck]);
                 }
             }
-
-
         }
 
         private IEnumerable<Vector2Int> GetDirections()
@@ -167,7 +159,7 @@ namespace TacticsToolkit
             yield return Vector2Int.left;
         }
 
-        //Hide all overlayTiles currently being shown.
+        // Hide all overlayTiles currently being shown.
         public void ClearTiles()
         {
             foreach (var item in map.Values)
@@ -176,7 +168,7 @@ namespace TacticsToolkit
             }
         }
 
-        //Get a tile by world position. 
+        // Get a tile by world position.
         public OverlayTile GetOverlayByTransform(Vector3 position)
         {
             var gridLocation = tilemap.WorldToCell(position);
@@ -186,7 +178,7 @@ namespace TacticsToolkit
             return null;
         }
 
-        //Get list of overlay tiles by grid positions. 
+        // Get list of overlay tiles by grid positions.
         public List<OverlayTile> GetOverlayTilesFromGridPositions(List<Vector2Int> positions)
         {
             List<OverlayTile> overlayTiles = new List<OverlayTile>();
@@ -199,7 +191,7 @@ namespace TacticsToolkit
             return overlayTiles;
         }
 
-        //Get overlay tile by grid position. 
+        // Get overlay tile by grid position.
         public OverlayTile GetOverlayTileFromGridPosition(Vector2Int position) => map[position];
     }
 

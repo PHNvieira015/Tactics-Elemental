@@ -8720,6 +8720,22 @@ PrefabInstance:
       propertyPath: arrows.Array.data[12]
       value: 
       objectReference: {fileID: 618819722, guid: 9acdc735d8e1b9f4c99856311928bfbc, type: 3}
+    - target: {fileID: 8598854086734225427, guid: 4d2d6cc526d4f6441a6923f5784b2785, type: 3}
+      propertyPath: tileData.baseTiles.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8598854086734225427, guid: 4d2d6cc526d4f6441a6923f5784b2785, type: 3}
+      propertyPath: tileData.baseTiles.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: bedacd96a2760044bb1c1576b96a63ce, type: 2}
+    - target: {fileID: 8598854086734225427, guid: 4d2d6cc526d4f6441a6923f5784b2785, type: 3}
+      propertyPath: tileData.baseTiles.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 184e7162f6894ff419f87bbb626be0cd, type: 2}
+    - target: {fileID: 8598854086734225427, guid: 4d2d6cc526d4f6441a6923f5784b2785, type: 3}
+      propertyPath: tileData.baseTiles.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 184e7162f6894ff419f87bbb626be0cd, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -11477,7 +11493,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlayTilePrefab: {fileID: 1711956746}
   overlayContainer: {fileID: 1348217444}
-  tileTypeList: {fileID: 11400000, guid: 1a6dfefa368ec6b4294d4aac73da948c, type: 2}
   ZHeigh: 4
   tilemap: {fileID: 976605034}
 --- !u!1 &1626684102

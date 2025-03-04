@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using static ArrowTranslator;
 
@@ -14,7 +13,7 @@ public class OverlayTile : MonoBehaviour
     public bool isLocked = false;
     public Unit activeCharacter;
     public Unit unitOnTile;
-    public TileData tileData;
+    [SerializeField] public TileData tileData = new TileData(); // Instantiate TileData as a regular class
     public int MoveCost => tileData != null ? tileData.MoveCost : 1;
 
     public OverlayTile Previous;
@@ -22,6 +21,9 @@ public class OverlayTile : MonoBehaviour
     public Vector2Int grid2DLocation { get { return new Vector2Int(gridLocation.x, gridLocation.y); } }
 
     public List<Sprite> arrows;
+
+    public bool IsTraversable => tileData != null ? tileData.isTraversable : true; // Default to true if no TileData
+
 
     private void Update()
     {
@@ -47,7 +49,6 @@ public class OverlayTile : MonoBehaviour
 
     public void HideTile()
     {
-        // Make sure tileData is not null and then check its type property
         if (tileData != null && tileData.type != TileTypes.Spawner)
         {
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
@@ -100,21 +101,21 @@ public class OverlayTile : MonoBehaviour
 
     public Unit GetUnit()
     {
-        //return FindObjectsOfType<Unit>().FirstOrDefault(unit => unit.standingOnTile == this);  //changed nothing (same as under appareantly)
-        return FindObjectsOfType<Unit>().FirstOrDefault(unit => unit.standingOnTile);
+        return FindObjectsOfType<Unit>().FirstOrDefault(unit => unit.standingOnTile == this);
     }
 
     public void SetUnit(Unit unit)
     {
-        if (unit == null) return; // Prevent null references
+        if (unit == null) return;
 
+        // Create a new TileData instance if none exists
         if (tileData == null)
         {
-            tileData = ScriptableObject.CreateInstance<TileData>();
+            tileData = new TileData(); // Regular class instantiation
         }
 
         unitOnTile = unit;
-        unit.standingOnTile = this; // Ensure unit knows the tile it's standing on
+        unit.standingOnTile = this;
 
         if (unit.teamID == 1 && tileData.type != TileTypes.Spawner)
         {
@@ -124,8 +125,6 @@ public class OverlayTile : MonoBehaviour
         {
             tileData.type = TileTypes.EnemyUnitBlocked;
         }
-
-        //Debug.Log($"Unit {unit.name} is now on tile {grid2DLocation}.");
     }
 
     public void ClearUnit()

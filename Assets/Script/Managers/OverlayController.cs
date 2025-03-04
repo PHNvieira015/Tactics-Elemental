@@ -1,15 +1,13 @@
 using System.Collections.Generic;
 using TacticsToolkit;
 using UnityEngine;
-using static OverlayTile;
 
-// Handles the coloring of tiles. 
 public class OverlayController : MonoBehaviour
 {
     private static OverlayController _instance;
     public static OverlayController Instance { get { return _instance; } }
 
-    public Dictionary<Color, List<OverlayTile>> coloredTiles;
+    public Dictionary<Color, HashSet<OverlayTile>> coloredTiles; // Use HashSet to avoid duplicates
     public GameConfig gameConfig;
 
     // Colors to be used for specific purposes
@@ -35,13 +33,13 @@ public class OverlayController : MonoBehaviour
             _instance = this;
         }
 
-        coloredTiles = new Dictionary<Color, List<OverlayTile>>();
+        coloredTiles = new Dictionary<Color, HashSet<OverlayTile>>();
         MoveRangeColor = gameConfig.MoveRangeColor;
         AttackRangeColor = gameConfig.AttackRangeColor;
         BlockedTileColor = gameConfig.BlockedTileColor;
     }
 
-    // Remove colours from all tiles
+    // Remove colors from all tiles
     public void ClearTiles(Color? color = null)
     {
         if (color.HasValue)
@@ -49,70 +47,73 @@ public class OverlayController : MonoBehaviour
             if (coloredTiles.ContainsKey(color.Value))
             {
                 var tiles = coloredTiles[color.Value];
-                coloredTiles.Remove(color.Value);
-                foreach (var coloredTile in tiles)
+                foreach (var tile in tiles)
                 {
-                    coloredTile.HideTile();
-
-                    foreach (var usedColors in coloredTiles.Keys)
-                    {
-                        foreach (var usedTile in coloredTiles[usedColors])
-                        {
-                            if (coloredTile.grid2DLocation == usedTile.grid2DLocation)
-                            {
-                                coloredTile.ShowTile(usedColors);
-                            }
-                        }
-                    }
+                    tile.HideTile();
                 }
+                coloredTiles.Remove(color.Value);
             }
         }
         else
         {
-            foreach (var item in coloredTiles.Keys)
+            foreach (var tiles in coloredTiles.Values)
             {
-                foreach (var colouredTile in coloredTiles[item])
+                foreach (var tile in tiles)
                 {
-                    colouredTile.HideTile();
+                    tile.HideTile();
                 }
             }
-
             coloredTiles.Clear();
         }
     }
 
-    // Color tiles to specific color and type
+    // Color tiles to a specific color and type
     public void ColorTiles(Color color, List<OverlayTile> overlayTiles, TileType type = TileType.Movement)
     {
-        ClearTiles(color);  // Clear existing tile colors
+        if (overlayTiles == null || overlayTiles.Count == 0) return;
+
+        ClearTiles(color);  // Clear existing tile colors for this color
+
+        var tileSet = new HashSet<OverlayTile>(); // Use HashSet to avoid duplicates
+
         foreach (var tile in overlayTiles)
         {
-            tile.ShowTile(color, type);  // Pass the color and type
+            if (tile == null) continue;
 
             if (tile.isBlocked)
             {
                 tile.ShowTile(BlockedTileColor, TileType.Blocked);  // Override color for blocked tiles
             }
+            else
+            {
+                tile.ShowTile(color, type);  // Pass the color and type
+            }
+
+            tileSet.Add(tile); // Add to the HashSet
         }
 
-        coloredTiles.Add(color, overlayTiles);
+        coloredTiles[color] = tileSet; // Update the dictionary
     }
 
     // Color only one tile
     public void ColorSingleTile(Color color, OverlayTile tile, TileType type = TileType.Movement)
     {
-        tile.ShowTile(color, type);  // Pass the color and type (defaults to TileType.Movement)
+        if (tile == null) return;
 
         if (tile.isBlocked)
         {
             tile.ShowTile(BlockedTileColor, TileType.Blocked);  // Override color for blocked tiles
         }
-
-        var list = new List<OverlayTile> { tile };
+        else
+        {
+            tile.ShowTile(color, type);  // Pass the color and type
+        }
 
         if (!coloredTiles.ContainsKey(color))
-            coloredTiles.Add(color, list);
-        else
-            coloredTiles[color].AddRange(list);
+        {
+            coloredTiles[color] = new HashSet<OverlayTile>();
+        }
+
+        coloredTiles[color].Add(tile); // Add to the HashSet
     }
 }
