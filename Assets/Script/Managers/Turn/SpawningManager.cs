@@ -20,7 +20,6 @@ public class SpawningManager : MonoBehaviour
     [SerializeField] private GameObject PlayerSpawningTiles;
     [SerializeField] private UnitManager unitManager;
 
-
     void Start()
     {
         playedUnits = new List<Unit>();
@@ -38,7 +37,6 @@ public class SpawningManager : MonoBehaviour
             {
                 enemyList = new List<Unit>(enemyList);
             }
-
         }
         else
         {
@@ -86,10 +84,10 @@ public class SpawningManager : MonoBehaviour
             Debug.LogError("No units to spawn, spawn units to continue.");
             return;
         }
+
         // Assign player units to GameMaster
         GameMaster.instance.playerList = new List<Unit>(playedUnits);
         enemyList = new List<Unit>(GameMaster.instance.spawnedUnits);
-        //Debug.Log("Player units assigned to GameMaster.");
 
         // Transfer enemy units to main grid tiles BEFORE destroying spawning tiles
         foreach (Unit enemy in enemyList)
@@ -97,74 +95,54 @@ public class SpawningManager : MonoBehaviour
             // Find the main grid tile under the enemy's position
             RaycastHit2D[] hits = Physics2D.RaycastAll(enemy.transform.position, Vector2.zero);
             OverlayTile mainGridTile = hits
-            .Select(hit => hit.collider.GetComponent<OverlayTile>())
+                .OrderByDescending(hit => hit.collider.transform.position.z) // Sort by Z-axis
+                .Select(hit => hit.collider.GetComponent<OverlayTile>())
+                .FirstOrDefault(tile => tile != null && tile.tileData != null && tile.tileData.type != TileTypes.Spawner);
 
-            //.FirstOrDefault(tile => tile != null && tile.GetComponent<SpawningTile>() == null); // Exclude spawning tiles for allied units
-            .FirstOrDefault(tile => tile != null && tile.tileData != null && tile.tileData.type != TileTypes.Spawner);
-
-
-
-
-            GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
-
-            startButton.gameObject.SetActive(false);
-            //place tile
-            Destroy(PlayerSpawningTiles.gameObject);
-            Destroy(EnemySpawnerTiles.gameObject);
-            unitManager.SetTurnOrderList();
+            if (mainGridTile != null)
+            {
+                enemy.standingOnTile = mainGridTile;
+                mainGridTile.isBlocked = true;
+                mainGridTile.unitOnTile = enemy;
+            }
         }
 
+        GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
 
-        // let's try to set the spawn
+        startButton.gameObject.SetActive(false);
+        Destroy(PlayerSpawningTiles.gameObject);
+        Destroy(EnemySpawnerTiles.gameObject);
+        unitManager.SetTurnOrderList();
+
+        // Set the standingOnTile for all units
         foreach (Unit unit in enemyList)
         {
             SetStandingOnTile(unit);
-            //unit.standingOnTile
-
-            //Debug.Log("aqui2");
-            if (unit.standingOnTile != null)
-            {
-                //Debug.Log($"Enemy {unit.name} is now on tile {unit.standingOnTile.name}.");
-
-            }
-            else
-            {
-                //Debug.LogWarning($"Enemy {unit.name} does not have a standingOnTile assigned!");
-            }
         }
 
         foreach (Unit unit in playedUnits)
         {
             SetStandingOnTile(unit);
         }
-
     }
 
     private void SetStandingOnTile(Unit unit)
     {
-        if (unit.standingOnTile != null)
-        {
-            // Block the tile and assign the activeCharacter reference.
-            unit.standingOnTile = unit.GetTileUnderUnit(); // Set the standingOnTile broke the traversable stuff indevelopment
-            unit.standingOnTile.isBlocked = true;
-            unit.standingOnTile.activeCharacter = unit;
-            unit.standingOnTile.unitOnTile = unit; // Set the unitOnTile during spawn
+        // Find the topmost tile under the unit's position
+        RaycastHit2D[] hits = Physics2D.RaycastAll(unit.transform.position, Vector2.zero);
+        OverlayTile topTile = hits
+            .OrderByDescending(hit => hit.collider.transform.position.z) // Sort by Z-axis
+            .Select(hit => hit.collider.GetComponent<OverlayTile>())
+            .FirstOrDefault(tile => tile != null);
 
-            // Also set the tile beneath (if exists)
-            Collider2D[] colliders = Physics2D.OverlapPointAll(unit.standingOnTile.transform.position);
-            foreach (var col in colliders)
-            {
-                OverlayTile underlyingTile = col.GetComponent<OverlayTile>();
-                if (underlyingTile != null && underlyingTile != unit.standingOnTile)
-                {
-                    underlyingTile.isBlocked = true;
-                    underlyingTile.unitOnTile = unit;
-                }
-            }
+        if (topTile != null)
+        {
+            unit.standingOnTile = topTile;
+            topTile.isBlocked = true;
+            topTile.unitOnTile = unit;
         }
         else
         {
-            unit.standingOnTile = unit.GetTileUnderUnit();
             Debug.LogWarning($"Unit {unit.name} does not have a standingOnTile assigned!");
         }
     }
@@ -180,20 +158,24 @@ public class SpawningManager : MonoBehaviour
             #region Spawning Logic for Mouse
             if (tile != null && tile.GetComponent<SpawningTile>() != null && !tile.GetComponent<SpawningTile>().IsOccupied)
             {
-                tile.ShowTile(spawnTileColor, TileType.Spawn);
+                // Only highlight the topmost tile
+                if (IsTopTile(tile))
+                {
+                    tile.ShowTile(spawnTileColor, TileType.Spawn);
 
-                if (unitPreview == null && playerAvailableUnits.Count > 0)
-                {
-                    Unit selectedUnit = playerAvailableUnits[0];
-                    unitPreview = Instantiate(selectedUnit.gameObject);
-                    unitPreview.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
-                    unitPreview.transform.position = tile.transform.position;
-                    unitPreview.SetActive(true);
-                }
-                else if (unitPreview != null)
-                {
-                    unitPreview.transform.position = tile.transform.position;
-                    unitPreview.SetActive(true);
+                    if (unitPreview == null && playerAvailableUnits.Count > 0)
+                    {
+                        Unit selectedUnit = playerAvailableUnits[0];
+                        unitPreview = Instantiate(selectedUnit.gameObject);
+                        unitPreview.GetComponent<SpriteRenderer>().sortingOrder = tile.GetComponent<SpriteRenderer>().sortingOrder;
+                        unitPreview.transform.position = tile.transform.position;
+                        unitPreview.SetActive(true);
+                    }
+                    else if (unitPreview != null)
+                    {
+                        unitPreview.transform.position = tile.transform.position;
+                        unitPreview.SetActive(true);
+                    }
                 }
             }
             else if (unitPreview != null)
@@ -201,7 +183,7 @@ public class SpawningManager : MonoBehaviour
                 unitPreview.SetActive(false);
             }
 
-            if (Input.GetMouseButtonDown(0) && tile.GetComponent<SpawningTile>() != null)
+            if (Input.GetMouseButtonDown(0) && tile.GetComponent<SpawningTile>() != null && IsTopTile(tile))
             {
                 SpawnUnitOnTile(tile);
             }
@@ -284,6 +266,25 @@ public class SpawningManager : MonoBehaviour
             unitPreview.SetActive(false);
             Destroy(unitPreview);
         }
+    }
+
+    private bool IsTopTile(OverlayTile tile)
+    {
+        Vector2 tilePosition = tile.transform.position;
+        RaycastHit2D[] hits = Physics2D.RaycastAll(tilePosition, Vector2.zero);
+
+        if (hits.Length > 0)
+        {
+            // Find the topmost tile
+            OverlayTile topTile = hits
+                .OrderByDescending(hit => hit.collider.transform.position.z) // Sort by Z-axis
+                .Select(hit => hit.collider.GetComponent<OverlayTile>())
+                .FirstOrDefault(t => t != null);
+
+            return topTile == tile;
+        }
+
+        return false;
     }
 
     private static RaycastHit2D? GetFocusedOnTile()

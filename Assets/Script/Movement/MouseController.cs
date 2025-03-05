@@ -276,37 +276,29 @@ public class MouseController : MonoBehaviour
 
     private void PositionCharacterOnLine(OverlayTile newTile)
     {
-        // Free the previous tile (if any) before moving
         if (currentUnit.standingOnTile != null && currentUnit.standingOnTile != newTile)
         {
             currentUnit.standingOnTile.isBlocked = false;
             currentUnit.standingOnTile.activeCharacter = null;
-            currentUnit.standingOnTile.ClearUnit();  // <---- This method resets the tile data.
+            currentUnit.standingOnTile.ClearUnit();
         }
 
-        // Snap the unit to the new tile's position (with a slight Y adjustment)
         currentUnit.transform.position = new Vector3(
             newTile.transform.position.x,
-            newTile.transform.position.y + 0.0001f,0  // Slight Y offset
+            newTile.transform.position.y + 0.0001f,
+            0
         );
 
-        // Update the sorting order based on the new tile
         currentUnit.GetComponent<SpriteRenderer>().sortingOrder = newTile.GetComponent<SpriteRenderer>().sortingOrder;
-
-        // Set the new tile as the unit's current tile
         currentUnit.standingOnTile = newTile;
-
-        // Mark the new tile as occupied by the unit
         newTile.isBlocked = true;
         newTile.activeCharacter = currentUnit;
         newTile.unitOnTile = currentUnit;
-        //Debug.Log($"{currentUnit.name} is now standing on tile: {newTile.name}");
     }
 
     private static RaycastHit2D? GetFocusedOnTile()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
         Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
 
         RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos2D, Vector2.zero);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TacticsToolkit;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -312,13 +313,19 @@ public void ApplyBuff(Buff newBuff)
     public OverlayTile GetTileUnderUnit()
     {
         Vector2 unitPosition = unitGameObject.transform.position;  // World position of the unit
-        RaycastHit2D hit = Physics2D.Raycast(unitPosition, Vector2.down, 20f);
 
-        if (hit.collider != null)
+        // Use RaycastAll to get all tiles under the unit
+        RaycastHit2D[] hits = Physics2D.RaycastAll(unitPosition, Vector2.down, 20f);
+
+        if (hits.Length > 0)
         {
-            OverlayTile tile = hit.collider.GetComponent<OverlayTile>();
+            // Find the tile with the highest Z-axis value
+            OverlayTile tile = hits
+                .OrderByDescending(hit => hit.collider.transform.position.z) // Sort by Z-axis
+                .Select(hit => hit.collider.GetComponent<OverlayTile>())    // Get OverlayTile component
+                .FirstOrDefault(tile => tile != null);                      // Select the first valid tile
 
-            if (tile)
+            if (tile != null)
             {
                 standingOnTile = tile;  // Set the standingOnTile
                 tile.unitOnTile = this; // Set the unit on the tile
@@ -326,6 +333,7 @@ public void ApplyBuff(Buff newBuff)
                 return tile;
             }
         }
+
         return null;
     }
     // Helper property to access the sprite

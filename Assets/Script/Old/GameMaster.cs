@@ -102,18 +102,15 @@ public class GameMaster : MonoBehaviour
     {
         if (enemyList.Count > 0 && enemySpawner != null)
         {
-            // Get the list of tiles from the spawner (excluding the parent object)
             List<Transform> enemySpawningTiles = enemySpawner.GetComponentsInChildren<Transform>().Skip(1).ToList();
 
             int spawnLimit = Mathf.Min(enemyList.Count, enemySpawningTiles.Count);
 
             for (int i = 0; i < spawnLimit; i++)
             {
-                // Get the current enemy and corresponding tile
                 Unit enemyToSpawn = enemyList[i];
                 Transform spawnPoint = enemySpawningTiles[i];
 
-                // Instantiate the enemy unit at the spawn point
                 Unit spawnedUnit = Instantiate(enemyToSpawn, spawnPoint.position, Quaternion.identity);
                 spawnedUnit.teamID = 2;
                 spawnedUnit.playerOwner = 2;
@@ -121,26 +118,23 @@ public class GameMaster : MonoBehaviour
                 // Raycast to find the tile under the spawn position
                 RaycastHit2D[] hits = Physics2D.RaycastAll(spawnPoint.position, Vector2.zero);
 
-                // Find the first hit with an OverlayTile component
+                // Find the tile with the highest Z-axis value
                 OverlayTile tileUnderEnemy = hits
+                    .OrderByDescending(hit => hit.collider.transform.position.z)
                     .Select(hit => hit.collider.GetComponent<OverlayTile>())
                     .FirstOrDefault(tile => tile != null);
 
                 if (tileUnderEnemy != null)
                 {
-                    // Set the enemy's current tile
                     spawnedUnit.standingOnTile = tileUnderEnemy;
-                    // Mark the tile as blocked and record the enemy as the occupant
-                    tileUnderEnemy.SetUnit(spawnedUnit); // This ensures unitOnTile is set correctly
+                    tileUnderEnemy.SetUnit(spawnedUnit);
                     tileUnderEnemy.isBlocked = true;
-                    //Debug.Log($"Enemy {spawnedUnit.name} assigned to tile {tileUnderEnemy.gameObject.name}");
                 }
                 else
                 {
                     Debug.LogWarning($"No tile found under enemy spawn point at position {spawnPoint.position}");
                 }
 
-                // Set proper sprite rendering order if tile was found
                 if (tileUnderEnemy != null)
                 {
                     SpriteRenderer spriteRenderer = spawnedUnit.GetComponent<SpriteRenderer>();

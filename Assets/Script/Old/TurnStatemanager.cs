@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
 
@@ -299,22 +300,19 @@ public class TurnStateManager : MonoBehaviour
     {
         if (currentUnit != null)
         {
-            // Log the position of the unit to verify it's being updated
-            //Debug.Log($"Unit Position: {currentUnit.transform.position}");
+            RaycastHit2D[] hits = Physics2D.RaycastAll(currentUnit.transform.position, Vector2.down);
 
-            // Use raycasting or tile-based logic to determine the standing tile
-            RaycastHit2D hit = Physics2D.Raycast(currentUnit.transform.position, Vector2.down);
-
-            if (hit.collider != null)
+            if (hits.Length > 0)
             {
-                // Assuming OverlayTile is attached to the tile's collider
-                OverlayTile standingTile = hit.collider.gameObject.GetComponent<OverlayTile>();
+                // Find the tile with the highest Z-axis value
+                OverlayTile standingTile = hits
+                    .OrderByDescending(hit => hit.collider.transform.position.z)
+                    .Select(hit => hit.collider.GetComponent<OverlayTile>())
+                    .FirstOrDefault(tile => tile != null);
 
                 if (standingTile != null)
                 {
-                    // Update the standingOnTile in the Unit class
                     currentUnit.standingOnTile = standingTile;
-                    //Debug.Log($"{currentUnit.name} is standing on tile: {standingTile.name}");
                 }
                 else
                 {
