@@ -38,7 +38,7 @@ public class UI_ActionBar : MonoBehaviour
         ButtonUI_Attack.onClick.AddListener(OnAttackButtonClicked);
         ButtonUI_Skill.onClick.AddListener(OnSkillButtonClicked);
         ButtonUI_Condition.onClick.AddListener(OnConditionButtonClicked);
-        ButtonUI_Wait.onClick.AddListener(OnWaitButtonClicked);
+        ButtonUI_Wait.onClick.AddListener(OnEndTurnButtonClicked);
 
         ButtonUI_ReturnTurnStart.onClick.AddListener(() =>
         {
@@ -86,9 +86,9 @@ public class UI_ActionBar : MonoBehaviour
         // Logic for condition button goes here
     }
 
-    private void OnWaitButtonClicked()
+    private void OnEndTurnButtonClicked()
     {
         Debug.Log("Wait button clicked.");
-        turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
+        turnStateManager.ChangeState(TurnStateManager.TurnState.EndTurn);
     }
 }

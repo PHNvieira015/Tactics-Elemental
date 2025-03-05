@@ -205,7 +205,10 @@ public class MouseController : MonoBehaviour
                                     Debug.Log("Attack animation triggered!");
 
                                     damageSystem.Attack(currentUnit, targetUnit);
+                                    currentUnit.hasAttacked = true;
+                                    turnStateManager.uiActionBar.GameObjectButton_attack.SetActive(false);
                                     turnStateManager.ChangeState(TurnState.Waiting);
+
                                 }
                                 else
                                 {

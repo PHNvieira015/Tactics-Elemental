@@ -174,8 +174,14 @@ public class TurnStateManager : MonoBehaviour
     UpdateStandingOnTile(); // Update the tile after the unit has moved
 
     EnableUI_Action();
+
     uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
-    uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
+
+                if (currentUnit.hasAttacked == false)
+                {
+                    uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
+                }
+                
     break;
             #endregion
 
@@ -183,25 +189,22 @@ public class TurnStateManager : MonoBehaviour
             case TurnState.Attacking:
                 if (!currentUnit.hasAttacked)
                 {
-                mouseController.GetAttackRangeTiles(); // Show attack range
-                //Debug.Log($"{currentUnit.name} is attacking...");
+                    mouseController.GetAttackRangeTiles();
                     DisableUI_Action();
                     Debug.Log($"{currentUnit.name} is attacking...");
                     // Attack logic
                     EnableUI_Action();
-                   
-                    uiActionBar.GameObjectButton_attack.SetActive(false); // Deactivate attack button
-                    uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
+                    // Remove these lines:
+                    uiActionBar.GameObjectButton_attack.SetActive(false);
+                    // uiActionBar.GameObjectButton_return.SetActive(true);
                 }
                 else
                 {
                     Debug.Log($"{currentUnit.name} has already attacked.");
-                    //uiActionBar.GameObjectButton_attack.SetActive(false); // Deactivate attack button
                     EnableUI_Action();
                 }
                 break;
             #endregion
-
 
             #region UsingSkill
             case TurnState.UsingSkill:
@@ -217,19 +220,11 @@ public class TurnStateManager : MonoBehaviour
             case TurnState.Waiting:
                 EnableUI_Action();
                 Debug.Log($"{currentUnit.name} is waiting...");
-                Camera.main.transform.position = new Vector3(currentUnit.transform.position.x,
-                                            currentUnit.transform.position.y,
-                                            Camera.main.transform.position.z);
-
-                // Update Move button
-                uiActionBar.GameObjectButton_move.SetActive(!currentUnit.hasMoved);
-
-                // Update Attack button
-                uiActionBar.GameObjectButton_attack.SetActive(!currentUnit.hasAttacked);
-
-                // Update Return button (show if ANY action was taken)
-                uiActionBar.GameObjectButton_return.SetActive(currentUnit.hasMoved || currentUnit.hasAttacked);
-
+                Camera.main.transform.position = new Vector3(
+                    currentUnit.transform.position.x,
+                    currentUnit.transform.position.y,
+                    Camera.main.transform.position.z
+                );
                 break;
             #endregion
 
@@ -349,14 +344,14 @@ public class TurnStateManager : MonoBehaviour
 
     private void EnableUI_Action()
     {
-        // Assuming UI_ActionBar is the GameObject, not the script itself
         if (UI_ActionBar != null)
         {
-            UI_ActionBar.SetActive(true); // Activate ActionBar
+            UI_ActionBar.SetActive(true);
         }
         else
         {
             Debug.LogError("UI_ActionBar is not assigned!");
+            return;
         }
 
         // Update Move button
@@ -365,8 +360,11 @@ public class TurnStateManager : MonoBehaviour
         // Update Attack button
         uiActionBar.GameObjectButton_attack.SetActive(!currentUnit.hasAttacked);
 
-        // Update Return button (show if ANY action was taken)
-        uiActionBar.GameObjectButton_return.SetActive(currentUnit.hasMoved || currentUnit.hasAttacked);
+        // Update Return button: Show if either:
+        // 1. The unit has moved but hasn't attacked, OR
+        // 2. The unit is in the Attacking state and hasn't attacked yet
+        bool showReturn = (currentUnit.hasMoved || currentTurnState == TurnState.Attacking) && !currentUnit.hasAttacked;
+        uiActionBar.GameObjectButton_return.SetActive(showReturn);
     }
     #endregion
 
@@ -409,6 +407,13 @@ public class TurnStateManager : MonoBehaviour
 
         // Refresh the UI
         EnableUI_Action();
+        
+        if (currentUnit.hasAttacked == false)
+        {
+            uiActionBar.GameObjectButton_attack.SetActive(true);
+        }
+        // Update Return button (show if ANY action was taken)
+
 
         // Reset the camera to the unit's position
         Camera.main.transform.position = new Vector3(
