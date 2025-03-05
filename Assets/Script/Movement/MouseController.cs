@@ -93,6 +93,10 @@ public class MouseController : MonoBehaviour
             }
             return; // Prevent further path recalculation if already moving
         }
+        if (turnStateManager.currentTurnState == TurnState.Attacking)
+        {
+            GetAttackRangeTiles();
+        }
 
         RaycastHit2D? hit = GetFocusedOnTile();
 
@@ -184,7 +188,7 @@ public class MouseController : MonoBehaviour
             #endregion
 
             #region attack indevelopment
-            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking)
+            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
             {
                 if (attackRangeTiles.Contains(tile))
                 {
@@ -213,14 +217,14 @@ public class MouseController : MonoBehaviour
                                 // Damage part remains as it is (damageSystem.Attack is already working)
                                 damageSystem.Attack(currentUnit, targetUnit);
                                 // Mark the current unit as having attacked
-                                //currentUnit.hasAttacked = true;  invedelopment  turn on after testing.
+//mark ater testing            //currentUnit.hasAttacked = true;  invedelopment  turn on after testing.
 
                                 // Clear the attack range tiles
-                                foreach (var rangeTile in attackRangeTiles)
-                                {
-                                    rangeTile.HideTile();
-                                }
-                                attackRangeTiles.Clear();
+                                //foreach (var rangeTile in attackRangeTiles)
+                                //{
+                                //    rangeTile.HideTile();
+                                //}
+                                //attackRangeTiles.Clear();
                             }
                             else
                             {
