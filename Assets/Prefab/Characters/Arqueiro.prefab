@@ -101,6 +101,10 @@ PrefabInstance:
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: elementType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: CharacterName
       value: Arqueiro
       objectReference: {fileID: 0}

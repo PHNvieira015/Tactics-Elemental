@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,7 +6,7 @@ using UnityEngine.UI;
 public class UnitManager : MonoBehaviour
 {
     public List<Unit> turnOrderList;
-    [SerializeField]private Unit selectedUnit;
+    [SerializeField] private Unit selectedUnit;
     private GameMaster gameMaster;
 
     [Header("UI References")]
@@ -21,6 +20,28 @@ public class UnitManager : MonoBehaviour
     [SerializeField] private TMP_Text manaText_TMP;
     [SerializeField] private TMP_Text characterName_TMP;
     [SerializeField] private TMP_Text LvL_NumberText_TMP;
+
+    [Header("Element & Class Icons")]
+    [SerializeField] private Image elementIcon;
+    [SerializeField] private Image classIcon;
+
+    [System.Serializable]
+    public struct ElementSpritePair
+    {
+        public CharacterStat.ElementType element;
+        public Sprite sprite;
+    }
+
+    [System.Serializable]
+    public struct ClassSpritePair
+    {
+        public CharacterStat.CharacterClass characterClass;
+        public Sprite sprite;
+    }
+
+    [Header("Icon Mappings")]
+    [SerializeField] private ElementSpritePair[] elementSprites;
+    [SerializeField] private ClassSpritePair[] classSprites;
 
     private void Awake()
     {
@@ -40,6 +61,8 @@ public class UnitManager : MonoBehaviour
         if (manaBarImage) manaBarImage.fillAmount = 1f;
         if (characterName_TMP) characterName_TMP.text = "";
         if (LvL_NumberText_TMP) LvL_NumberText_TMP.text = "";
+        if (elementIcon) elementIcon.gameObject.SetActive(false);
+        if (classIcon) classIcon.gameObject.SetActive(false);
     }
 
     #region TurnOrder/UnitSelection
@@ -58,8 +81,6 @@ public class UnitManager : MonoBehaviour
         UpdateSelectedUnitUI(unit);
     }
 
- 
-
     public void SetTurnOrderList()
     {
         turnOrderList.Clear();
@@ -76,8 +97,6 @@ public class UnitManager : MonoBehaviour
             UpdateTurnOrderUI();
         }
     }
-
-
     #endregion
 
     #region UI
@@ -94,6 +113,10 @@ public class UnitManager : MonoBehaviour
 
         // Update mana UI
         UpdateManaUI(unit.characterStats.currentMana, unit.characterStats.maxMana);
+
+        // Update icons
+        UpdateElementIcon(unit.characterStats.elementType);
+        UpdateClassIcon(unit.characterStats.characterClass);
     }
 
     private void UpdateHealthUI(float current, float max)
@@ -121,6 +144,7 @@ public class UnitManager : MonoBehaviour
             manaText_TMP.text = $"{current}/{max}";
         }
     }
+
     void UpdateTurnOrderUI()
     {
         for (int i = 0; i < unitButtons.Length; i++)
@@ -167,6 +191,37 @@ public class UnitManager : MonoBehaviour
             SetSelectedUnit(unit);
         }
     }
-#endregion
 
+    private void UpdateElementIcon(CharacterStat.ElementType element)
+    {
+        if (elementIcon == null) return;
+
+        foreach (var pair in elementSprites)
+        {
+            if (pair.element == element)
+            {
+                elementIcon.sprite = pair.sprite;
+                elementIcon.gameObject.SetActive(true);
+                return;
+            }
+        }
+        elementIcon.gameObject.SetActive(false);
+    }
+
+    private void UpdateClassIcon(CharacterStat.CharacterClass characterClass)
+    {
+        if (classIcon == null) return;
+
+        foreach (var pair in classSprites)
+        {
+            if (pair.characterClass == characterClass)
+            {
+                classIcon.sprite = pair.sprite;
+                classIcon.gameObject.SetActive(true);
+                return;
+            }
+        }
+        classIcon.gameObject.SetActive(false);
+    }
+    #endregion
 }
