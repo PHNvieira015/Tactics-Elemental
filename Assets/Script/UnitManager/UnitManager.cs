@@ -51,7 +51,10 @@ public class UnitManager : MonoBehaviour
             unit.transform.position.y,
             Camera.main.transform.position.z
         );
-        Camera.main.transform.position = targetPosition;
+        if (Input.GetMouseButtonDown(0))
+        {
+            Camera.main.transform.position = targetPosition;
+        }
         UpdateSelectedUnitUI(unit);
     }
 

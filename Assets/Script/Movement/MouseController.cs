@@ -71,7 +71,7 @@ public class MouseController : MonoBehaviour
 
     void Update()
     {
-         //Check if the mouse is over a UI element (e.g., a button)
+        //Check if the mouse is over a UI element (e.g., a button)
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return; // Skip further processing if the mouse is over a UI element
@@ -100,156 +100,134 @@ public class MouseController : MonoBehaviour
 
         RaycastHit2D? hit = GetFocusedOnTile();
 
-
-        //check here if unit 
+        // Check if a valid tile is hit
         if (hit.HasValue)
         {
-            
-            #region movement
-            // Attempt to get the Unit component on the hit object
-            Unit hitUnit = hit.Value.collider.gameObject.GetComponent<Unit>();
-            Debug.Log("Unit name is" + hitUnit);
-
-            //WIP getting the mouseouverunit to the UI
-            if (hitUnit != null)
-            {
-                SelectedUnitInfo.SetActive(true);
-                UnitManager.SetSelectedUnit(hitUnit);
-
-
-                // Found a Unit; now notify the UI_Manager.
-                UI_Manager uiManager = FindObjectOfType<UI_Manager>();
-                Debug.Log("Unit name is" + hitUnit.name);
-                if (uiManager != null)
-                {
-                    uiManager.DisplayUnitInfo(hitUnit);
-                }
-                else
-                {
-                    SelectedUnitInfo.SetActive(false);
-                }
-            }
+            // Get the OverlayTile component
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>();
-            cursor.transform.position = tile.transform.position;
-            cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder;
-            
-
-            // Update TargetPosition
-            TargetPosition = tile.transform.position;
-            GetInRangeTiles();
-            if (currentUnit == null || currentUnit.standingOnTile == null || currentUnit.characterStats == null)
+            if (tile != null)
             {
-                return; // Exit early if unit, tile, or stats are not ready
-            }
-            if (rangeFinderTiles.Contains(tile))
+                // Get the unit from the tile
+                Unit unitOnTile = tile.unitOnTile;
+                Debug.Log("Unit on tile: " + (unitOnTile != null ? unitOnTile.name : "None"));
 
-            {
-                //Debug.Log($"Tile {tile.name} is within range.");
-                //Debug.Log($"Path Count Before Calculation: {path.Count}");
-                // Only recalculate path if the target tile is in range
-                if (currentUnit.standingOnTile != tile)
+                #region movement
+                if (unitOnTile != null)
                 {
-                    // Calculate the path from the current unit's standing tile to the clicked tile
-                    path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
-                    
-                    // Visualize the path with arrows
-                    foreach (var item in rangeFinderTiles)
-                    {
-                        MapManager.Instance.map[item.grid2DLocation].SetSprite(ArrowDirection.None);
-                    }
-                    if (turnStateManager.currentTurnState == TurnState.Moving)
-                    {
-                        for (int i = 0; i < path.Count; i++)
-                        {
-                            var previousTile = i > 0 ? path[i - 1] : currentUnit.standingOnTile;
-                            var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+                    SelectedUnitInfo.SetActive(true);
+                    UnitManager.SetSelectedUnit(unitOnTile);
 
-                            var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
-                            path[i].SetSprite(arrow);
+                    // Found a Unit; now notify the UI_Manager.
+                    UI_Manager uiManager = FindObjectOfType<UI_Manager>();
+                    if (uiManager != null)
+                    {
+                        uiManager.DisplayUnitInfo(unitOnTile);
+                    }
+                    else
+                    {
+                        SelectedUnitInfo.SetActive(false);
+                    }
+                }
+
+                cursor.transform.position = tile.transform.position;
+                cursor.gameObject.GetComponent<SpriteRenderer>().sortingOrder = tile.transform.GetComponent<SpriteRenderer>().sortingOrder;
+
+                // Update TargetPosition
+                TargetPosition = tile.transform.position;
+                GetInRangeTiles();
+
+                if (currentUnit == null || currentUnit.standingOnTile == null || currentUnit.characterStats == null)
+                {
+                    return; // Exit early if unit, tile, or stats are not ready
+                }
+                if (rangeFinderTiles.Contains(tile))
+                {
+                    // Debug.Log($"Tile {tile.name} is within range.");
+                    if (currentUnit.standingOnTile != tile)
+                    {
+                        path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
+
+                        foreach (var item in rangeFinderTiles)
+                        {
+                            MapManager.Instance.map[item.grid2DLocation].SetSprite(ArrowDirection.None);
+                        }
+
+                        if (turnStateManager.currentTurnState == TurnState.Moving)
+                        {
+                            for (int i = 0; i < path.Count; i++)
+                            {
+                                var previousTile = i > 0 ? path[i - 1] : currentUnit.standingOnTile;
+                                var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+
+                                var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
+                                path[i].SetSprite(arrow);
+                            }
                         }
                     }
                 }
-            }
 
-            // Move the unit to the clicked position if it's in range
-            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving && rangeFinderTiles.Contains(tile))
-            {
-                if (rangeFinderTiles.Contains(tile))
+                // Move the unit to the clicked position if it's in range
+                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving && rangeFinderTiles.Contains(tile))
                 {
-                    path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
-
-                    if (path.Count > 0)
+                    if (rangeFinderTiles.Contains(tile))
                     {
-                        isMoving = true; // Lock movement state
-                    }
-
-                }
-            }
-            #endregion
-
-            #region attack indevelopment
-            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
-            {
-                if (attackRangeTiles.Contains(tile))
-                {
-                    // Get the target unit from the tile
-                    Unit targetUnit = tile.unitOnTile;
-                    Debug.Log($"Attempting to attack. Target unit found: {targetUnit != null}");
-
-                    // Ensure we have a valid target, not the current unit, and it hasn't already attacked
-                    if (targetUnit != null && targetUnit != currentUnit && !currentUnit.hasAttacked)
-                    {
-                        Debug.Log($"Attack conditions met! Current unit: {currentUnit.name}, Target: {targetUnit.name}");
-
-                        // Optionally check if the target is an enemy (using playerOwner)
-                        if (targetUnit.playerOwner != currentUnit.playerOwner)
+                        path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
+                        if (path.Count > 0)
                         {
-                            // Retrieve the CharacterBattle components from both units
-                            CharacterBattle attackerBattle = currentUnit.GetComponent<CharacterBattle>();
-                            CharacterBattle targetBattle = targetUnit.GetComponent<CharacterBattle>();
+                            isMoving = true; // Lock movement state
+                        }
+                    }
+                }
+                #endregion
 
-                            if (attackerBattle != null && targetBattle != null)
+                #region attack indevelopment
+                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
+                {
+                    if (attackRangeTiles.Contains(tile))
+                    {
+                        // Get the target unit from the tile
+                        Unit targetUnit = tile.unitOnTile;
+                        Debug.Log($"Attempting to attack. Target unit found: {targetUnit != null}");
+
+                        if (targetUnit != null && targetUnit != currentUnit && !currentUnit.hasAttacked)
+                        {
+                            Debug.Log($"Attack conditions met! Current unit: {currentUnit.name}, Target: {targetUnit.name}");
+
+                            if (targetUnit.playerOwner != currentUnit.playerOwner)
                             {
-                                // Trigger only the attack animation
-                                attackerBattle.TriggerAttackAnimationnearattacker(targetBattle);
-                                Debug.Log("Attack animation triggered!");
+                                CharacterBattle attackerBattle = currentUnit.GetComponent<CharacterBattle>();
+                                CharacterBattle targetBattle = targetUnit.GetComponent<CharacterBattle>();
 
-                                // Damage part remains as it is (damageSystem.Attack is already working)
-                                damageSystem.Attack(currentUnit, targetUnit);
-                                // Mark the current unit as having attacked
-//mark ater testing            //currentUnit.hasAttacked = true;  invedelopment  turn on after testing.
+                                if (attackerBattle != null && targetBattle != null)
+                                {
+                                    attackerBattle.TriggerAttackAnimationnearattacker(targetBattle);
+                                    Debug.Log("Attack animation triggered!");
 
-                                // Clear the attack range tiles
-                                //foreach (var rangeTile in attackRangeTiles)
-                                //{
-                                //    rangeTile.HideTile();
-                                //}
-                                //attackRangeTiles.Clear();
+                                    damageSystem.Attack(currentUnit, targetUnit);
+                                }
+                                else
+                                {
+                                    Debug.LogWarning("CharacterBattle component not found on one of the units.");
+                                }
                             }
                             else
                             {
-                                Debug.LogWarning("CharacterBattle component not found on one of the units.");
+                                Debug.Log("Cannot attack your own unit.");
                             }
                         }
                         else
                         {
-                            Debug.Log("Cannot attack your own unit.");
+                            Debug.Log($"Attack conditions not met: " +
+                                      $"Target exists: {targetUnit != null}, " +
+                                      $"Hasn't Attacked: {!currentUnit.hasAttacked}");
                         }
                     }
-                    else
-                    {
-                        Debug.Log($"Attack conditions not met: " +
-                                  $"Target exists: {targetUnit != null}, " +
-                                  $"Hasn't Attacked: {!currentUnit.hasAttacked}");
-                    }
                 }
+                #endregion
             }
-            #endregion
-
-
         }
-
     }
+
 
 
     private IEnumerator MoveAlongPathCoroutine()
@@ -328,6 +306,7 @@ public class MouseController : MonoBehaviour
     private static RaycastHit2D? GetFocusedOnTile()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
         Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
 
         RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos2D, Vector2.zero);
