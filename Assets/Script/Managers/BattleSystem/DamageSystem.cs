@@ -52,7 +52,9 @@ public class DamageSystem : MonoBehaviour
             if (!target.IsAlive())
             {
                 Debug.Log($"{target.name} has been defeated!");
-                target.gameObject.SetActive(false);
+                //target.gameObject.SetActive(false);
+                target.standingOnTile.ClearUnit();
+                Destroy(target.gameObject);
             }
             else
             {
