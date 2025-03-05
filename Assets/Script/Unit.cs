@@ -29,7 +29,7 @@ public class Unit : MonoBehaviour
     public GameObject weaponIcon; // Icon over unit if it's attackable
     public GameObject SelectionCircle;  // Add this declaration at the beginning of your class
     public bool isTarget; //is being target
-    public int attackRange; // AttackRange
+    [HideInInspector] public int attackRange=1; // AttackRange
     public OverlayTile standingOnTile;
     public float Xposition;
     public float Yposition;
@@ -75,10 +75,10 @@ public class Unit : MonoBehaviour
         unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
         levelSystem = new LevelSystem(characterStats);
         levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
-        attackRange += characterStats.AttackRange;
         battleHandler = GetComponent<BattleHandler>();
         damageSystem ??= FindObjectOfType<DamageSystem>();
         characterStats.SetRoundInitiative();
+        UpdateAttackRange();
     }
 
     private void UnitSkills_OnSkillUnlocked(object sender, UnitSkills.OnSkillUnlockedEventArgs e)
@@ -345,4 +345,23 @@ public void ApplyBuff(Buff newBuff)
             return sr != null ? sr.sprite : null;
         }
     }
+    public void UpdateAttackRange()
+    {
+        if (characterStats != null)
+        {
+            if (characterStats.equippedWeapon != null)
+            {
+                attackRange = characterStats.attackRangeBonus + characterStats.equippedWeapon.WeaponRange;
+            }
+            else
+            {
+                attackRange = characterStats.attackRangeBonus; // No weapon equipped
+            }
+        }
+        else
+        {
+            Debug.LogWarning("CharacterStats is null. Cannot update attackRange.");
+        }
+    }
+
 }

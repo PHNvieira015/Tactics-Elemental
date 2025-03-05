@@ -5,6 +5,7 @@ using static Weapon;
 
 public class CharacterStat : MonoBehaviour
 {
+    #region variables
     public string CharacterName;
     public string CharacterDescription;
     public enum CharacterClass { None, Warrior, Mage, Archer }
@@ -30,7 +31,7 @@ public class CharacterStat : MonoBehaviour
     public int agility;
     public int intellect;
     public AttackType PrimaryAttackType;
-    public int AttackRange;
+    public int attackRangeBonus;
 
     // Defensive stats (Editable)
     public int armorValue;
@@ -60,6 +61,59 @@ public class CharacterStat : MonoBehaviour
     public int experience;
     public int requiredExperience;
 
+    #endregion
+
+
+        public void Initialize()
+    {
+        // Initialize health and mana
+        currentHealth = maxBaseHealth;
+        currentMana = maxMana;
+
+        SetCharacterAttackRange(attackRangeBonus);
+
+        // Optional method to calculate armor value (example)
+        CalculateArmorValue();
+
+        // Initialize equipment slots and log debug messages
+        if (equippedWeapon != null)
+        {
+            Debug.Log("Equipped weapon: " + equippedWeapon.name);
+        }
+        else
+        {
+            Debug.Log("No weapon equipped.");
+        }
+
+        if (equippedArmor != null)
+        {
+            Debug.Log("Equipped armor: " + equippedArmor.name);
+        }
+        else
+        {
+            Debug.Log("No armor equipped.");
+        }
+
+        if (accessory1 != null)
+        {
+            Debug.Log("Equipped accessory 1: " + accessory1.name);
+        }
+        else
+        {
+            Debug.Log("No accessory 1 equipped.");
+        }
+
+        if (accessory2 != null)
+        {
+            Debug.Log("Equipped accessory 2: " + accessory2.name);
+        }
+        else
+        {
+            Debug.Log("No accessory 2 equipped.");
+        }
+
+    }
+    #region methods
     // Set Weakness based on Element Type
     public void SetWeakness()
     {
@@ -87,7 +141,7 @@ public class CharacterStat : MonoBehaviour
     }
     public void SetCharacterAttackRange(int AttackRange)
     {
-        this.AttackRange = AttackRange+ equippedWeapon.WeaponRange;
+        this.attackRangeBonus = AttackRange+ equippedWeapon.WeaponRange;
     }
 
     // Set Character Level
@@ -134,66 +188,12 @@ public class CharacterStat : MonoBehaviour
     }
 
     // Initialization method
-    public void Initialize()
-    {
-        // Initialize health and mana
-        currentHealth = maxBaseHealth;
-        currentMana = maxMana;
 
-        // Optional method to calculate armor value (example)
-        CalculateArmorValue();
-
-        // Initialize equipment slots and log debug messages
-        if (equippedWeapon != null)
-        {
-            Debug.Log("Equipped weapon: " + equippedWeapon.name);
-        }
-        else
-        {
-            Debug.Log("No weapon equipped.");
-        }
-
-        if (equippedArmor != null)
-        {
-            Debug.Log("Equipped armor: " + equippedArmor.name);
-        }
-        else
-        {
-            Debug.Log("No armor equipped.");
-        }
-
-        if (accessory1 != null)
-        {
-            Debug.Log("Equipped accessory 1: " + accessory1.name);
-        }
-        else
-        {
-            Debug.Log("No accessory 1 equipped.");
-        }
-
-        if (accessory2 != null)
-        {
-            Debug.Log("Equipped accessory 2: " + accessory2.name);
-        }
-        else
-        {
-            Debug.Log("No accessory 2 equipped.");
-        }
-
-        // Calculate Movement Range
-        CalculateMovementRange();
-    }
 
     // Optional method to calculate armor value
     public void CalculateArmorValue()
     {
         armorValue = physicalDefense * 2; // Example calculation
-    }
-
-    // Calculate Movement Range
-    public void CalculateMovementRange()
-    {
-        movementRange = initiative * 0.5f;  // Example calculation
     }
 
     // Equip Weapon Method
@@ -260,3 +260,4 @@ public class CharacterStat : MonoBehaviour
         RoundInitiative=RoundInitiative/100;  // Divide RountInitiative by 100
     }
 }
+#endregion

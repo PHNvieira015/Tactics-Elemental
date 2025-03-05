@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dc16548d0b2af94da409af52005eb0f, type: 3}
   m_Name: Bow
   m_EditorClassIdentifier: 
-  itemName: 
-  itemDescription: 
+  itemName: Bow
+  itemDescription: Simple Bow
   itemIcon: {fileID: 0}
   strengthBonus: 0
-  agilityBonus: 0
+  agilityBonus: 2
   intellectBonus: 0
   WeightBonus: 0
   MovementBonus: 0
   itemClass: 0
   value: 0
-  requiredClass: 0
+  requiredClass: 2
   weapon: 0
   WeaponDamageModifier: 1
-  WeaponRange: 4
+  WeaponRange: 3
   weaponType: 1
   PrimaryAttackType: 2

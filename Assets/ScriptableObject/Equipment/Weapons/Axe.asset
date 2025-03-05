@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Axe
   itemDescription: 
   itemIcon: {fileID: 0}
-  strengthBonus: 0
+  strengthBonus: 2
   agilityBonus: 0
   intellectBonus: 0
   WeightBonus: 1

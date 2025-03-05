@@ -117,6 +117,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: equippedWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 99c17806b082e244ab8ed984c5705ff6, type: 2}
+    - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: requiredExperience
       value: 20
       objectReference: {fileID: 0}

@@ -39,6 +39,12 @@ public class UI_ActionBar : MonoBehaviour
         ButtonUI_Skill.onClick.AddListener(OnSkillButtonClicked);
         ButtonUI_Condition.onClick.AddListener(OnConditionButtonClicked);
         ButtonUI_Wait.onClick.AddListener(OnWaitButtonClicked);
+
+        ButtonUI_ReturnTurnStart.onClick.AddListener(() =>
+        {
+            TurnStateManager turnManager = FindObjectOfType<TurnStateManager>();
+            if (turnManager != null) turnManager.OnBackButtonPressed();
+        });
     }
         
 
@@ -48,7 +54,7 @@ public class UI_ActionBar : MonoBehaviour
 
         //add the go back to starting position
         Debug.Log("Returning to Turn Start...");
-        turnStateManager.ChangeState(TurnStateManager.TurnState.TurnStart);
+        turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
         GameObjectButton_return.gameObject.SetActive(false);
         GameObjectButton_move.gameObject.SetActive(true);
         GameObjectButton_attack.gameObject.SetActive(true);

@@ -111,6 +111,7 @@ public class MouseController : MonoBehaviour
                 Unit unitOnTile = tile.unitOnTile;
                 Debug.Log("Unit on tile: " + (unitOnTile != null ? unitOnTile.name : "None"));
 
+
                 #region movement
                 if (unitOnTile != null)
                 {
@@ -180,7 +181,7 @@ public class MouseController : MonoBehaviour
                 }
                 #endregion
 
-                #region attack indevelopment
+                #region attack
                 if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
                 {
                     if (attackRangeTiles.Contains(tile))
@@ -204,6 +205,7 @@ public class MouseController : MonoBehaviour
                                     Debug.Log("Attack animation triggered!");
 
                                     damageSystem.Attack(currentUnit, targetUnit);
+                                    turnStateManager.ChangeState(TurnState.Waiting);
                                 }
                                 else
                                 {
@@ -270,8 +272,12 @@ public class MouseController : MonoBehaviour
         _coroutineRunning = false;
         isMoving = false; // End movement
         currentUnit.hasMoved = true;
-        turnStateManager.ChangeState(TurnState.TurnStart);
+        turnStateManager.ChangeState(TurnState.Waiting
+            );
         //GetInRangeTiles(); // Refresh range tiles after movement   //possibily change it as we should not move twice in a turn.
+        
+        //Sethasmoved Only After movement is complete
+        currentUnit.hasMoved = true;
     }
 
     private void PositionCharacterOnLine(OverlayTile newTile)

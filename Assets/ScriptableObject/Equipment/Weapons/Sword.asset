@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dc16548d0b2af94da409af52005eb0f, type: 3}
   m_Name: Sword
   m_EditorClassIdentifier: 
-  itemName: 
-  itemDescription: 
+  itemName: Sword
+  itemDescription: Simple Sword
   itemIcon: {fileID: 0}
-  strengthBonus: 0
+  strengthBonus: 2
   agilityBonus: 0
   intellectBonus: 0
   WeightBonus: 1

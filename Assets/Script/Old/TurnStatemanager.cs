@@ -67,7 +67,7 @@ public class TurnStateManager : MonoBehaviour
 
         currentUnit = unit;
         currentUnitObject = unit.gameObject;
-        currentTurnState = TurnState.Waiting; // Default state at turn start
+        currentTurnState = TurnState.Waiting; // Default state at waiting
         Debug.Log($"Current unit set to {currentUnit.name}");
         // Trigger the UI update after setting the current unit
         OnTurnStateChanged?.Invoke(currentTurnState);
@@ -75,32 +75,7 @@ public class TurnStateManager : MonoBehaviour
     }
     #endregion
 
-    public void ChangeState(TurnState newState)
-    {
-        if (currentTurnState == newState)
-        {
-            return; // Avoid redundant state processing
-        }
-        if (currentUnit != null)
-        {
-            OverlayTile tileUnderUnit = currentUnit.GetTileUnderUnit();
-            if (tileUnderUnit != null)
-            {
-                // Do something with the tile
-                //Debug.Log($"Tile under the unit: {tileUnderUnit.name}");
-            }
-        }
-
-        UI_ActionBar.SetActive(false); // Deactivate ActionBar (typically Move button will be hidden)
-        currentTurnState = newState;
-        //Debug.Log($"State changed to {currentTurnState}");
-
-        // Notify listeners of the state change
-        OnTurnStateChanged?.Invoke(currentTurnState);
-
-        // Execute state-specific logic
-        HandleTurnState(newState);
-    }
+  
 
     public void HandleTurnState(TurnState state)
     {
@@ -130,7 +105,7 @@ public class TurnStateManager : MonoBehaviour
                     Debug.LogWarning("MouseController reference missing - arrows not cleared");
                 }
 
-                currentUnit.hasMoved = false;  // Reset movement status
+                //currentUnit.hasMoved = false;  // Reset movement status
                 EnableUI_Action();
                 currentUnit.GetTileUnderUnit();
                 Camera.main.transform.position = new Vector3(currentUnit.transform.position.x,
@@ -159,15 +134,15 @@ public class TurnStateManager : MonoBehaviour
 
                     turnStarted = true;
 
-                    //deactivating butons
-                    if(currentUnit.hasMoved==true)
-                    {
-                        uiActionBar.GameObjectButton_move.SetActive(false);
-                    }
-                    if (currentUnit.hasAttacked == true)
-                    {
-                        uiActionBar.GameObjectButton_attack.SetActive(false);
-                    }
+                    ////deactivating butons
+                    //if(currentUnit.hasMoved==true)
+                    //{
+                    //    uiActionBar.GameObjectButton_move.SetActive(false);
+                    //}
+                    //if (currentUnit.hasAttacked == true)
+                    //{
+                    //    uiActionBar.GameObjectButton_attack.SetActive(false);
+                    //}
                 }
                 break;
             #endregion
@@ -194,8 +169,6 @@ public class TurnStateManager : MonoBehaviour
         Debug.LogWarning("Current unit's standingOnTile is null!");
     }
 
-    // Move the unit
-    currentUnit.hasMoved = true;
 
     // After moving, update standingOnTile
     UpdateStandingOnTile(); // Update the tile after the unit has moved
@@ -203,7 +176,6 @@ public class TurnStateManager : MonoBehaviour
     EnableUI_Action();
     uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
     uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
-    //turnStateManager.ChangeState(TurnState.TurnStart);
     break;
             #endregion
 
@@ -217,13 +189,14 @@ public class TurnStateManager : MonoBehaviour
                     Debug.Log($"{currentUnit.name} is attacking...");
                     // Attack logic
                     EnableUI_Action();
+                   
                     uiActionBar.GameObjectButton_attack.SetActive(false); // Deactivate attack button
                     uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
                 }
                 else
                 {
                     Debug.Log($"{currentUnit.name} has already attacked.");
-                    uiActionBar.GameObjectButton_attack.SetActive(false); // Deactivate attack button
+                    //uiActionBar.GameObjectButton_attack.SetActive(false); // Deactivate attack button
                     EnableUI_Action();
                 }
                 break;
@@ -236,54 +209,57 @@ public class TurnStateManager : MonoBehaviour
                 Debug.Log($"{currentUnit.name} is using a skill...");
                 // Skill usage logic
                 EnableUI_Action();
-                uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
+                //uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
                 break;
             #endregion
 
             #region Waiting
             case TurnState.Waiting:
-                DisableUI_Action();
+                EnableUI_Action();
                 Debug.Log($"{currentUnit.name} is waiting...");
-                currentUnit.SetFaceDirectionAtTurnEnd();
-                currentUnit.selected = false;
-                ChangeState(TurnState.EndTurn);
-                uiActionBar.GameObjectButton_move.SetActive(true); // Deactivate Move button
-                uiActionBar.GameObjectButton_attack.SetActive(true); // Deactivate Move button
-                uiActionBar.GameObjectButton_return.SetActive(false); // Activate Return button
+                Camera.main.transform.position = new Vector3(currentUnit.transform.position.x,
+                                            currentUnit.transform.position.y,
+                                            Camera.main.transform.position.z);
+
+                // Update Move button
+                uiActionBar.GameObjectButton_move.SetActive(!currentUnit.hasMoved);
+
+                // Update Attack button
+                uiActionBar.GameObjectButton_attack.SetActive(!currentUnit.hasAttacked);
+
+                // Update Return button (show if ANY action was taken)
+                uiActionBar.GameObjectButton_return.SetActive(currentUnit.hasMoved || currentUnit.hasAttacked);
+
                 break;
             #endregion
 
             #region endTurn
             case TurnState.EndTurn:
-                Debug.Log($"Turn ended for {currentUnit.name}.");
-                turnStarted = false;
-                currentUnit.hasMoved = false;  // Reset movement status
-                currentUnit.hasAttacked = false;  // Reset attack status
-                currentUnit.characterStats.EndTurnRoundInitiative();
-                
+                DisableUI_Action();
+                currentUnit.SetFaceDirectionAtTurnEnd();
+                currentUnit.selected = false;
 
-                //if (currentUnit.standingOnTile != null)
-                //{
-                //    if (currentUnit.standingOnTile.unitOnTile == currentUnit)
-                //    {
-                //        Debug.Log($"Clearing unitOnTile for {currentUnit.name} on {currentUnit.standingOnTile}");
-                //        currentUnit.standingOnTile.unitOnTile = null;
-                //    }
-                //}
+                // Reset flags
+                turnStarted = false;
+                currentUnit.hasMoved = false;
+                currentUnit.hasAttacked = false;
+                currentUnit.characterStats.EndTurnRoundInitiative();
+
+                // Handle end-of-round logic
                 if (gameMaster != null)
                 {
-                    gameMaster.HandleEndOfRound();  // Handle end-of-round in GameMaster
+                    gameMaster.HandleEndOfRound();
                 }
-                else
-                {
-                    Debug.LogError("GameMaster is not assigned!");
-                }
+
+                // Update turn order and start new turn
                 unitManager.SetTurnOrderList();
                 if (unitManager.turnOrderList.Count > 0)
                 {
                     SetCurrentUnit(unitManager.turnOrderList[0]);
                 }
-                ChangeState(TurnState.TurnStart); // Start the new turn
+
+                // Transition to TurnStart
+                ChangeState(TurnState.TurnStart);
                 break;
 
             default:
@@ -327,6 +303,36 @@ public class TurnStateManager : MonoBehaviour
     }
     #endregion
 
+    #region ChangeState
+    public void ChangeState(TurnState newState)
+    {
+        if (currentTurnState == newState)
+        {
+            return; // Avoid redundant state processing
+        }
+        if (currentUnit != null)
+        {
+            OverlayTile tileUnderUnit = currentUnit.GetTileUnderUnit();
+            if (tileUnderUnit != null)
+            {
+                // Do something with the tile
+                //Debug.Log($"Tile under the unit: {tileUnderUnit.name}");
+            }
+        }
+
+        UI_ActionBar.SetActive(false); // Deactivate ActionBar (typically Move button will be hidden)
+        currentTurnState = newState;
+        //Debug.Log($"State changed to {currentTurnState}");
+
+        // Notify listeners of the state change
+        OnTurnStateChanged?.Invoke(currentTurnState);
+
+        // Execute state-specific logic
+        HandleTurnState(newState);
+    }
+    #endregion
+
+
     #region UI actionBar
     private void DisableUI_Action()
     {
@@ -352,6 +358,64 @@ public class TurnStateManager : MonoBehaviour
         {
             Debug.LogError("UI_ActionBar is not assigned!");
         }
+
+        // Update Move button
+        uiActionBar.GameObjectButton_move.SetActive(!currentUnit.hasMoved);
+
+        // Update Attack button
+        uiActionBar.GameObjectButton_attack.SetActive(!currentUnit.hasAttacked);
+
+        // Update Return button (show if ANY action was taken)
+        uiActionBar.GameObjectButton_return.SetActive(currentUnit.hasMoved || currentUnit.hasAttacked);
+    }
+    #endregion
+
+
+    #region backbutton
+    public void OnBackButtonPressed()
+    {
+        if (currentUnit == null || !currentUnit.hasMoved)
+            return;
+
+        // Reset the hasMoved flag
+        currentUnit.hasMoved = false;
+
+        // Clear the current tile's unit reference
+        OverlayTile currentTile = currentUnit.standingOnTile;
+        if (currentTile != null)
+        {
+            currentTile.unitOnTile = null;
+            currentTile.isBlocked = false;
+        }
+
+        // Find the original tile at TurnStartingPosition
+        RaycastHit2D[] hits = Physics2D.RaycastAll(TurnStartingPosition, Vector2.zero);
+        OverlayTile originalTile = hits
+            .OrderByDescending(hit => hit.collider.transform.position.z)
+            .Select(hit => hit.collider.GetComponent<OverlayTile>())
+            .FirstOrDefault(tile => tile != null);
+
+        if (originalTile != null)
+        {
+            // Move the unit back to the original tile's position
+            currentUnit.transform.position = originalTile.transform.position;
+            currentUnit.GetComponent<SpriteRenderer>().sortingOrder = originalTile.GetComponent<SpriteRenderer>().sortingOrder;
+
+            // Update tile references
+            originalTile.unitOnTile = currentUnit;
+            originalTile.isBlocked = true;
+            currentUnit.standingOnTile = originalTile;
+        }
+
+        // Refresh the UI
+        EnableUI_Action();
+
+        // Reset the camera to the unit's position
+        Camera.main.transform.position = new Vector3(
+            currentUnit.transform.position.x,
+            currentUnit.transform.position.y,
+            Camera.main.transform.position.z
+        );
     }
     #endregion
 }
