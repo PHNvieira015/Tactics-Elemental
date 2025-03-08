@@ -64,18 +64,21 @@ public class TurnStateManager : MonoBehaviour
     #region SetCurrentUnit
     public void SetCurrentUnit(Unit unit)
     {
+        // Clear previous unit's attack range visuals
+        mouseController.ClearAttackRangeTiles();
 
         currentUnit = unit;
         currentUnitObject = unit.gameObject;
-        currentTurnState = TurnState.Waiting; // Default state at waiting
+        mouseController.SetUnit(unit); // Update MouseController's reference
+        TurnStartingPosition = currentUnit.transform.position;
+
         Debug.Log($"Current unit set to {currentUnit.name}");
-        // Trigger the UI update after setting the current unit
+        Debug.Log($"Current unit set to {currentUnit.name}");
         OnTurnStateChanged?.Invoke(currentTurnState);
-        //Debug.Log("UI update triggered");
     }
     #endregion
 
-  
+
 
     public void HandleTurnState(TurnState state)
     {
@@ -189,14 +192,14 @@ public class TurnStateManager : MonoBehaviour
             case TurnState.Attacking:
                 if (!currentUnit.hasAttacked)
                 {
+                    // Clear old attack range before showing new one
+                    mouseController.ClearAttackRangeTiles(); // Add this line
                     mouseController.GetAttackRangeTiles();
                     DisableUI_Action();
                     Debug.Log($"{currentUnit.name} is attacking...");
                     // Attack logic
                     EnableUI_Action();
-                    // Remove these lines:
                     uiActionBar.GameObjectButton_attack.SetActive(false);
-                    // uiActionBar.GameObjectButton_return.SetActive(true);
                 }
                 else
                 {

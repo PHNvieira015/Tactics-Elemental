@@ -362,40 +362,45 @@ public class MouseController : MonoBehaviour
 
     public void SetUnit(Unit newUnit)
     {
-        //Debug.Log($"Assigning {newUnit.name} to currentUnit.");
+        Debug.Log($"Setting MouseController's currentUnit to: {newUnit?.name}");
+
+        ClearPathArrows();
+        ClearAttackRangeTiles(); // Clear old attack tiles
+
         currentUnit = newUnit;
-        // Optionally, you can check or set the starting tile here:
-        if (currentUnit.standingOnTile == null)
-        {
-            Debug.LogWarning("CurrentUnit.standingOnTile is null! Make sure to assign it.");
-        }
-        GetInRangeTiles(); // Initialize range tiles for the new unit
+        GetInRangeTiles(); // Refresh movement range
+
+        Debug.Log($"Attack range tiles after SetUnit: {attackRangeTiles?.Count}");
     }
     // Call this method when the attack state is activated
+
     public void GetAttackRangeTiles()
     {
+        ClearAttackRangeTiles(); // Clear old tiles first
+        Debug.Log($"Calculating attack range for: {currentUnit?.name} (Attack Range: {currentUnit?.attackRange})");
+        
+
         if (currentUnit == null || currentUnit.standingOnTile == null)
         {
-            Debug.LogError("CurrentUnit is null or not standing on a tile! Cannot determine attack range.");
+            Debug.LogError("CurrentUnit is null or not on a tile!");
             return;
         }
 
-        // Calculate attack range tiles
         attackRangeTiles = rangeFinder.GetTilesInRange(
             new Vector2Int(
                 currentUnit.standingOnTile.gridLocation.x,
                 currentUnit.standingOnTile.gridLocation.y
             ),
-            Mathf.RoundToInt(currentUnit.attackRange),
-            true // Ignore obstacles for attack range
+            Mathf.RoundToInt(currentUnit.attackRange), 
+            true // Ignore obstacles
         );
 
-        // Only visualize attack range when in Attack state
-        if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Attacking)
+        // Visualize only if in Attack state
+        if (turnStateManager.currentTurnState == TurnState.Attacking)
         {
             foreach (var tile in attackRangeTiles)
             {
-                tile.ShowTile(attackColor, TileType.AttackRangeColor); // Show red attack tiles
+                tile.ShowTile(attackColor, TileType.AttackRangeColor);
             }
         }
     }
@@ -413,5 +418,16 @@ public class MouseController : MonoBehaviour
             tile.HideTile();
         }
         rangeFinderTiles.Clear();
+    }
+    public void ClearAttackRangeTiles()
+    {
+        if (attackRangeTiles != null)
+        {
+            foreach (var tile in attackRangeTiles)
+            {
+                tile.HideTile(); // Hide attack indicators
+            }
+            attackRangeTiles.Clear();
+        }
     }
 }

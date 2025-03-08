@@ -142,6 +142,10 @@ public class CharacterStat : MonoBehaviour
     public void SetCharacterAttackRange(int AttackRange)
     {
         this.attackRangeBonus = AttackRange+ equippedWeapon.WeaponRange;
+        if (this.attackRangeBonus == 0)
+        {
+            attackRangeBonus += 1;
+        }
     }
 
     // Set Character Level

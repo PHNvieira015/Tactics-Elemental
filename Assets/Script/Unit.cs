@@ -29,7 +29,7 @@ public class Unit : MonoBehaviour
     public GameObject weaponIcon; // Icon over unit if it's attackable
     public GameObject SelectionCircle;  // Add this declaration at the beginning of your class
     public bool isTarget; //is being target
-    [HideInInspector] public int attackRange=1; // AttackRange
+    public int attackRange=1; // AttackRange
     public OverlayTile standingOnTile;
     public float Xposition;
     public float Yposition;
@@ -356,6 +356,10 @@ public void ApplyBuff(Buff newBuff)
             else
             {
                 attackRange = characterStats.attackRangeBonus; // No weapon equipped
+            }
+            if (attackRange<1)
+            {
+                attackRange = 1;
             }
         }
         else
