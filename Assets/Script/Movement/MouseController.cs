@@ -353,7 +353,10 @@ public class MouseController : MonoBehaviour
             {
                 foreach (var tile in rangeFinderTiles)
                 {
-                    tile.ShowTile(color, TileType.Movement); // Visualize the range
+                    if (tile.unitOnTile==null && turnStateManager.currentTurnState == TurnState.Moving)
+                    {
+                        tile.ShowTile(color, TileType.Movement); // Visualize the range
+                    }
                 }
 
                 //Debug.Log($"Highlighted {rangeFinderTiles.Count} tiles for movement.");
