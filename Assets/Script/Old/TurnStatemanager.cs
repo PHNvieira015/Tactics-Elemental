@@ -64,17 +64,14 @@ public class TurnStateManager : MonoBehaviour
     #region SetCurrentUnit
     public void SetCurrentUnit(Unit unit)
     {
-        // Clear previous unit's attack range visuals
-        mouseController.ClearAttackRangeTiles();
 
         currentUnit = unit;
         currentUnitObject = unit.gameObject;
-        mouseController.SetUnit(unit); // Update MouseController's reference
-        TurnStartingPosition = currentUnit.transform.position;
-
+        currentTurnState = TurnState.Waiting; // Default state at waiting
         Debug.Log($"Current unit set to {currentUnit.name}");
-        Debug.Log($"Current unit set to {currentUnit.name}");
+        // Trigger the UI update after setting the current unit
         OnTurnStateChanged?.Invoke(currentTurnState);
+        //Debug.Log("UI update triggered");
     }
     #endregion
 
@@ -111,43 +108,21 @@ public class TurnStateManager : MonoBehaviour
                 //currentUnit.hasMoved = false;  // Reset movement status
                 EnableUI_Action();
                 currentUnit.GetTileUnderUnit();
-                Camera.main.transform.position = new Vector3(currentUnit.transform.position.x,
-                                                            currentUnit.transform.position.y,
-                                                            Camera.main.transform.position.z);
-
-                if (!turnStarted)
-                {
-                    currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();  // Ensure tile is updated
-                    TurnStartingPosition = currentUnit.transform.position;
-                    mouseController.SetUnit(currentUnit);  // Assign unit to MouseController
-                    Debug.Log($"Turn started for {currentUnit.name}! Standing on tile: {currentUnit.standingOnTile?.name}");
-                    currentUnit.RefreshStatusEffects();
-                    TurnStartingPosition = currentUnit.transform.position;
-                    mouseController.SetUnit(currentUnit);
-                    // Deactivate the ActionBar
-                    if (UI_ActionBar != null && ActionBar != null)
                     {
-                        uiActionBar.ActionBar.SetActive(true); // Make sure the ActionBar is visible
-                        Debug.Log("ActionBar activated.");
-                    }
-                    else
-                    {
-                        Debug.LogError("UI_ActionBar or ActionBar is not assigned!");
-                    }
+        // Set camera to currentUnit's position
+        Camera.main.transform.position = new Vector3(
+            currentUnit.transform.position.x,
+            currentUnit.transform.position.y,
+            Camera.main.transform.position.z
+        );
+        Debug.Log($"Camera set to {currentUnit.name} at {currentUnit.transform.position}");
 
-                    turnStarted = true;
-
-                    ////deactivating butons
-                    //if(currentUnit.hasMoved==true)
-                    //{
-                    //    uiActionBar.GameObjectButton_move.SetActive(false);
-                    //}
-                    //if (currentUnit.hasAttacked == true)
-                    //{
-                    //    uiActionBar.GameObjectButton_attack.SetActive(false);
-                    //}
-                }
-                break;
+        // Initialize turn-specific logic
+        currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
+        mouseController.SetUnit(currentUnit);
+        turnStarted = true;
+    }
+    break;
             #endregion
 
             #region Moving
