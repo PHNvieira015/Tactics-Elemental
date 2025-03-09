@@ -24,6 +24,7 @@ public class CursorFollowUI : MonoBehaviour
 
     private void Update()
     {
+        //transform.position = Input.mousePosition;
         // Get the mouse position in screen space
         Vector2 screenPos = Input.mousePosition;
 

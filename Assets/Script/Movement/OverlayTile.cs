@@ -188,9 +188,14 @@ public class OverlayTile : MonoBehaviour
 
     public bool CanMoveThrough(Unit unit)
     {
-        // Only check movement if this tile is the topmost tile or a spawner tile
         if (IsTopTile())
         {
+            // Allow movement through tiles with allied units or no units
+            if (unitOnTile != null)
+            {
+                return unitOnTile.teamID == unit.teamID; // Allow allies
+            }
+
             if (isBlocked && activeCharacter != null)
             {
                 return activeCharacter.teamID == unit.teamID;

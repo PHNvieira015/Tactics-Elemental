@@ -239,60 +239,61 @@ public class MouseController : MonoBehaviour
     private IEnumerator MoveAlongPathCoroutine()
     {
         _coroutineRunning = true;
+
         // Clear the unit from the previous tile before moving
         if (currentUnit.standingOnTile != null)
         {
-            currentUnit.standingOnTile.activeCharacter = null;  // Clear the reference
+            currentUnit.standingOnTile.activeCharacter = null;
             currentUnit.standingOnTile.isBlocked = false;
         }
+
         for (int i = 0; i < path.Count; i++)
         {
             var tile = path[i];
+            bool isFinalTile = (i == path.Count - 1);
 
-            //error de posição aqui!!
             while (!Mathf.Approximately(Vector2.Distance(currentUnit.transform.position, tile.transform.position), 0))
             {
-                // Move the unit towards the current tile
                 currentUnit.transform.position = Vector2.MoveTowards(
                     currentUnit.transform.position,
                     tile.transform.position,
-                    Mathf.Min(speed * Time.deltaTime, Vector2.Distance(currentUnit.transform.position, tile.transform.position))
+                    speed * Time.deltaTime
                 );
-
-
                 yield return null;
             }
 
-            // After reaching the tile, position the character correctly on top of the tile
-            PositionCharacterOnLine(tile);
-        }
-        // Clear arrow sprites after movement
-        foreach (var tile in path)
-        {
-            tile.SetSprite(ArrowDirection.None);
+            PositionCharacterOnLine(tile, isFinalTile); // Pass final tile status
         }
 
+        // Clear arrows and finish movement
+        foreach (var tile in path) tile.SetSprite(ArrowDirection.None);
         path.Clear();
         _coroutineRunning = false;
-        isMoving = false; // End movement
+        isMoving = false;
         currentUnit.hasMoved = true;
-        turnStateManager.ChangeState(TurnState.Waiting
-            );
-        //GetInRangeTiles(); // Refresh range tiles after movement   //possibily change it as we should not move twice in a turn.
-        
-        //Sethasmoved Only After movement is complete
-        currentUnit.hasMoved = true;
+        turnStateManager.ChangeState(TurnState.Waiting);
+    //GetInRangeTiles(); // Refresh range tiles after movement   //possibily change it as we should not move twice in a turn.
+
+    //Sethasmoved Only After movement is complete
+    currentUnit.hasMoved = true;
     }
 
-    private void PositionCharacterOnLine(OverlayTile newTile)
+    private void PositionCharacterOnLine(OverlayTile newTile, bool isFinalTile)
     {
+        // Clear previous tile's references if moving from it
         if (currentUnit.standingOnTile != null && currentUnit.standingOnTile != newTile)
         {
             currentUnit.standingOnTile.isBlocked = false;
             currentUnit.standingOnTile.activeCharacter = null;
-            currentUnit.standingOnTile.ClearUnit();
+
+            // Only clear unitOnTile if it was set by this unit
+            if (currentUnit.standingOnTile.unitOnTile == currentUnit)
+            {
+                currentUnit.standingOnTile.unitOnTile = null;
+            }
         }
 
+        // Update unit's position and tile reference
         currentUnit.transform.position = new Vector3(
             newTile.transform.position.x,
             newTile.transform.position.y + 0.0001f,
@@ -301,9 +302,14 @@ public class MouseController : MonoBehaviour
 
         currentUnit.GetComponent<SpriteRenderer>().sortingOrder = newTile.GetComponent<SpriteRenderer>().sortingOrder;
         currentUnit.standingOnTile = newTile;
-        newTile.isBlocked = true;
-        newTile.activeCharacter = currentUnit;
-        newTile.unitOnTile = currentUnit;
+
+        // Only block and claim the tile if it's the final destination
+        if (isFinalTile)
+        {
+            newTile.isBlocked = true;
+            newTile.activeCharacter = currentUnit;
+            newTile.unitOnTile = currentUnit;
+        }
     }
 
     private static RaycastHit2D? GetFocusedOnTile()

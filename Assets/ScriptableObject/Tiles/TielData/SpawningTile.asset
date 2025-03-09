@@ -16,6 +16,6 @@ MonoBehaviour:
   hasTooltip: 0
   tooltipName: 
   tooltipDescription: SpawningTile
-  type: 5
+  type: 0
   MoveCost: 1
   effect: {fileID: 0}
