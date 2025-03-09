@@ -4166,6 +4166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turnOrderList: []
   selectedUnit: {fileID: 0}
+  mainCamera: {fileID: 0}
   unitButtons:
   - {fileID: 1255143148}
   - {fileID: 2112468011}

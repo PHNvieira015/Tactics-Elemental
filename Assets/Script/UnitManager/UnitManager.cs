@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,6 +9,9 @@ public class UnitManager : MonoBehaviour
     public List<Unit> turnOrderList;
     [SerializeField] private Unit selectedUnit;
     private GameMaster gameMaster;
+    [SerializeField] private Camera mainCamera;
+
+
 
     [Header("UI References")]
     [SerializeField] private Button[] unitButtons;
@@ -47,6 +51,7 @@ public class UnitManager : MonoBehaviour
     {
         gameMaster = FindObjectOfType<GameMaster>();
         turnOrderList = new List<Unit>();
+        mainCamera = Camera.main;
     }
 
     private void Start()
@@ -54,7 +59,37 @@ public class UnitManager : MonoBehaviour
         SetTurnOrderList();
         InitializeUI();
     }
+    public void MoveCameraToUnit(Unit unit)
+    {
+        if (unit == null) return;
 
+        Vector3 targetPosition = new Vector3(
+            unit.transform.position.x,
+            unit.transform.position.y,
+            mainCamera.transform.position.z
+        );
+        mainCamera.transform.position = targetPosition;
+        StartCoroutine(SmoothCameraMove(targetPosition));
+    }
+    private IEnumerator SmoothCameraMove(Vector3 targetPosition)
+    {
+        float duration = 0.5f;
+        Vector3 startPosition = mainCamera.transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            mainCamera.transform.position = Vector3.Lerp(
+                startPosition,
+                targetPosition,
+                elapsed / duration
+            );
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        mainCamera.transform.position = targetPosition;
+    }
     private void InitializeUI()
     {
         if (healthBarImage) healthBarImage.fillAmount = 1f;
@@ -185,10 +220,12 @@ public class UnitManager : MonoBehaviour
 
     void OnUnitButtonClick(int unitIndex)
     {
-        if (unitIndex < turnOrderList.Count)
         {
-            Unit unit = turnOrderList[unitIndex];
-            SetSelectedUnit(unit);
+            if (unitIndex < turnOrderList.Count)
+            {
+                Unit unit = turnOrderList[unitIndex];
+                MoveCameraToUnit(unit);
+            }
         }
     }
 
