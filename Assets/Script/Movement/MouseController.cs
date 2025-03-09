@@ -168,21 +168,22 @@ public class MouseController : MonoBehaviour
                 }
 
                 // Move the unit to the clicked position if it's in range
-                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving && rangeFinderTiles.Contains(tile))
+                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving)
                 {
-                    if (rangeFinderTiles.Contains(tile))
+                    if (tile.unitOnTile == null)  // Prevent landing on occupied tiles
                     {
                         path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
-                        if (path.Count > 0)
-                        {
-                            isMoving = true; // Lock movement state
-                        }
+                        if (path.Count > 0) isMoving = true;
+                    }
+                    else
+                    {
+                        Debug.Log("Cannot move to occupied tile");
                     }
                 }
-                #endregion
+            #endregion
 
-                #region attack
-                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
+            #region attack
+            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
                 {
                     if (attackRangeTiles.Contains(tile))
                     {
@@ -338,17 +339,17 @@ public class MouseController : MonoBehaviour
 
         if (currentUnit != null)
         {
-
             rangeFinderTiles = rangeFinder.GetTilesInRange(
-            new Vector2Int(
-                currentUnit.standingOnTile.gridLocation.x,
-                currentUnit.standingOnTile.gridLocation.y
-            ),
-            Mathf.RoundToInt(currentUnit.characterStats.movementRange),
-            false // Do not ignore obstacles (movement is blocked by obstacles)
-        );
-        // Only visualize the range if the turn state allows movement.
-             if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Moving)
+                new Vector2Int(
+                    currentUnit.standingOnTile.gridLocation.x,
+                    currentUnit.standingOnTile.gridLocation.y
+                ),
+                Mathf.RoundToInt(currentUnit.characterStats.movementRange),
+                currentUnit.teamID,  // Team ID parameter
+                false // Ignore obstacles
+            );
+            // Only visualize the range if the turn state allows movement.
+            if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Moving)
             {
                 foreach (var tile in rangeFinderTiles)
                 {
@@ -386,13 +387,14 @@ public class MouseController : MonoBehaviour
             return;
         }
 
-        attackRangeTiles = rangeFinder.GetTilesInRange(
+        rangeFinderTiles = rangeFinder.GetTilesInRange(
             new Vector2Int(
                 currentUnit.standingOnTile.gridLocation.x,
                 currentUnit.standingOnTile.gridLocation.y
             ),
-            Mathf.RoundToInt(currentUnit.attackRange), 
-            true // Ignore obstacles
+            Mathf.RoundToInt(currentUnit.characterStats.movementRange),
+            currentUnit.teamID,
+            false
         );
 
         // Visualize only if in Attack state

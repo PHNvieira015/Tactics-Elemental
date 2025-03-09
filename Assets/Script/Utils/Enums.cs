@@ -30,7 +30,7 @@ public enum TileTypes
     Effect,
     PlayerUnitBlocked,
     EnemyUnitBlocked,
-    Spawner
+    Spawner,
 }
 
 public enum MovementDirection

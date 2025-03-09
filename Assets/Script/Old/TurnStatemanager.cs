@@ -99,6 +99,13 @@ public class TurnStateManager : MonoBehaviour
                 if (mouseController != null)
                 {
                     mouseController.ClearPathArrows();
+                    TurnStartingPosition = currentUnit.transform.position;
+                    currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
+                    // Clear previous tile references
+                    if (currentUnit.standingOnTile != null)
+                    {
+                        currentUnit.standingOnTile.ClearUnit();
+                    }
                 }
                 else
                 {

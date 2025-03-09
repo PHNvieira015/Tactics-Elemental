@@ -53,7 +53,7 @@ public class UI_ActionBar : MonoBehaviour
         //change position back to orignial indevelopment
 
         //add the go back to starting position
-        Debug.Log("Returning to Turn Start...");
+        Debug.Log("Returning to waiting...");
         turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
         GameObjectButton_return.gameObject.SetActive(false);
         GameObjectButton_move.gameObject.SetActive(true);

@@ -11,9 +11,9 @@ public class PathFinder
     public List<OverlayTile> FindPath(OverlayTile start, OverlayTile end, List<OverlayTile> inRangeTiles)
     {
         searchableTiles = new Dictionary<Vector2Int, OverlayTile>();
-
         List<OverlayTile> openList = new List<OverlayTile>();
         HashSet<OverlayTile> closedList = new HashSet<OverlayTile>();
+        int currentTeamID = start.unitOnTile?.teamID ?? -1;
 
         if (inRangeTiles.Count > 0)
         {
@@ -43,7 +43,12 @@ public class PathFinder
 
             foreach (var tile in GetNeightbourOverlayTiles(currentOverlayTile))
             {
-                if (tile.isBlocked || closedList.Contains(tile) || Mathf.Abs(currentOverlayTile.transform.position.z - tile.transform.position.z) > 1)
+                // New blocking checks
+                bool isObstacle = tile.isBlockedByObstacle;
+                bool isEnemyOccupied = tile.unitOnTile != null && tile.unitOnTile.teamID != currentTeamID;
+                bool heightMismatch = Mathf.Abs(currentOverlayTile.transform.position.z - tile.transform.position.z) > 1;
+
+                if (closedList.Contains(tile) || isObstacle || isEnemyOccupied || heightMismatch)
                 {
                     continue;
                 }

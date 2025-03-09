@@ -5,7 +5,12 @@ using UnityEngine;
 
 public class RangeFinder
 {
-    public List<OverlayTile> GetTilesInRange(Vector2Int location, int range, bool ignoreObstacles = false)
+    public List<OverlayTile> GetTilesInRange(
+    Vector2Int location,
+    int range,
+    int teamID,  // Added teamID parameter
+    bool ignoreObstacles = false
+)
     {
         MapManager mapManager = GameObject.FindObjectOfType<MapManager>();
 
@@ -32,11 +37,27 @@ public class RangeFinder
 
             foreach (var tile in tilesForPreviousStep)
             {
-                surroundingTiles.AddRange(mapManager.GetNeighbourTiles(tile, new List<OverlayTile>(), ignoreObstacles));
+                var neighbours = mapManager.GetNeighbourTiles(tile, new List<OverlayTile>(), true);
+
+                foreach (var neighbour in neighbours)
+                {
+                    // Skip obstacles unless ignoring them
+                    if (!ignoreObstacles && neighbour.isBlockedByObstacle)
+                        continue;
+
+                    // Skip tiles with enemy units
+                    if (neighbour.unitOnTile != null && neighbour.unitOnTile.teamID != teamID)
+                        continue;
+
+                    if (!inRangeTiles.Contains(neighbour))
+                    {
+                        surroundingTiles.Add(neighbour);
+                        inRangeTiles.Add(neighbour);
+                    }
+                }
             }
 
-            inRangeTiles.AddRange(surroundingTiles);
-            tilesForPreviousStep = surroundingTiles.Distinct().ToList();
+            tilesForPreviousStep = surroundingTiles;
             stepCount++;
         }
 

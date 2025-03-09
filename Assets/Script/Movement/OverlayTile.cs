@@ -23,6 +23,10 @@ public class OverlayTile : MonoBehaviour
 
     public List<Sprite> arrows;
 
+    public bool isBlockedByObstacle => tileData?.type == TileTypes.NonTraversable;
+    public int teamID => unitOnTile?.teamID ?? -1;
+
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
