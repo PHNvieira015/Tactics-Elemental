@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Axe
   itemDescription: 
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: a1cf7b00fd0923e4aa7ded6692aea581, type: 3}
   strengthBonus: 2
   agilityBonus: 0
   intellectBonus: 0

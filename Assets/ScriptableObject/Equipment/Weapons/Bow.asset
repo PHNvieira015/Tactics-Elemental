@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Bow
   itemDescription: Simple Bow
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 86ce2a2e3334e0f4b94b468b1c65e4fe, type: 3}
   strengthBonus: 0
   agilityBonus: 2
   intellectBonus: 0

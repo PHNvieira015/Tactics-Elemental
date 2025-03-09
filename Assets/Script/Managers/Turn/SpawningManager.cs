@@ -19,11 +19,14 @@ public class SpawningManager : MonoBehaviour
     [SerializeField] private GameObject EnemySpawnerTiles;
     [SerializeField] private GameObject PlayerSpawningTiles;
     [SerializeField] private UnitManager unitManager;
+    private List<OverlayTile> allSpawningTiles = new List<OverlayTile>();
+    private bool spawningPhaseActive;
 
     void Start()
     {
         playedUnits = new List<Unit>();
         enemyList = new List<Unit>(GameMaster.instance.spawnedUnits);
+        InitializeSpawningTiles();
 
         if (gameMaster != null)
         {
@@ -81,7 +84,8 @@ public class SpawningManager : MonoBehaviour
 
         if (playedUnits.Count == 0)
         {
-            Debug.LogError("No units to spawn, spawn units to continue.");
+            Debug.Log("No units to spawn, spawn units to continue.");
+            print("No units to spawn, spawn units to continue.");
             return;
         }
 
@@ -161,7 +165,7 @@ public class SpawningManager : MonoBehaviour
                 // Only highlight the topmost tile
                 if (IsTopTile(tile))
                 {
-                    tile.ShowTile(spawnTileColor, TileType.Spawn);
+                    tile.ShowTile(Color.blue, TileType.Spawn); // Brighten hovered tile
 
                     if (unitPreview == null && playerAvailableUnits.Count > 0)
                     {
@@ -301,4 +305,23 @@ public class SpawningManager : MonoBehaviour
 
         return null;
     }
+    private void InitializeSpawningTiles()
+    {
+        allSpawningTiles.Clear();
+
+        // Get player spawning tiles
+        foreach (Transform child in PlayerSpawningTiles.transform)
+        {
+            var tile = child.GetComponent<OverlayTile>();
+            if (tile != null) allSpawningTiles.Add(tile);
+        }
+
+        // Get enemy spawning tiles
+        foreach (Transform child in EnemySpawnerTiles.transform)
+        {
+            var tile = child.GetComponent<OverlayTile>();
+            if (tile != null) allSpawningTiles.Add(tile);
+        }
+    }
+
 }
