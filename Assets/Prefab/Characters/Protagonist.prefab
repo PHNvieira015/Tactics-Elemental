@@ -44,6 +44,10 @@ PrefabInstance:
       propertyPath: unitGameObject
       value: 
       objectReference: {fileID: 1235754595728221991}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: abilities.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1801358683268259246, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
