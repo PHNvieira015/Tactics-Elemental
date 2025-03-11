@@ -19,6 +19,7 @@ public class UI_ActionBar : MonoBehaviour
     [SerializeField] public GameObject GameObjectButton_skill;
     [SerializeField] public GameObject GameObjectButton_condition;
     [SerializeField] public GameObject GameObjectButton_wait;
+    [SerializeField] public GameObject GameObject_SkillUIGroup;
 
     private TurnStateManager turnStateManager;
 
@@ -77,7 +78,15 @@ public class UI_ActionBar : MonoBehaviour
     private void OnSkillButtonClicked()
     {
         Debug.Log("Skill button clicked.");
-        turnStateManager.ChangeState(TurnStateManager.TurnState.UsingSkill);
+        if (turnStateManager.currentTurnState == TurnStateManager.TurnState.UsingSkill)
+        {
+            turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
+        }
+        else 
+        {
+            turnStateManager.ChangeState(TurnStateManager.TurnState.UsingSkill);
+        }
+
     }
 
     private void OnConditionButtonClicked()
@@ -91,4 +100,5 @@ public class UI_ActionBar : MonoBehaviour
         Debug.Log("Wait button clicked.");
         turnStateManager.ChangeState(TurnStateManager.TurnState.EndTurn);
     }
+
 }

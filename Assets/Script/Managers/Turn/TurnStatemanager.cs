@@ -197,12 +197,26 @@ public class TurnStateManager : MonoBehaviour
                 Debug.Log($"{currentUnit.name} is using a skill...");
                 // Skill usage logic
                 EnableUI_Action();
+                if (uiActionBar != null && uiActionBar.GameObject_SkillUIGroup != null)
+                {
+                    uiActionBar.GameObject_SkillUIGroup.SetActive(true);
+                }
+                else
+                {
+                    Debug.LogError("Skill UI Group reference is missing!");
+                }
                 //uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
+                uiActionBar.GameObjectButton_return.SetActive(false);
+                uiActionBar.GameObjectButton_move.SetActive(false);
+                uiActionBar.GameObjectButton_attack.SetActive(false);
+                //uiActionBar.GameObjectButton_condition.SetActive(false);
+                //uiActionBar.GameObjectButton_wait.SetActive(false);
                 break;
             #endregion
 
             #region Waiting
             case TurnState.Waiting:
+                uiActionBar.GameObject_SkillUIGroup.SetActive(false);
                 EnableUI_Action();
                 Debug.Log($"{currentUnit.name} is waiting...");
                 Camera.main.transform.position = new Vector3(
