@@ -99,6 +99,10 @@ public class OverlayTile : MonoBehaviour
                     break;
                 case TileType.AttackColor:
                     break;
+                case TileType.DamageSkillColor:
+                    break;
+                case TileType.BuffSkillColor:
+                    break;
                 case TileType.Blocked:
                     break;
             }
@@ -211,8 +215,10 @@ public enum TileType
     Movement,
     AttackRangeColor,
     AttackColor,
+    DamageSkillColor,
+    BuffSkillColor,
     Blocked,
     Spawn,
     EnemyunitBlocked,
-    PlayerunitBlocked
+    PlayerunitBlocked,
 }

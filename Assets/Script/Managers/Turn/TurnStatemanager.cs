@@ -12,6 +12,7 @@ public class TurnStateManager : MonoBehaviour
     [HideInInspector] public Vector3 TurnStartingPosition;
     private TurnStateManager turnStateManager;
     [SerializeField] private UnitManager unitManager;
+    public Skill selectedSkill; // Track selected skill
 
     public enum TurnState
     {
@@ -21,6 +22,7 @@ public class TurnStateManager : MonoBehaviour
         Moving,
         Attacking,
         UsingSkill,
+        SkillTargeting,
         Waiting,
         EndTurn
     }
@@ -211,6 +213,13 @@ public class TurnStateManager : MonoBehaviour
                 uiActionBar.GameObjectButton_attack.SetActive(false);
                 //uiActionBar.GameObjectButton_condition.SetActive(false);
                 //uiActionBar.GameObjectButton_wait.SetActive(false);
+                break;
+            #endregion
+
+            #region SkillTargeting
+            case TurnState.SkillTargeting:
+                mouseController.ShowSkillRange(selectedSkill);
+                DisableUI_Action();
                 break;
             #endregion
 

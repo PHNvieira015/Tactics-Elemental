@@ -45,8 +45,8 @@ public class RangeFinder
                     if (!ignoreObstacles && neighbour.isBlockedByObstacle)
                         continue;
 
-                    // Skip tiles with enemy units
-                    if (neighbour.unitOnTile != null && neighbour.unitOnTile.teamID != teamID)
+                    // Skip tiles with enemy units unless ignoring obstacles (for attack range)
+                    if (!ignoreObstacles && neighbour.unitOnTile != null && neighbour.unitOnTile.teamID != teamID)
                         continue;
 
                     if (!inRangeTiles.Contains(neighbour))

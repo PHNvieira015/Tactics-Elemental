@@ -20,7 +20,7 @@ MonoBehaviour:
   cooldown: 0
   cost: 0
   value: 0
-  attackType: 1
+  attackType: 2
   elementType: 0
   targetType: 1
   includeOrigin: 0

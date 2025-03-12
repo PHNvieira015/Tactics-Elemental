@@ -97,6 +97,10 @@ public class MouseController : MonoBehaviour
         {
             GetAttackRangeTiles();
         }
+        if (turnStateManager.currentTurnState == TurnState.SkillTargeting)
+        {
+            ShowSkillRange(turnStateManager.selectedSkill);
+        }
 
         RaycastHit2D? hit = GetFocusedOnTile();
 
@@ -330,42 +334,31 @@ public class MouseController : MonoBehaviour
 
     public void GetInRangeTiles()
     {
-
-        if (currentUnit == null)
+        if (currentUnit == null || currentUnit.standingOnTile == null)
         {
-            //Debug.LogError("CurrentUnit is null! Ensure SetUnit() is called before moving.");
+            //Debug.LogError("CurrentUnit is null or not on a tile!");
             return;
         }
 
-        if (currentUnit.standingOnTile == null)
-        {
-            Debug.LogError("CurrentUnit is not standing on a tile!");
-            return;
-        }
+        rangeFinderTiles = rangeFinder.GetTilesInRange(
+            new Vector2Int(
+                currentUnit.standingOnTile.gridLocation.x,
+                currentUnit.standingOnTile.gridLocation.y
+            ),
+            Mathf.RoundToInt(currentUnit.characterStats.movementRange),
+            currentUnit.teamID,
+            false // Pass false to respect obstacles (including enemy units)
+        );
 
-        if (currentUnit != null)
+        // Visualize only if in Moving state
+        if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Moving)
         {
-            rangeFinderTiles = rangeFinder.GetTilesInRange(
-                new Vector2Int(
-                    currentUnit.standingOnTile.gridLocation.x,
-                    currentUnit.standingOnTile.gridLocation.y
-                ),
-                Mathf.RoundToInt(currentUnit.characterStats.movementRange),
-                currentUnit.teamID,  // Team ID parameter
-                false // Ignore obstacles
-            );
-            // Only visualize the range if the turn state allows movement.
-            if (turnStateManager != null && turnStateManager.currentTurnState == TurnState.Moving)
+            foreach (var tile in rangeFinderTiles)
             {
-                foreach (var tile in rangeFinderTiles)
+                if (tile.unitOnTile == null)
                 {
-                    if (tile.unitOnTile==null && turnStateManager.currentTurnState == TurnState.Moving)
-                    {
-                        tile.ShowTile(color, TileType.Movement); // Visualize the range
-                    }
+                    tile.ShowTile(color, TileType.Movement);
                 }
-
-                //Debug.Log($"Highlighted {rangeFinderTiles.Count} tiles for movement.");
             }
         }
     }
@@ -388,7 +381,6 @@ public class MouseController : MonoBehaviour
     {
         ClearAttackRangeTiles(); // Clear old tiles first
         Debug.Log($"Calculating attack range for: {currentUnit?.name} (Attack Range: {currentUnit?.attackRange})");
-        
 
         if (currentUnit == null || currentUnit.standingOnTile == null)
         {
@@ -396,14 +388,14 @@ public class MouseController : MonoBehaviour
             return;
         }
 
-        rangeFinderTiles = rangeFinder.GetTilesInRange(
+        attackRangeTiles = rangeFinder.GetTilesInRange(
             new Vector2Int(
                 currentUnit.standingOnTile.gridLocation.x,
                 currentUnit.standingOnTile.gridLocation.y
             ),
-            Mathf.RoundToInt(currentUnit.characterStats.movementRange),
+            Mathf.RoundToInt(currentUnit.attackRange), // Use attackRange instead of movementRange
             currentUnit.teamID,
-            false
+            true // Pass true to ignore obstacles (including enemy units)
         );
 
         // Visualize only if in Attack state
@@ -440,5 +432,37 @@ public class MouseController : MonoBehaviour
             }
             attackRangeTiles.Clear();
         }
+    }
+    public void ShowSkillRange(Skill skill)
+    {
+        ClearAttackRangeTiles();
+        attackRangeTiles = rangeFinder.GetTilesInRange(
+            currentUnit.standingOnTile.grid2DLocation,
+            skill.range,  // Now using the parameter
+            currentUnit.teamID,
+            true
+        );
+
+        foreach (var tile in attackRangeTiles)
+        {
+            tile.ShowTile(Color.cyan, TileType.DamageSkillColor);
+        }
+    }
+    private void UseSkillOnTarget(OverlayTile targetTile)
+    {
+        Unit targetUnit = targetTile.unitOnTile;
+        Skill skill = turnStateManager.selectedSkill;
+
+        // Apply skill effects
+        if (skill.targetType == Skill.TargetType.Enemy && targetUnit != null)
+        {
+            damageSystem.CalculateDamage(currentUnit, targetUnit);
+        }
+        // Add other target types and effects as needed
+
+        // Consume resources
+        currentUnit.hasAttacked = true;
+        turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
+        ClearAttackRangeTiles();
     }
 }

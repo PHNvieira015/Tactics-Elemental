@@ -47,8 +47,7 @@ public class UI_Manager : MonoBehaviour
 
     public void DisplayUnitInfo(Unit unit)
     {
-
-
+        currentUnit = unit;
         //Debug.Log("UI_Manager: Unit information updated for " + unit.name);
     }
     private void OnTurnStateChanged(TurnStateManager.TurnState newState)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Ability", menuName = "Tactical RPG/Character/Ability")]
-public class Ability : ScriptableObject
+public class Skill : ScriptableObject
 {
     [Header("General")]
     public string Name;

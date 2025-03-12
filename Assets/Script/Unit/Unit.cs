@@ -47,7 +47,7 @@ public class Unit : MonoBehaviour
 
 
     private UnitSkills unitSkills;
-    public List<Ability> abilities;
+    public List<Skill> skillslist;
     #endregion
 
     #region skills
