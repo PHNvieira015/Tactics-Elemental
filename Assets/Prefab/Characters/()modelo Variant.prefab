@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 1337989675174498596}
   - component: {fileID: 8931217287400680452}
   - component: {fileID: 8136399621069120847}
+  - component: {fileID: 6701442406017429958}
   m_Layer: 10
   m_Name: ()modelo Variant
   m_TagString: Untagged
@@ -186,6 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4088a82e5570ba4bae6c3d7a51ab7ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitName: 
   characterStats: {fileID: 8931217287400680452}
   turnStateManager: {fileID: 0}
   unitGameObject: {fileID: 1808987032276278563}
@@ -206,9 +208,10 @@ MonoBehaviour:
   Yposition: 0
   battleHandler: {fileID: 0}
   damageSystem: {fileID: 0}
+  unitSpriteRenderer: {fileID: 0}
   buffs: []
   debuffs: []
-  abilities: []
+  skillslist: []
 --- !u!114 &8931217287400680452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,6 +232,9 @@ MonoBehaviour:
   equippedArmor: {fileID: 11400000, guid: bccba060c3ab95f45b40d9f19f8eb220, type: 2}
   accessory1: {fileID: 11400000, guid: f283e99cda5abf444a19f550431988ee, type: 2}
   accessory2: {fileID: 11400000, guid: f283e99cda5abf444a19f550431988ee, type: 2}
+  CharacterLevel: 1
+  experience: 0
+  requiredExperience: 20
   maxBaseHealth: 50
   currentHealth: 50
   maxMana: 24
@@ -237,7 +243,7 @@ MonoBehaviour:
   agility: 0
   intellect: 0
   PrimaryAttackType: 0
-  AttackRange: 0
+  attackRangeBonus: 0
   armorValue: 0
   physicalDefense: 0
   magicalDefense: 0
@@ -247,10 +253,8 @@ MonoBehaviour:
   faceDirection: 0
   weight: 0
   initiative: 0
+  RoundInitiative: 0
   movementRange: 3
-  CharacterLevel: 1
-  experience: 0
-  requiredExperience: 20
 --- !u!114 &8136399621069120847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,8 +269,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slideSpeed: 5
   reachedDistance: 1
+  healthBar: {fileID: 0}
   damageManager: {fileID: 0}
   damageSystem: {fileID: 0}
+--- !u!114 &6701442406017429958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808987032276278563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 275c4307e17842d418e9720ca5376cb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2002893845217513422
 GameObject:
   m_ObjectHideFlags: 0
@@ -556,6 +573,7 @@ GameObject:
   - component: {fileID: 7410210832532357685}
   - component: {fileID: 2161935363493563731}
   - component: {fileID: 7798603503965672777}
+  - component: {fileID: 817399028540868484}
   m_Layer: 10
   m_Name: UnitSprite
   m_TagString: Untagged
@@ -642,6 +660,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &817399028540868484
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6128993453666486054}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6808402186744926048
 GameObject:
   m_ObjectHideFlags: 0

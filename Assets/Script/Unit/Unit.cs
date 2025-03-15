@@ -48,6 +48,9 @@ public class Unit : MonoBehaviour
 
     private UnitSkills unitSkills;
     public List<Skill> skillslist;
+
+    private DirectionHandler directionHandler;
+
     #endregion
 
     #region skills
@@ -57,6 +60,7 @@ public class Unit : MonoBehaviour
             if (unitSpriteRenderer == null)
                 unitSpriteRenderer = transform.Find("UnitSprite")?.GetComponent<SpriteRenderer>();
         }
+        directionHandler = GetComponent<DirectionHandler>();
         turnStateManager ??= FindObjectOfType<TurnStateManager>();
         characterStats = GetComponent<CharacterStat>();
         unitGameObject = gameObject;
@@ -227,19 +231,19 @@ public void ApplyBuff(Buff newBuff)
     #region FaceDirection
     public void SetFaceDirectionAtTurnEnd()
     {
-        if (characterStats.faceDirection == CharacterStat.Direction.North)
+        if (characterStats.faceDirection == CharacterStat.Direction.UpLeft)
         {
             Debug.Log("Unit is facing North.");
         }
-        else if (characterStats.faceDirection == CharacterStat.Direction.East)
+        else if (characterStats.faceDirection == CharacterStat.Direction.DownRight)
         {
             Debug.Log("Unit is facing East.");
         }
-        else if (characterStats.faceDirection == CharacterStat.Direction.South)
+        else if (characterStats.faceDirection == CharacterStat.Direction.DownLeft)
         {
             Debug.Log("Unit is facing South.");
         }
-        else if (characterStats.faceDirection == CharacterStat.Direction.West)
+        else if (characterStats.faceDirection == CharacterStat.Direction.UpLeft)
         {
             Debug.Log("Unit is facing West.");
         }

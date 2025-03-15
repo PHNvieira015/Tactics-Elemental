@@ -173,6 +173,7 @@ public class MouseController : MonoBehaviour
 
                 // Move the unit to the clicked position if it's in range
                 if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving)
+
                 {
                     if (tile.unitOnTile == null)  // Prevent landing on occupied tiles
                     {

@@ -6,6 +6,7 @@ using static Weapon;
 public class CharacterStat : MonoBehaviour
 {
     #region variables
+    [Header("Name/Description")]
     public string CharacterName;
     public string CharacterDescription;
     public enum CharacterClass { None, Warrior, Mage, Archer }
@@ -15,18 +16,27 @@ public class CharacterStat : MonoBehaviour
     public LevelUpSystem levelUp;
 
     // **Explicit Equipment Slots**
+    [Header("Equipemnt Settings")]
     public Weapon equippedWeapon;  // 1 Weapon slot
     public Armor equippedArmor;    // 1 Armor slot
     public Accessory accessory1;   // 1st accessory slot
     public Accessory accessory2;   // 2nd accessory slot
 
+       // Character Stats
+    [Header("LevelUp Stats")]
+    public int CharacterLevel;
+    public int experience;
+    public int requiredExperience;
+
     // Resources
+    [Header("Resources")]
     public int maxBaseHealth;
     public int currentHealth;
     public int maxMana;
     public int currentMana;
 
     // Editable stats (in Inspector)
+    [Header("Damage Stats")]
     public int strength;
     public int agility;
     public int intellect;
@@ -34,6 +44,7 @@ public class CharacterStat : MonoBehaviour
     public int attackRangeBonus;
 
     // Defensive stats (Editable)
+    [Header("Defensive Stats")]
     public int armorValue;
     public int physicalDefense;
     public int magicalDefense;
@@ -47,19 +58,23 @@ public class CharacterStat : MonoBehaviour
     [HideInInspector] public ArmorType armorType;
 
     // Player direction
-    public enum Direction { North, East, South, West }
+    public enum Direction
+    {
+        UpRight,    // North
+        UpLeft,     // West 
+        DownRight,   // East
+        DownLeft     // South
+    }
     [HideInInspector] public Direction faceDirection; //define with movement
 
     // Movement stats (Editable)
+    [Header("Movement/Initiative")]
     public int weight;
     public float initiative;
     [HideInInspector] public float RoundInitiative;
     public float movementRange;
 
-    // Character Stats
-    public int CharacterLevel;
-    public int experience;
-    public int requiredExperience;
+ 
 
     #endregion
 
@@ -263,5 +278,52 @@ public class CharacterStat : MonoBehaviour
     {
         RoundInitiative=RoundInitiative/100;  // Divide RountInitiative by 100
     }
+
+
+    public void CalculateBasicStats()
+    {
+        // Base stats based on class
+        switch (characterClass)
+        {
+            case CharacterClass.Warrior:
+                strength = 10 + (CharacterLevel * 3);  // Base strength + scaling with level
+                agility = 5 + (CharacterLevel * 0);   // Base agility + scaling with level
+                intellect = 3 + (CharacterLevel * 0); // Base intellect + no scaling for Warrior
+                maxBaseHealth = 150 + (CharacterLevel * 10);  // Base health + scaling with level
+                maxMana = 50 + (CharacterLevel * 4);   // Base mana + scaling with level for Warrior
+                break;
+
+            case CharacterClass.Mage:
+                strength = 3 + (CharacterLevel * 0);   // Lower strength for Mage
+                agility = 5 + (CharacterLevel * 0);    // Agility scaling for Mage
+                intellect = 15 + (CharacterLevel * 3); // Higher intellect for Mage
+                maxBaseHealth = 80 + (CharacterLevel * 4);  // Lower health scaling for Mage
+                maxMana = 100 + (CharacterLevel * 10);  // Higher mana scaling for Mage
+                break;
+
+            case CharacterClass.Archer:
+                strength = 7 + (CharacterLevel * 0);   // Base strength for Archer
+                agility = 12 + (CharacterLevel * 3);   // Higher agility scaling for Archer
+                intellect = 4 + (CharacterLevel * 0);  // Lower intellect for Archer
+                maxBaseHealth = 100 + (CharacterLevel * 6); // Medium health scaling for Archer
+                maxMana = 60 + (CharacterLevel * 6);  // Medium mana scaling for Archer
+                break;
+
+            default:
+                strength = 5 + (CharacterLevel * 1);   // Default stat for unassigned class
+                agility = 5 + (CharacterLevel * 1);
+                intellect = 5 + (CharacterLevel * 1);
+                maxBaseHealth = 70 + (CharacterLevel * 5);
+                maxMana = 60 + (CharacterLevel * 5);
+                break;
+        }
+
+        // After calculation, make sure to initialize health and mana
+        currentHealth = maxBaseHealth;
+        currentMana = maxMana;
+
+        Debug.Log($"Calculated Stats for {CharacterName}: Strength = {strength}, Agility = {agility}, Intellect = {intellect}, Health = {currentHealth}, Mana = {currentMana}");
+    }
+
 }
 #endregion
