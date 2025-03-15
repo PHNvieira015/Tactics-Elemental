@@ -26393,6 +26393,7 @@ MonoBehaviour:
   currentUnit: {fileID: 0}
   turnStateManager: {fileID: 1538757723}
   spawningManager: {fileID: 1190875574}
+  unitManager: {fileID: 0}
   State: 0
 --- !u!1 &1853304692
 GameObject:

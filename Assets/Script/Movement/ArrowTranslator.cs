@@ -4,19 +4,19 @@ public class ArrowTranslator
 {
     public enum ArrowDirection
     {
-        None = 0,
-        Up = 1,
-        Down = 2,
-        Left = 3,
-        Right = 4,
-        TopLeft = 5,
-        BottomLeft = 6,
-        TopRight = 7,
-        BottomRight = 8,
-        UpFinished = 9,
-        DownFinished = 10,
-        LeftFinished = 11,
-        RightFinished = 12
+        None = 0,          //Arrows_0 - nothing - None
+        Up = 1,            //Arrows_4 - Midle - UpLeft
+        Down = 2,          // Arrows_6 - Midle - DownRight
+        Left = 3,          // Arrows_5 - Midle - DownRight or the opposite..
+        Right = 4,         // Arrows_7 - Midle - DownRight or the opposite..
+        TopLeft = 5,       // Arrows_8 - Midle - UpRight or the opposite..
+        BottomLeft = 6,    //Arrows_11 - Corner -  
+        TopRight = 7,      //Arrows_9 - Corner - 
+        BottomRight = 8,   //Arrows_10 - Corner -  
+        UpFinished = 9,    //Arrows_3 - Finisher - UpRight
+        DownFinished = 10, //Arrows_1 - Finisher - BottonRight
+        LeftFinished = 11, //Arrows_2 - Finisher - DownLeft
+        RightFinished = 12 //Arrows_0 - Finisher - UpLeft
     }
 
     public ArrowDirection TranslateDirection(OverlayTile previousTile, OverlayTile currentTile, OverlayTile futureTile)

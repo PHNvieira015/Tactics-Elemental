@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 8931217287400680452}
   - component: {fileID: 8136399621069120847}
   - component: {fileID: 6701442406017429958}
-  - component: {fileID: 1427367871175943185}
+  - component: {fileID: 2725242325327982056}
   m_Layer: 10
   m_Name: ()modelo Variant
   m_TagString: Untagged
@@ -213,6 +213,7 @@ MonoBehaviour:
   buffs: []
   debuffs: []
   skillslist: []
+  directionHandler: {fileID: 0}
 --- !u!114 &8931217287400680452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,7 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275c4307e17842d418e9720ca5376cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1427367871175943185
+--- !u!114 &2725242325327982056
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

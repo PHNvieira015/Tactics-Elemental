@@ -7,6 +7,7 @@ using System.Collections;
 using UnityEngine.UIElements;
 using UnityEngine.EventSystems;
 using static TurnStateManager;
+using System;
 
 public class MouseController : MonoBehaviour
 {
@@ -263,14 +264,33 @@ public class MouseController : MonoBehaviour
             // Update unit facing direction BEFORE moving
             if (i < path.Count - 1)
             {
-                Vector2Int newDirection = new Vector2Int(
+                // Calculate the direction to the next tile
+                Vector2Int movementDirection = new Vector2Int(
                     path[i + 1].gridLocation.x - path[i].gridLocation.x,
                     path[i + 1].gridLocation.y - path[i].gridLocation.y
                 );
-                currentUnit.directionHandler.UpdateFacingDirectionForState(TurnState.Moving, newDirection);
+                // Determine characterStat.Direction based on movement direction
+                // Set the unit's facing direction based on movement direction
+                if (movementDirection == new Vector2Int(0, 1))
+                {
+                    currentUnit.characterStats.faceDirection = CharacterStat.Direction.UpLeft;  // Moving North   UpRight
+                }
+                else if (movementDirection == new Vector2Int(0, -1))
+                {
+                    currentUnit.characterStats.faceDirection = CharacterStat.Direction.DownRight;  // Moving South  DownRight
+                }
+                else if (movementDirection == new Vector2Int(-1, 0))
+                {
+                    currentUnit.characterStats.faceDirection = CharacterStat.Direction.DownLeft;  // Moving West   UpLeft
+                }
+                else if (movementDirection == new Vector2Int(1, 0))
+                {
+                    currentUnit.characterStats.faceDirection = CharacterStat.Direction.UpRight;  // Moving East  DownLeft
+                }
             }
 
-            while (!Mathf.Approximately(Vector2.Distance(currentUnit.transform.position, tile.transform.position), 0))
+        // Move the unit to the current tile
+        while (!Mathf.Approximately(Vector2.Distance(currentUnit.transform.position, tile.transform.position), 0))
             {
                 currentUnit.transform.position = Vector2.MoveTowards(
                     currentUnit.transform.position,
@@ -290,9 +310,6 @@ public class MouseController : MonoBehaviour
         isMoving = false;
         currentUnit.hasMoved = true;
         turnStateManager.ChangeState(TurnState.Waiting);
-
-        // Set hasMoved Only After movement is complete
-        currentUnit.hasMoved = true;
     }
 
     private void PositionCharacterOnLine(OverlayTile newTile, bool isFinalTile)
@@ -385,6 +402,12 @@ public class MouseController : MonoBehaviour
 
         currentUnit = newUnit;
         GetInRangeTiles(); // Refresh movement range
+
+        // Initialize facing direction based on the unit's current position
+        if (currentUnit != null && currentUnit.standingOnTile != null)
+        {
+            //currentUnit.characterStats.faceDirection = CharacterStat.Direction.UpRight; // Default direction
+        }
 
         Debug.Log($"Attack range tiles after SetUnit: {attackRangeTiles?.Count}");
     }

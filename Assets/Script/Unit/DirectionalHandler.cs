@@ -1,74 +1,45 @@
+using System.Collections.Generic;
 using UnityEngine;
-using static TurnStateManager;
 
-[RequireComponent(typeof(Unit))]
 public class DirectionHandler : MonoBehaviour
 {
-    private Unit currentUnit;
-    private AnimatorScript animatorScript;
+    private ArrowTranslator _arrowTranslator = new ArrowTranslator();
 
-    private void Awake()
+    public List<CharacterStat.Direction> GetFacingDirections(List<OverlayTile> path)
     {
-        currentUnit = GetComponent<Unit>();
-        animatorScript = GetComponent<AnimatorScript>();
-    }
+        List<CharacterStat.Direction> facingDirections = new List<CharacterStat.Direction>();
 
-    public void UpdateFacingDirectionForState(TurnState state, Vector2Int? targetPosition = null)
-    {
-        CharacterStat.Direction newDirection = currentUnit.characterStats.faceDirection; // Default to current
-
-        switch (state)
+        for (int i = 0; i < path.Count; i++)
         {
-            case TurnState.Moving:
-                if (targetPosition.HasValue)
-                {
-                    // Convert the unit's current position (Vector3) to Vector2Int by casting to Vector2
-                    Vector2Int unitPosition = new Vector2Int((int)currentUnit.transform.position.x, (int)currentUnit.transform.position.y);
-                    newDirection = GetDirectionFromVector(targetPosition.Value - unitPosition);
-                }
-                break;
+            OverlayTile previousTile = i > 0 ? path[i - 1] : null;
+            OverlayTile currentTile = path[i];
+            OverlayTile futureTile = i < path.Count - 1 ? path[i + 1] : null;
 
-            case TurnState.Attacking:
-            case TurnState.SkillTargeting:
-                if (targetPosition.HasValue)
-                {
-                    Vector2Int unitPosition = new Vector2Int((int)currentUnit.transform.position.x, (int)currentUnit.transform.position.y);
-                    newDirection = GetDirectionFromVector(targetPosition.Value - unitPosition);
-                }
-                break;
+            ArrowTranslator.ArrowDirection arrowDir =
+                _arrowTranslator.TranslateDirection(previousTile, currentTile, futureTile);
 
-            case TurnState.Spawning:
-                Vector2Int spawnPosition = new Vector2Int((int)GetEnemySpawnerPosition().x, (int)GetEnemySpawnerPosition().y);
-                newDirection = GetDirectionFromVector(spawnPosition - new Vector2Int((int)currentUnit.transform.position.x, (int)currentUnit.transform.position.y));
-                break;
+            // Convert ArrowDirection to CharacterStat.Direction
+            CharacterStat.Direction direction = ConvertArrowDirection(arrowDir);
+            facingDirections.Add(direction);
         }
 
-        // Only update if there's a change in direction
-        if (currentUnit.characterStats.faceDirection != newDirection)
+        return facingDirections;
+    }
+
+    private CharacterStat.Direction ConvertArrowDirection(ArrowTranslator.ArrowDirection arrowDir)
+    {
+        switch (arrowDir)
         {
-            currentUnit.characterStats.faceDirection = newDirection;
-            UpdateDirectionAnimation();
+            case ArrowTranslator.ArrowDirection.Up:
+                return CharacterStat.Direction.UpRight; // North
+            case ArrowTranslator.ArrowDirection.Down:
+                return CharacterStat.Direction.DownLeft; // South
+            case ArrowTranslator.ArrowDirection.Left:
+                return CharacterStat.Direction.UpLeft; // West
+            case ArrowTranslator.ArrowDirection.Right:
+                return CharacterStat.Direction.DownRight; // East
+            default:
+                return CharacterStat.Direction.UpRight; // Default to North
         }
-    }
-
-
-
-    private CharacterStat.Direction GetDirectionFromVector(Vector2Int dir)
-    {
-        if (dir.x > 0)
-            return dir.y > 0 ? CharacterStat.Direction.UpRight : CharacterStat.Direction.DownRight;
-        else
-            return dir.y > 0 ? CharacterStat.Direction.UpLeft : CharacterStat.Direction.DownLeft;
-    }
-
-    private Vector2Int GetEnemySpawnerPosition()
-    {
-        // Replace this with actual logic to get the enemy spawner position
-        return new Vector2Int(0, 0);
-    }
-
-    private void UpdateDirectionAnimation()
-    {
-        animatorScript.SetDirection(currentUnit.characterStats.faceDirection);
     }
 }
