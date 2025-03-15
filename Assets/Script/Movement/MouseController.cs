@@ -140,23 +140,26 @@ public class MouseController : MonoBehaviour
                 // Update TargetPosition
                 TargetPosition = tile.transform.position;
                 GetInRangeTiles();
-
                 if (currentUnit == null || currentUnit.standingOnTile == null || currentUnit.characterStats == null)
                 {
                     return; // Exit early if unit, tile, or stats are not ready
                 }
                 if (rangeFinderTiles.Contains(tile))
+
                 {
-                    // Debug.Log($"Tile {tile.name} is within range.");
+                    //Debug.Log($"Tile {tile.name} is within range.");
+                    //Debug.Log($"Path Count Before Calculation: {path.Count}");
+                    // Only recalculate path if the target tile is in range
                     if (currentUnit.standingOnTile != tile)
                     {
+                        // Calculate the path from the current unit's standing tile to the clicked tile
                         path = pathFinder.FindPath(currentUnit.standingOnTile, tile, rangeFinderTiles);
 
+                        // Visualize the path with arrows
                         foreach (var item in rangeFinderTiles)
                         {
                             MapManager.Instance.map[item.grid2DLocation].SetSprite(ArrowDirection.None);
                         }
-
                         if (turnStateManager.currentTurnState == TurnState.Moving)
                         {
                             for (int i = 0; i < path.Count; i++)
@@ -165,7 +168,7 @@ public class MouseController : MonoBehaviour
                                 var futureTile = i < path.Count - 1 ? path[i + 1] : null;
 
                                 var arrow = arrowTranslator.TranslateDirection(previousTile, path[i], futureTile);
-                                path[i].SetSprite(arrow);
+                                path[i].SetSprite((ArrowDirection)arrow); // Cast to ArrowDirection
                             }
                         }
                     }
@@ -185,10 +188,10 @@ public class MouseController : MonoBehaviour
                         Debug.Log("Cannot move to occupied tile");
                     }
                 }
-            #endregion
+                #endregion
 
-            #region attack
-            if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
+                #region attack
+                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
                 {
                     if (attackRangeTiles.Contains(tile))
                     {
@@ -258,14 +261,14 @@ public class MouseController : MonoBehaviour
             bool isFinalTile = (i == path.Count - 1);
 
             // Update unit facing direction BEFORE moving
-if (i < path.Count - 1)
-{
-    Vector2Int newDirection = new Vector2Int(
-        path[i + 1].gridLocation.x - path[i].gridLocation.x,
-        path[i + 1].gridLocation.y - path[i].gridLocation.y
-    );
-    currentUnit.directionHandler.UpdateFacingDirectionForState(TurnState.Moving, newDirection);
-}
+            if (i < path.Count - 1)
+            {
+                Vector2Int newDirection = new Vector2Int(
+                    path[i + 1].gridLocation.x - path[i].gridLocation.x,
+                    path[i + 1].gridLocation.y - path[i].gridLocation.y
+                );
+                currentUnit.directionHandler.UpdateFacingDirectionForState(TurnState.Moving, newDirection);
+            }
 
             while (!Mathf.Approximately(Vector2.Distance(currentUnit.transform.position, tile.transform.position), 0))
             {

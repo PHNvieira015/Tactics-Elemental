@@ -40,3 +40,20 @@ public enum MovementDirection
     Left = 2,
     Right = 3
 }
+
+public enum ArrowDirection
+{
+    None = 0,
+    Up = 1,
+    Down = 2,
+    Left = 3,
+    Right = 4,
+    TopLeft = 5,
+    BottomLeft = 6,
+    TopRight = 7,
+    BottomRight = 8,
+    UpFinished = 9,
+    DownFinished = 10,
+    LeftFinished = 11,
+    RightFinished = 12
+}
