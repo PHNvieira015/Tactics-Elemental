@@ -257,6 +257,16 @@ public class MouseController : MonoBehaviour
             var tile = path[i];
             bool isFinalTile = (i == path.Count - 1);
 
+            // Update unit facing direction BEFORE moving
+if (i < path.Count - 1)
+{
+    Vector2Int newDirection = new Vector2Int(
+        path[i + 1].gridLocation.x - path[i].gridLocation.x,
+        path[i + 1].gridLocation.y - path[i].gridLocation.y
+    );
+    currentUnit.directionHandler.UpdateFacingDirectionForState(TurnState.Moving, newDirection);
+}
+
             while (!Mathf.Approximately(Vector2.Distance(currentUnit.transform.position, tile.transform.position), 0))
             {
                 currentUnit.transform.position = Vector2.MoveTowards(
@@ -277,10 +287,9 @@ public class MouseController : MonoBehaviour
         isMoving = false;
         currentUnit.hasMoved = true;
         turnStateManager.ChangeState(TurnState.Waiting);
-    //GetInRangeTiles(); // Refresh range tiles after movement   //possibily change it as we should not move twice in a turn.
 
-    //Sethasmoved Only After movement is complete
-    currentUnit.hasMoved = true;
+        // Set hasMoved Only After movement is complete
+        currentUnit.hasMoved = true;
     }
 
     private void PositionCharacterOnLine(OverlayTile newTile, bool isFinalTile)

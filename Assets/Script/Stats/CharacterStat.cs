@@ -58,14 +58,14 @@ public class CharacterStat : MonoBehaviour
     [HideInInspector] public ArmorType armorType;
 
     // Player direction
-    public enum Direction
+    [SerializeField]public enum Direction
     {
         UpRight,    // North
         UpLeft,     // West 
         DownRight,   // East
         DownLeft     // South
     }
-    [HideInInspector] public Direction faceDirection; //define with movement
+    public Direction faceDirection; //define with movement
 
     // Movement stats (Editable)
     [Header("Movement/Initiative")]

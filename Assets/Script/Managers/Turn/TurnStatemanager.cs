@@ -239,7 +239,6 @@ public class TurnStateManager : MonoBehaviour
             #region endTurn
             case TurnState.EndTurn:
                 DisableUI_Action();
-                currentUnit.SetFaceDirectionAtTurnEnd();
                 currentUnit.selected = false;
 
                 // Reset flags

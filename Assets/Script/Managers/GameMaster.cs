@@ -20,6 +20,7 @@ public class GameMaster : MonoBehaviour
     public Unit currentUnit;
     public TurnStateManager turnStateManager;
     public SpawningManager spawningManager;
+    public UnitManager unitManager;
 
     public static event Action<GameState> OnGameStateChanged;
 
@@ -174,8 +175,16 @@ public class GameMaster : MonoBehaviour
         //Debug.Log($"Player count: {playerList.Count}, enemyList count: {enemyList.Count}");
 
         // Combine all units into a single list
+        //unitManager.turnOrderList.RemoveAll(unit => unit == null);
         var allUnits = new List<Unit>(playerList);
         allUnits.AddRange(enemyList);
+
+        // Ensure no null elements are in the lists before proceeding
+        allUnits.RemoveAll(unit => unit == null);
+        playerList.RemoveAll(unit => unit == null);
+        playerAvailableUnits.RemoveAll(unit => unit == null);
+        playerList.RemoveAll(unit => unit == null);
+        spawnedUnits.RemoveAll(unit => unit == null);
 
         //Debug.Log($"Total units before sorting and filtering: {allUnits.Count}");
 
@@ -386,4 +395,62 @@ public class GameMaster : MonoBehaviour
             ProcessUnitTurn();  // This will either find the next living unit or handle the end of the round.
         }
     }
+    public static void RemoveUnit(Unit unit)
+    {
+        if (unit == null)
+        {
+            Debug.LogError("Unit is null. Cannot remove from lists.");
+            return;
+        }
+
+        // Log before removing
+        Debug.Log($"Removing unit: {unit.name}");
+
+        // Remove from the turn queue (if present)
+        if (instance.turnQueue.Contains(unit))
+        {
+            // We need to create a new queue without the removed unit
+            List<Unit> queueList = new List<Unit>(instance.turnQueue);
+            queueList.Remove(unit);
+            instance.turnQueue = new Queue<Unit>(queueList); // Reassign the updated queue
+        }
+        else
+        {
+            Debug.LogWarning($"Unit {unit.name} is not in the turn order queue.");
+        }
+
+        // Remove the unit from all lists
+        RemoveUnitFromList(instance.playerList, unit);
+        RemoveUnitFromList(instance.enemyList, unit);
+        RemoveUnitFromList(instance.spawnedUnits, unit);
+
+        // Clean up any null references that may remain after removal
+        CleanUpNullEntries(instance.playerList);
+        CleanUpNullEntries(instance.enemyList);
+        CleanUpNullEntries(instance.spawnedUnits);
+
+        // Clean up the turn queue to ensure no null entries are left
+        CleanUpNullEntries(instance.turnQueue.ToList());
+
+        // Log after removal
+        Debug.Log($"{unit.name} has been successfully removed from all lists.");
+    }
+
+    private static void RemoveUnitFromList(List<Unit> unitList, Unit unit)
+    {
+        if (unitList.Contains(unit))
+        {
+            unitList.Remove(unit);
+        }
+    }
+
+    private static void CleanUpNullEntries(List<Unit> unitList)
+    {
+        // Remove all null elements from the list
+        unitList.RemoveAll(unit => unit == null);
+    }
+
+
+
+
 }

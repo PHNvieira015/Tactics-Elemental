@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 8931217287400680452}
   - component: {fileID: 8136399621069120847}
   - component: {fileID: 6701442406017429958}
+  - component: {fileID: 1427367871175943185}
   m_Layer: 10
   m_Name: ()modelo Variant
   m_TagString: Untagged
@@ -282,6 +283,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 275c4307e17842d418e9720ca5376cb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1427367871175943185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808987032276278563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 315727d94414ec14dabe4bea009b4119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2002893845217513422

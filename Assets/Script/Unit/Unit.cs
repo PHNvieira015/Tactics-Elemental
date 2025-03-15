@@ -49,7 +49,7 @@ public class Unit : MonoBehaviour
     private UnitSkills unitSkills;
     public List<Skill> skillslist;
 
-    private DirectionHandler directionHandler;
+    public DirectionHandler directionHandler;
 
     #endregion
 
@@ -229,9 +229,17 @@ public void ApplyBuff(Buff newBuff)
     #endregion
 
     #region FaceDirection
-    public void SetFaceDirectionAtTurnEnd()
+    public void SetFaceDirectionAtTurnEnd(CharacterStat.Direction newDirection)
     {
+        // Set the new direction
+        characterStats.faceDirection = newDirection;
+
+        // Debug the new direction
         if (characterStats.faceDirection == CharacterStat.Direction.UpLeft)
+        {
+            Debug.Log("Unit is facing West.");
+        }
+        else if (characterStats.faceDirection == CharacterStat.Direction.UpRight)
         {
             Debug.Log("Unit is facing North.");
         }
@@ -242,10 +250,6 @@ public void ApplyBuff(Buff newBuff)
         else if (characterStats.faceDirection == CharacterStat.Direction.DownLeft)
         {
             Debug.Log("Unit is facing South.");
-        }
-        else if (characterStats.faceDirection == CharacterStat.Direction.UpLeft)
-        {
-            Debug.Log("Unit is facing West.");
         }
     }
     #endregion

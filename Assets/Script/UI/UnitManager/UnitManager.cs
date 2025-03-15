@@ -11,8 +11,6 @@ public class UnitManager : MonoBehaviour
     private GameMaster gameMaster;
     [SerializeField] private Camera mainCamera;
 
-
-
     [Header("UI References")]
     [SerializeField] private Button[] unitButtons;
     [SerializeField] private float cameraMoveDuration = 0.2f;
@@ -129,6 +127,16 @@ public class UnitManager : MonoBehaviour
     {
         if (turnOrderList.Remove(unit))
         {
+            // Find the index of the unit in the turnOrder list
+            int unitIndex = turnOrderList.IndexOf(unit);
+
+            // Hide or destroy the button associated with this unit
+            if (unitIndex >= 0 && unitIndex < unitButtons.Length)
+            {
+                unitButtons[unitIndex].gameObject.SetActive(false); // or Destroy(unitButtons[unitIndex].gameObject);
+            }
+
+            // Update the UI to reflect the removal of the unit
             UpdateTurnOrderUI();
         }
     }
@@ -188,9 +196,21 @@ public class UnitManager : MonoBehaviour
             bool hasUnit = i < turnOrderList.Count;
             btn.gameObject.SetActive(hasUnit);
 
-            if (!hasUnit) continue;
+            if (!hasUnit)
+            {
+                // Hide and remove button for the unit if not present in the list
+                btn.gameObject.SetActive(false);  // You can also destroy the button if required
+                continue;
+            }
 
             Unit unit = turnOrderList[i];
+            if (unit == null)
+            {
+                // If the unit is null, remove the corresponding button from UI
+                btn.gameObject.SetActive(false);
+                continue;
+            }
+
             SetupButton(btn, unit, i);
         }
     }

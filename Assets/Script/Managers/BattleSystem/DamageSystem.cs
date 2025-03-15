@@ -7,6 +7,8 @@ public class DamageSystem : MonoBehaviour
 {
     public BattleHandler battleHandler; // Reference to BattleHandler for handling battle logic
     public int baseDamage = 1;
+    private UnitManager unitManager;
+    private GameMaster gameMaster;
 
     public static DamageSystem Instance { get; private set; }
 
@@ -24,8 +26,32 @@ public class DamageSystem : MonoBehaviour
 
     public void Attack(Unit attacker, Unit target)
     {
+        if (attacker == null || target == null)
+        {
+            Debug.LogError("Attacker or Target is null! Cannot perform attack.");
+            return;
+        }
+
+        if (battleHandler == null)
+        {
+            Debug.LogError("BattleHandler is not assigned!");
+            return;
+        }
+
         battleHandler.attackerCharacterBattle = attacker.GetComponent<CharacterBattle>();
         battleHandler.targetCharacterBattle = target.GetComponent<CharacterBattle>();
+
+        if (battleHandler.attackerCharacterBattle == null)
+        {
+            Debug.LogError("Attacker does not have a CharacterBattle component!");
+            return;
+        }
+
+        if (battleHandler.targetCharacterBattle == null)
+        {
+            Debug.LogError("Target does not have a CharacterBattle component!");
+            return;
+        }
 
         if (!IsWithinAttackRange(attacker, target))
         {
@@ -55,6 +81,12 @@ public class DamageSystem : MonoBehaviour
                 //target.gameObject.SetActive(false);
                 target.standingOnTile.ClearUnit();
                 Destroy(target.gameObject);
+                if (unitManager != null)
+                {
+                    unitManager.RemoveUnitFromTurnOrder(target);
+                    GameMaster.RemoveUnit(target);
+                }
+
             }
             else
             {
@@ -62,6 +94,7 @@ public class DamageSystem : MonoBehaviour
             }
         }
     }
+
 
 
     private bool IsWithinAttackRange(Unit attacker, Unit target)
