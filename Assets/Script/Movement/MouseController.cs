@@ -206,6 +206,7 @@ public class MouseController : MonoBehaviour
 
                             if (targetUnit.playerOwner != currentUnit.playerOwner)
                             {
+                                UpdateFaceDirection(targetUnit.standingOnTile);
                                 CharacterBattle attackerBattle = currentUnit.GetComponent<CharacterBattle>();
                                 CharacterBattle targetBattle = targetUnit.GetComponent<CharacterBattle>();
 
@@ -537,4 +538,5 @@ public class MouseController : MonoBehaviour
         turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
         ClearAttackRangeTiles();
     }
+
 }

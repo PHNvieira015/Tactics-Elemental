@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class AnimatorScript : MonoBehaviour
 {
-    [SerializeField] private AnimationState testAnimationState; // Serialized field for testing animation state
-    [SerializeField] private CharacterStat.Direction testDirection; // Serialized field for testing direction
     private Animator animator;
-    private AnimationState currentAnimationState;
-    private CharacterStat.Direction currentDirection;
+    [SerializeField] private AnimationState currentAnimationState;
+    [SerializeField] private CharacterStat.Direction currentDirection;
+
+    // Reference to TurnStateManager and CharacterStat
     private Unit currentUnit;
 
     // Directional animation hashes for Idle
@@ -35,8 +35,6 @@ public class AnimatorScript : MonoBehaviour
 
     // Add similar hashes for Death and Extra if needed...
 
-
-
     public enum AnimationState
     {
         Idle,
@@ -59,17 +57,48 @@ public class AnimatorScript : MonoBehaviour
             Debug.LogError("Animator does not have an AnimatorController assigned!", this);
         }
 
-        // Hardcode for testing
-        SetAnimation(AnimationState.Walking);
-        SetDirection(CharacterStat.Direction.UpLeft);
+        // Get the Unit component
+        if (currentUnit == null)
+        {
+            currentUnit = GetComponent<Unit>();
+            if (currentUnit == null)
+            {
+                Debug.LogError("Unit component not found on this GameObject!", this);
+            }
+        }
+
+
+        //// Initialize references
+        //if (currentUnit.turnStateManager == null)
+        //{
+        //    currentUnit.turnStateManager = GetComponent<TurnStateManager>();
+        //    if (currentUnit.turnStateManager == null)
+        //    {
+        //        Debug.LogError("TurnStateManager not found on this GameObject!", this);
+        //    }
+        //}
+
+        //if (currentUnit.characterStats == null)
+        //{
+        //    currentUnit.characterStats = GetComponent<CharacterStat>();
+        //    if (currentUnit.characterStats == null)
+        //    {
+        //        Debug.LogError("CharacterStat not found on this GameObject!", this);
+        //    }
+        //}
     }
+
     private void Update()
     {
-        // Hardcode for testing
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Update animation based on TurnState and faceDirection
+        if (currentUnit!= null)
         {
-            SetAnimation(testAnimationState);
-            SetDirection(testDirection);
+            // Map TurnState to AnimationState
+            AnimationState newAnimationState = MapTurnStateToAnimationState(currentUnit.turnStateManager.currentTurnState);
+
+            // Set animation state and direction
+            SetAnimation(newAnimationState);
+            SetDirection(currentUnit.characterStats.faceDirection);
         }
     }
 
@@ -123,6 +152,27 @@ public class AnimatorScript : MonoBehaviour
 
             // Add cases for Death and Extra if needed...
             _ => throw new System.ArgumentOutOfRangeException()
+        };
+    }
+
+    private AnimationState MapTurnStateToAnimationState(TurnStateManager.TurnState turnState)
+    {
+        // Map TurnState to AnimationState
+        return turnState switch
+        {
+            TurnStateManager.TurnState.TurnStart => AnimationState.Walking,
+            TurnStateManager.TurnState.Moving => AnimationState.Walking,
+            TurnStateManager.TurnState.Attacking => AnimationState.Idle,
+            TurnStateManager.TurnState.UsingSkill => AnimationState.Walking,
+            TurnStateManager.TurnState.SkillTargeting => AnimationState.Casting,
+            TurnStateManager.TurnState.Waiting => AnimationState.Walking,
+            TurnStateManager.TurnState.EndTurn => AnimationState.Walking,
+
+            //WIP add jumping on turn Start??
+            // Add cases for Death and Extra if needed...
+            //WIP Special Skill Animation
+            //WIP attacking aniamtion is going to be forced in
+            _ => AnimationState.Idle // Default to Idle for unhandled states
         };
     }
 }
