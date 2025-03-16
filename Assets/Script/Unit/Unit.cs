@@ -11,6 +11,8 @@ using static TurnStateManager;
 [RequireComponent(typeof(CharacterStat))]
 public class Unit : MonoBehaviour
 {
+    public AnimatorScript animationScript;
+
     #region variables
     public string unitName; // Name of the unit
     // Reference to CharacterStat MonoBehaviour for accessing stats and data

@@ -4,7 +4,9 @@ public class AnimatorScript : MonoBehaviour
 {
     [SerializeField] private AnimationState testAnimationState; // Serialized field for testing animation state
     [SerializeField] private CharacterStat.Direction testDirection; // Serialized field for testing direction
-
+    private Animator animator;
+    private AnimationState currentAnimationState;
+    private CharacterStat.Direction currentDirection;
     private Unit currentUnit;
 
     // Directional animation hashes for Idle
@@ -33,9 +35,7 @@ public class AnimatorScript : MonoBehaviour
 
     // Add similar hashes for Death and Extra if needed...
 
-    private Animator animator;
-    private AnimationState currentAnimationState;
-    private CharacterStat.Direction currentDirection;
+
 
     public enum AnimationState
     {
@@ -62,6 +62,15 @@ public class AnimatorScript : MonoBehaviour
         // Hardcode for testing
         SetAnimation(AnimationState.Walking);
         SetDirection(CharacterStat.Direction.UpLeft);
+    }
+    private void Update()
+    {
+        // Hardcode for testing
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SetAnimation(testAnimationState);
+            SetDirection(testDirection);
+        }
     }
 
     public void SetAnimation(AnimationState newState)
