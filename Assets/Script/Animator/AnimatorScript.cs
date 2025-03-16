@@ -21,7 +21,7 @@ public class AnimatorScript : MonoBehaviour
     private static readonly int Walking_DownRight = Animator.StringToHash("Walking_DownRight");
     private static readonly int Walking_DownLeft = Animator.StringToHash("Walking_DownLeft");
 
-    // Directional animation hashes for Attack
+    // Directional animation hashes for Attack Animation
     private static readonly int Attack_UpRight = Animator.StringToHash("Attack_UpRight");
     private static readonly int Attack_UpLeft = Animator.StringToHash("Attack_UpLeft");
     private static readonly int Attack_DownRight = Animator.StringToHash("Attack_DownRight");
@@ -33,6 +33,12 @@ public class AnimatorScript : MonoBehaviour
     private static readonly int Casting_DownRight = Animator.StringToHash("Casting_DownRight");
     private static readonly int Casting_DownLeft = Animator.StringToHash("Casting_DownLeft");
 
+    // Directional animation hashes for Extra
+    private static readonly int Extra_UpRight = Animator.StringToHash("Extra_UpRight");
+    private static readonly int Extra_UpLeft = Animator.StringToHash("Extra_UpLeft");
+    private static readonly int Extra_DownRight = Animator.StringToHash("Extra_DownRight");
+    private static readonly int Extra_DownLeft = Animator.StringToHash("Extra_DownLeft");
+
     // Add similar hashes for Death and Extra if needed...
 
     public enum AnimationState
@@ -41,8 +47,8 @@ public class AnimatorScript : MonoBehaviour
         Walking,
         Attacking,
         Casting,
+        Extra,
         Death,
-        Extra
     }
 
     private void Start()
@@ -149,6 +155,12 @@ public class AnimatorScript : MonoBehaviour
             (AnimationState.Casting, CharacterStat.Direction.UpLeft) => Casting_UpLeft,
             (AnimationState.Casting, CharacterStat.Direction.DownRight) => Casting_DownRight,
             (AnimationState.Casting, CharacterStat.Direction.DownLeft) => Casting_DownLeft,
+
+            (AnimationState.Extra, CharacterStat.Direction.UpRight) => Extra_UpRight,
+            (AnimationState.Extra, CharacterStat.Direction.UpLeft) => Extra_UpLeft,
+            (AnimationState.Extra, CharacterStat.Direction.DownRight) => Extra_DownRight,
+            (AnimationState.Extra, CharacterStat.Direction.DownLeft) => Extra_DownLeft,
+
 
             // Add cases for Death and Extra if needed...
             _ => throw new System.ArgumentOutOfRangeException()
