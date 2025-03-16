@@ -1,8 +1,12 @@
 using UnityEngine;
-using static TurnStateManager;
 
 public class AnimatorScript : MonoBehaviour
 {
+    [SerializeField] private AnimationState testAnimationState; // Serialized field for testing animation state
+    [SerializeField] private CharacterStat.Direction testDirection; // Serialized field for testing direction
+
+    private Unit currentUnit;
+
     // Directional animation hashes for Idle
     private static readonly int Idle_UpRight = Animator.StringToHash("Idle_UpRight");
     private static readonly int Idle_UpLeft = Animator.StringToHash("Idle_UpLeft");
@@ -10,10 +14,10 @@ public class AnimatorScript : MonoBehaviour
     private static readonly int Idle_DownLeft = Animator.StringToHash("Idle_DownLeft");
 
     // Directional animation hashes for Walk
-    private static readonly int Walk_UpRight = Animator.StringToHash("Walk_UpRight");
-    private static readonly int Walk_UpLeft = Animator.StringToHash("Walk_UpLeft");
-    private static readonly int Walk_DownRight = Animator.StringToHash("Walk_DownRight");
-    private static readonly int Walk_DownLeft = Animator.StringToHash("Walk_DownLeft");
+    private static readonly int Walking_UpRight = Animator.StringToHash("Walking_UpRight");
+    private static readonly int Walking_UpLeft = Animator.StringToHash("Walking_UpLeft");
+    private static readonly int Walking_DownRight = Animator.StringToHash("Walking_DownRight");
+    private static readonly int Walking_DownLeft = Animator.StringToHash("Walking_DownLeft");
 
     // Directional animation hashes for Attack
     private static readonly int Attack_UpRight = Animator.StringToHash("Attack_UpRight");
@@ -36,8 +40,8 @@ public class AnimatorScript : MonoBehaviour
     public enum AnimationState
     {
         Idle,
-        Walk,
-        Attack,
+        Walking,
+        Attacking,
         Casting,
         Death,
         Extra
@@ -46,6 +50,18 @@ public class AnimatorScript : MonoBehaviour
     private void Start()
     {
         animator = GetComponentInChildren<Animator>();
+        if (animator == null)
+        {
+            Debug.LogError("Animator component not found on this GameObject or its children!", this);
+        }
+        else if (animator.runtimeAnimatorController == null)
+        {
+            Debug.LogError("Animator does not have an AnimatorController assigned!", this);
+        }
+
+        // Hardcode for testing
+        SetAnimation(AnimationState.Walking);
+        SetDirection(CharacterStat.Direction.UpLeft);
     }
 
     public void SetAnimation(AnimationState newState)
@@ -67,34 +83,37 @@ public class AnimatorScript : MonoBehaviour
     private void UpdateAnimation()
     {
         int stateHash = GetAnimationHash(currentAnimationState, currentDirection);
-        animator.CrossFade(stateHash, 0.1f, 0);
+        Debug.Log($"Playing animation: {currentAnimationState} {currentDirection} (Hash: {stateHash})");
+        animator.CrossFade(stateHash, 0f, 0); // Instant transition
     }
 
     private int GetAnimationHash(AnimationState state, CharacterStat.Direction dir)
     {
-        string baseName = state switch
+        // Return the pre-defined animation hash based on the state and direction
+        return (state, dir) switch
         {
-            AnimationState.Idle => "Idle",
-            AnimationState.Walk => "Walk",
-            AnimationState.Attack => "Attack",
-            AnimationState.Casting => "Casting",
-            AnimationState.Death => "Death",
-            AnimationState.Extra => "Extra",
+            (AnimationState.Idle, CharacterStat.Direction.UpRight) => Idle_UpRight,
+            (AnimationState.Idle, CharacterStat.Direction.UpLeft) => Idle_UpLeft,
+            (AnimationState.Idle, CharacterStat.Direction.DownRight) => Idle_DownRight,
+            (AnimationState.Idle, CharacterStat.Direction.DownLeft) => Idle_DownLeft,
+
+            (AnimationState.Walking, CharacterStat.Direction.UpRight) => Walking_UpRight,
+            (AnimationState.Walking, CharacterStat.Direction.UpLeft) => Walking_UpLeft,
+            (AnimationState.Walking, CharacterStat.Direction.DownRight) => Walking_DownRight,
+            (AnimationState.Walking, CharacterStat.Direction.DownLeft) => Walking_DownLeft,
+
+            (AnimationState.Attacking, CharacterStat.Direction.UpRight) => Attack_UpRight,
+            (AnimationState.Attacking, CharacterStat.Direction.UpLeft) => Attack_UpLeft,
+            (AnimationState.Attacking, CharacterStat.Direction.DownRight) => Attack_DownRight,
+            (AnimationState.Attacking, CharacterStat.Direction.DownLeft) => Attack_DownLeft,
+
+            (AnimationState.Casting, CharacterStat.Direction.UpRight) => Casting_UpRight,
+            (AnimationState.Casting, CharacterStat.Direction.UpLeft) => Casting_UpLeft,
+            (AnimationState.Casting, CharacterStat.Direction.DownRight) => Casting_DownRight,
+            (AnimationState.Casting, CharacterStat.Direction.DownLeft) => Casting_DownLeft,
+
+            // Add cases for Death and Extra if needed...
             _ => throw new System.ArgumentOutOfRangeException()
         };
-
-        string directionSuffix = dir switch
-        {
-            CharacterStat.Direction.UpRight => "_UpRight",
-            CharacterStat.Direction.UpLeft => "_UpLeft",
-            CharacterStat.Direction.DownRight => "_DownRight",
-            CharacterStat.Direction.DownLeft => "_DownLeft",
-            _ => "_UpRight"
-        };
-
-        return Animator.StringToHash(baseName + directionSuffix);
     }
-
-
-
 }

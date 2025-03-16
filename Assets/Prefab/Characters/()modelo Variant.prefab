@@ -286,6 +286,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275c4307e17842d418e9720ca5376cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testAnimationState: 0
+  testDirection: 0
 --- !u!114 &2725242325327982056
 MonoBehaviour:
   m_ObjectHideFlags: 0

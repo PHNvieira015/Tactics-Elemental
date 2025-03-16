@@ -255,6 +255,18 @@ public class MouseController : MonoBehaviour
             currentUnit.standingOnTile.activeCharacter = null;
             currentUnit.standingOnTile.isBlocked = false;
         }
+        // Check if there are any tiles in the path
+        if (path.Count > 0)
+        {
+            var firstTile = path[0];
+
+            // Update the face direction for the first tile
+            if (currentUnit.standingOnTile != firstTile)
+            {
+                UpdateFaceDirection(firstTile);
+
+            }
+        }
 
         for (int i = 0; i < path.Count; i++)
         {
@@ -312,6 +324,30 @@ public class MouseController : MonoBehaviour
         turnStateManager.ChangeState(TurnState.Waiting);
     }
 
+    private void UpdateFaceDirection(OverlayTile targetTile)
+    {
+        Vector2Int movementDirection = new Vector2Int(
+            targetTile.gridLocation.x - currentUnit.standingOnTile.gridLocation.x,
+            targetTile.gridLocation.y - currentUnit.standingOnTile.gridLocation.y
+        );
+        if (movementDirection == new Vector2Int(0, 1))
+        {
+            currentUnit.characterStats.faceDirection = CharacterStat.Direction.UpLeft;  // Moving North   UpRight
+        }
+        else if (movementDirection == new Vector2Int(0, -1))
+        {
+            currentUnit.characterStats.faceDirection = CharacterStat.Direction.DownRight;  // Moving South  DownRight
+        }
+        else if (movementDirection == new Vector2Int(-1, 0))
+        {
+            currentUnit.characterStats.faceDirection = CharacterStat.Direction.DownLeft;  // Moving West   UpLeft
+        }
+        else if (movementDirection == new Vector2Int(1, 0))
+        {
+            currentUnit.characterStats.faceDirection = CharacterStat.Direction.UpRight;  // Moving East  DownLeft
+        }
+
+    }
     private void PositionCharacterOnLine(OverlayTile newTile, bool isFinalTile)
     {
         // Clear previous tile's references if moving from it
