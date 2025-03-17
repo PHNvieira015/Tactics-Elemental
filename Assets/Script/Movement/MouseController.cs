@@ -212,14 +212,15 @@ public class MouseController : MonoBehaviour
 
                                 if (attackerBattle != null && targetBattle != null)
                                 {
-                                    attackerBattle.TriggerAttackAnimationnearattacker(targetBattle);
+                                    turnStateManager.ChangeState(TurnState.AttackingAnimation);       //Attacking Animation
+                                    //attackerBattle.TriggerAttackAnimationnearattacker(targetBattle);  //Sliding Animation
                                     Debug.Log("Attack animation triggered!");
 
-                                    damageSystem.Attack(currentUnit, targetUnit);
+
                                     currentUnit.hasAttacked = true;
                                     turnStateManager.uiActionBar.GameObjectButton_attack.SetActive(false);
-                                    turnStateManager.ChangeState(TurnState.Waiting);
-
+                                    StartCoroutine(WaitForAttackAndMovement(attackerBattle));
+                                    damageSystem.Attack(currentUnit, targetUnit);
                                 }
                                 else
                                 {
@@ -537,6 +538,20 @@ public class MouseController : MonoBehaviour
         currentUnit.hasAttacked = true;
         turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
         ClearAttackRangeTiles();
+    }
+    private IEnumerator WaitForAttackAndMovement(CharacterBattle attackerBattle)
+    {
+        // Wait for the attack animation to complete (adjust duration as needed)
+        yield return new WaitForSeconds(1.0f); // Adjust based on your animation length
+
+        // Wait for the movement to complete
+        while (attackerBattle.GetState() != CharacterBattle.State.Idle)
+        {
+            yield return null; // Wait until the character stops moving
+        }
+
+        // Transition to Waiting state after both animation and movement are complete
+        turnStateManager.ChangeState(TurnState.Waiting);
     }
 
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ public class TurnStateManager : MonoBehaviour
         Spawning,
         Moving,
         Attacking,
+        AttackingAnimation,
         UsingSkill,
         SkillTargeting,
         Waiting,
@@ -184,12 +186,20 @@ public class TurnStateManager : MonoBehaviour
                     // Attack logic
                     EnableUI_Action();
                     uiActionBar.GameObjectButton_attack.SetActive(false);
+                    //Changing to AttackingAnimation on TriggerAttackAnimationnearattacker from mousecontroller
                 }
                 else
                 {
                     Debug.Log($"{currentUnit.name} has already attacked.");
                     EnableUI_Action();
                 }
+                break;
+            #endregion
+
+            #region AttackingAnimation
+            case TurnState.AttackingAnimation:
+                StartCoroutine(WaitForAttackAnimation(currentUnit.characterStats.faceDirection));
+//                ChangeState(TurnState.Waiting);
                 break;
             #endregion
 
@@ -431,5 +441,28 @@ public class TurnStateManager : MonoBehaviour
     }
     #endregion
 
+    private IEnumerator WaitForAttackAnimation(CharacterStat.Direction attackDirection)
+    {
+        //// Get the length of the attack animation dynamically
+        //AnimatorScript animatorScript = currentUnit.GetComponentInChildren<AnimatorScript>();
+        //if (animatorScript != null)
+        //{
+        //    float animationLength = animatorScript.GetAttackAnimationLength(attackDirection);
+        //    yield return new WaitForSeconds(animationLength); // Wait for the exact duration of the animation
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("AnimatorScript not found. Using default animation duration.");
+        //    yield return new WaitForSeconds(1.0f); // Fallback to a default duration
+        //}
+        yield return new WaitForSeconds(1.0f); // Fallback to a default duration
+
+        // Transition to Waiting state after the animation is complete
+        ChangeState(TurnState.Waiting);
+    }
+    public void OnAttackAnimationStarted()
+    {
+        // No additional logic needed here unless you want to track animation state
+    }
 
 }

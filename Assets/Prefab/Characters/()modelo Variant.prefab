@@ -188,6 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4088a82e5570ba4bae6c3d7a51ab7ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animationScript: {fileID: 0}
   unitName: 
   characterStats: {fileID: 8931217287400680452}
   turnStateManager: {fileID: 0}
@@ -269,11 +270,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6083c4bd7ffb8c49a7f5d0bf76610ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   slideSpeed: 5
   reachedDistance: 1
   healthBar: {fileID: 0}
   damageManager: {fileID: 0}
   damageSystem: {fileID: 0}
+  animatorScript: {fileID: 0}
+  WaitForSeconds: 0
 --- !u!114 &6701442406017429958
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,8 +290,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275c4307e17842d418e9720ca5376cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testAnimationState: 0
-  testDirection: 0
+  currentAnimationState: 0
+  currentDirection: 0
 --- !u!114 &2725242325327982056
 MonoBehaviour:
   m_ObjectHideFlags: 0

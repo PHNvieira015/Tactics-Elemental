@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 817399028540868484, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 38bc15fe31371d843a3d5d4f421f348c, type: 2}
     - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: isAlive
       value: 1
@@ -30,7 +34,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1808987032276278563, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_Name
-      value: Arqueiro
+      value: Archer
       objectReference: {fileID: 0}
     - target: {fileID: 1870194359036316205, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: healthText

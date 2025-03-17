@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class AnimatorScript : MonoBehaviour
 {
@@ -22,10 +23,10 @@ public class AnimatorScript : MonoBehaviour
     private static readonly int Walking_DownLeft = Animator.StringToHash("Walking_DownLeft");
 
     // Directional animation hashes for Attack Animation
-    private static readonly int Attack_UpRight = Animator.StringToHash("Attack_UpRight");
-    private static readonly int Attack_UpLeft = Animator.StringToHash("Attack_UpLeft");
-    private static readonly int Attack_DownRight = Animator.StringToHash("Attack_DownRight");
-    private static readonly int Attack_DownLeft = Animator.StringToHash("Attack_DownLeft");
+    private static readonly int Attacking_UpRight = Animator.StringToHash("Attacking_UpRight");
+    private static readonly int Attacking_UpLeft = Animator.StringToHash("Attacking_UpLeft");
+    private static readonly int Attacking_DownRight = Animator.StringToHash("Attacking_DownRight");
+    private static readonly int Attacking_DownLeft = Animator.StringToHash("Attacking_DownLeft");
 
     // Directional animation hashes for Casting
     private static readonly int Casting_UpRight = Animator.StringToHash("Casting_UpRight");
@@ -146,10 +147,10 @@ public class AnimatorScript : MonoBehaviour
             (AnimationState.Walking, CharacterStat.Direction.DownRight) => Walking_DownRight,
             (AnimationState.Walking, CharacterStat.Direction.DownLeft) => Walking_DownLeft,
 
-            (AnimationState.Attacking, CharacterStat.Direction.UpRight) => Attack_UpRight,
-            (AnimationState.Attacking, CharacterStat.Direction.UpLeft) => Attack_UpLeft,
-            (AnimationState.Attacking, CharacterStat.Direction.DownRight) => Attack_DownRight,
-            (AnimationState.Attacking, CharacterStat.Direction.DownLeft) => Attack_DownLeft,
+            (AnimationState.Attacking, CharacterStat.Direction.UpRight) => Attacking_UpRight,
+            (AnimationState.Attacking, CharacterStat.Direction.UpLeft) => Attacking_UpLeft,
+            (AnimationState.Attacking, CharacterStat.Direction.DownRight) => Attacking_DownRight,
+            (AnimationState.Attacking, CharacterStat.Direction.DownLeft) => Attacking_DownLeft,
 
             (AnimationState.Casting, CharacterStat.Direction.UpRight) => Casting_UpRight,
             (AnimationState.Casting, CharacterStat.Direction.UpLeft) => Casting_UpLeft,
@@ -175,6 +176,7 @@ public class AnimatorScript : MonoBehaviour
             TurnStateManager.TurnState.TurnStart => AnimationState.Walking,
             TurnStateManager.TurnState.Moving => AnimationState.Walking,
             TurnStateManager.TurnState.Attacking => AnimationState.Idle,
+            TurnStateManager.TurnState.AttackingAnimation => AnimationState.Attacking,
             TurnStateManager.TurnState.UsingSkill => AnimationState.Walking,
             TurnStateManager.TurnState.SkillTargeting => AnimationState.Casting,
             TurnStateManager.TurnState.Waiting => AnimationState.Walking,
@@ -183,8 +185,33 @@ public class AnimatorScript : MonoBehaviour
             //WIP add jumping on turn Start??
             // Add cases for Death and Extra if needed...
             //WIP Special Skill Animation
-            //WIP attacking aniamtion is going to be forced in
+            //WIP attacking animation is going to be forced in
             _ => AnimationState.Idle // Default to Idle for unhandled states
         };
     }
+    public void PlayAttackAnimation(CharacterStat.Direction direction)
+    {
+        // Set the animation state to Attacking
+        currentAnimationState = AnimationState.Attacking;
+        currentDirection = direction;
+
+        // Play the appropriate attack animation based on direction
+        int stateHash = GetAnimationHash(currentAnimationState, currentDirection);
+        animator.Play(stateHash, 0, 0f); // Play the animation from the start
+    }
+    public float GetAttackAnimationLength(CharacterStat.Direction direction)
+    {
+        int stateHash = GetAnimationHash(AnimationState.Attacking, direction);
+
+        // Get the current animation clip info
+        AnimatorClipInfo[] clipInfo = animator.GetCurrentAnimatorClipInfo(0);
+        if (clipInfo.Length > 0)
+        {
+            return clipInfo[0].clip.length; // Return the length of the animation clip
+        }
+
+        Debug.LogWarning("Attack animation clip not found!");
+        return 1.0f; // Fallback to a default duration
+    }
+
 }
