@@ -1,14 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
 using TacticsToolkit;
 using UnityEngine;
-using System.Collections;
 
 public class AIController : MonoBehaviour
 {
     public Unit unit; // Reference to the Unit component
     public List<Unit> allEnemies; // List of all enemy units
     private OverlayTile targetTile; // Tile the AI is moving toward
-
     private PathFinder pathFinder; // Instance of your PathFinder
 
     private void Awake()
