@@ -55,7 +55,7 @@ public class GameMaster : MonoBehaviour
     public void UpdateGameState(GameState newState)
     {
         State = newState;
-        //Debug.Log($"Game state changed to: {newState}");
+        Debug.Log($"Game state changed to: {newState}");
 
         switch (newState)
         {
@@ -76,22 +76,29 @@ public class GameMaster : MonoBehaviour
                     Debug.LogError("Failed to initialize turn order. Player or enemy list is empty.");
                 }
                 break;
-            case GameState.UnitTurn:
-                {
-                    //Debug.Log("Unit Turn for " + currentUnit.name);
 
-                    // Initialize TurnStateManager with the current unit
-                    if (turnStateManager != null && currentUnit != null)
-                    {
-                        turnStateManager.SetCurrentUnit(currentUnit); // Set the current unit in TurnStateManager
-                        turnStateManager.ChangeState(TurnStateManager.TurnState.TurnStart); // Trigger turn start
-                    }
-                    else
-                    {
-                        Debug.LogError("TurnStateManager or currentUnit is null, unable to start turn.");
-                    }
-                    break;
+            case GameState.UnitTurn:
+                if (turnStateManager != null && currentUnit != null)
+                {
+                    turnStateManager.SetCurrentUnit(currentUnit);
+                    turnStateManager.ChangeState(TurnStateManager.TurnState.TurnStart);
+                    currentUnit = turnStateManager.currentUnit;
                 }
+                else
+                {
+                    Debug.LogError("TurnStateManager or currentUnit is null, unable to start turn.");
+                }
+                break;
+
+            case GameState.Victory:
+                Debug.Log("Victory! You have defeated all enemies.");
+                // Handle victory logic here (e.g., show victory screen)
+                break;
+
+            case GameState.Defeat:
+                Debug.Log("Defeat! All your units have been defeated.");
+                // Handle defeat logic here (e.g., show defeat screen)
+                break;
 
             default:
                 Debug.LogWarning($"Unhandled game state: {newState}");
@@ -298,7 +305,7 @@ public class GameMaster : MonoBehaviour
             else
             {
                 Debug.LogError("Turn queue is empty, no more units to process.");
-                HandleEndOfRound();
+                HandleEndOfRound();  // Check for victory or defeat conditions
             }
         }
     }
@@ -335,16 +342,21 @@ public class GameMaster : MonoBehaviour
         bool playersAlive = playerList.Any(unit => unit.isAlive);
         bool enemiesAlive = enemyList.Any(unit => unit.isAlive);
 
+        Debug.Log($"Players alive: {playersAlive}, Enemies alive: {enemiesAlive}");
+
         if (playersAlive && !enemiesAlive)
         {
+            Debug.Log("Victory!");
             UpdateGameState(GameState.Victory);
         }
         else if (enemiesAlive && !playersAlive)
         {
+            Debug.Log("Defeat!");
             UpdateGameState(GameState.Defeat);
         }
         else
         {
+            Debug.Log("Continuing to the next round.");
             UpdateGameState(GameState.GameRound);  // Continue with the next round
         }
     }
@@ -434,6 +446,9 @@ public class GameMaster : MonoBehaviour
 
         // Log after removal
         Debug.Log($"{unit.name} has been successfully removed from all lists.");
+
+        // Check for victory or defeat conditions after removing the unit
+        instance.HandleEndOfRound();
     }
 
     private static void RemoveUnitFromList(List<Unit> unitList, Unit unit)

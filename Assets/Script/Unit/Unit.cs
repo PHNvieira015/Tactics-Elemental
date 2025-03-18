@@ -408,6 +408,7 @@ public class Unit : MonoBehaviour
     public void FindAllEnemies()
     {
         allEnemies = new List<Unit>();
+        aiController.allEnemies = allEnemies;
         Unit[] allUnits = FindObjectsOfType<Unit>();
 
         foreach (var unit in allUnits)
