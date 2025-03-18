@@ -15,53 +15,57 @@ public class Unit : MonoBehaviour
 
     #region variables
     public string unitName; // Name of the unit
-    // Reference to CharacterStat MonoBehaviour for accessing stats and data
     public CharacterStat characterStats;  // Now a component of the same GameObject
     public TurnStateManager turnStateManager;  // Reference to TurnStateManager
     public GameObject unitGameObject;  // Add a reference to the GameObject if not already present
-    // Control player properties
     public int teamID; // Team 1 or 2
     public int playerOwner; // 1 for Player 1, 2 for Player 2
     public int Mitigation; // Damage mitigation
     public bool isAlive = true; // Default value for isAlive
     public bool isDown; // Whether the unit is down (incapacitated)
-    public bool hasMoved=false; // Whether the unit has moved in this turn
+    public bool hasMoved = false; // Whether the unit has moved in this turn
     public bool hasAttacked; // Whether the unit has attacked in this turn
     public bool selected; // Track if the unit is selected
     public GameObject weaponIcon; // Icon over unit if it's attackable
     public GameObject SelectionCircle;  // Add this declaration at the beginning of your class
     public bool isTarget; //is being target
-    public int attackRange=1; // AttackRange
+    public int attackRange = 1; // AttackRange
+    public int movementRange = 5; // Movement range
     public OverlayTile standingOnTile;
     public float Xposition;
     public float Yposition;
     public BattleHandler battleHandler;
     public DamageSystem damageSystem;
     [SerializeField] private SpriteRenderer unitSpriteRenderer;
-    List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range
+    public List<Unit> enemiesInRange = new List<Unit>();  // Enemies in range (changed to public)
 
     private LevelSystem levelSystem;  //leveling system, stat growth
-
 
     public List<Buff> buffs = new List<Buff>(); // List of buffs currently affecting the unit
     public List<Debuff> debuffs = new List<Debuff>(); // List of debuffs currently affecting the unit
     private int currentTurn = 0; //buff duration to do
-
 
     private UnitSkills unitSkills;
     public List<Skill> skillslist;
 
     public DirectionHandler directionHandler;
 
+    #region AI Variables
+    public AIController aiController; // Reference to the AIController
+    public bool isAI; // Whether this unit is controlled by AI
+    private OverlayTile targetTile; // Tile the AI is moving toward
+    public List<Unit> allEnemies; // List of all enemy units
+    private PathFinder pathFinder; // Instance of PathFinder
+    #endregion
+
     #endregion
 
     #region skills
     private void Awake()
     {
-        {
-            if (unitSpriteRenderer == null)
-                unitSpriteRenderer = transform.Find("UnitSprite")?.GetComponent<SpriteRenderer>();
-        }
+        if (unitSpriteRenderer == null)
+            unitSpriteRenderer = transform.Find("UnitSprite")?.GetComponent<SpriteRenderer>();
+
         directionHandler = GetComponent<DirectionHandler>();
         turnStateManager ??= FindObjectOfType<TurnStateManager>();
         characterStats = GetComponent<CharacterStat>();
@@ -85,6 +89,14 @@ public class Unit : MonoBehaviour
         damageSystem ??= FindObjectOfType<DamageSystem>();
         characterStats.SetRoundInitiative();
         UpdateAttackRange();
+
+        if (isAI)
+        {
+            aiController = gameObject.AddComponent<AIController>();
+        }
+
+        // Initialize PathFinder
+        pathFinder = new PathFinder();
     }
 
     private void UnitSkills_OnSkillUnlocked(object sender, UnitSkills.OnSkillUnlockedEventArgs e)
@@ -126,9 +138,6 @@ public class Unit : MonoBehaviour
     }
     #endregion
 
-
-
-
     private void Start()
     {
         if (buffs.Count > 0)
@@ -162,7 +171,7 @@ public class Unit : MonoBehaviour
         // damage popup
         DamagePopup.Create(transform.position, damageAmount);
         //  Update health bar after taking damage
-  
+
         if (characterStats.currentHealth <= 0)
         {
             isAlive = false;
@@ -172,8 +181,8 @@ public class Unit : MonoBehaviour
     }
     #endregion
 
-#region Buff/Debuff
-public void ApplyBuff(Buff newBuff)
+    #region Buff/Debuff
+    public void ApplyBuff(Buff newBuff)
     {
         if (!buffs.Contains(newBuff)) // Prevent applying duplicates
         {
@@ -269,7 +278,6 @@ public void ApplyBuff(Buff newBuff)
     #endregion
 
     #region Select and Deselect Methods
-
     public void Select()
     {
         if (SelectionCircle != null)
@@ -316,7 +324,6 @@ public void ApplyBuff(Buff newBuff)
             Debug.LogError($"Renderer not found on SelectionCircle for {name}");
         }
     }
-
     #endregion
 
     // New method to get the tile under the unit
@@ -346,6 +353,7 @@ public void ApplyBuff(Buff newBuff)
 
         return null;
     }
+
     // Helper property to access the sprite
     public Sprite UnitSprite
     {
@@ -355,6 +363,7 @@ public void ApplyBuff(Buff newBuff)
             return sr != null ? sr.sprite : null;
         }
     }
+
     public void UpdateAttackRange()
     {
         if (characterStats != null)
@@ -367,7 +376,7 @@ public void ApplyBuff(Buff newBuff)
             {
                 attackRange = characterStats.attackRangeBonus; // No weapon equipped
             }
-            if (attackRange<1)
+            if (attackRange < 1)
             {
                 attackRange = 1;
             }
@@ -378,4 +387,103 @@ public void ApplyBuff(Buff newBuff)
         }
     }
 
+    #region AI Methods
+    public void FindAllEnemies()
+    {
+        allEnemies = new List<Unit>();
+        Unit[] allUnits = FindObjectsOfType<Unit>();
+
+        foreach (var unit in allUnits)
+        {
+            if (unit.teamID != teamID && unit.IsAlive())
+            {
+                allEnemies.Add(unit);
+            }
+        }
+    }
+
+    public void CheckForEnemiesInRange()
+    {
+        enemiesInRange.Clear();
+        foreach (var enemy in allEnemies)
+        {
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            if (distance <= attackRange)
+            {
+                enemiesInRange.Add(enemy);
+            }
+        }
+    }
+
+    public void MoveTowardNearestEnemy()
+    {
+        Unit nearestEnemy = null;
+        float shortestDistance = float.MaxValue;
+
+        // Find the nearest enemy
+        foreach (var enemy in allEnemies)
+        {
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                nearestEnemy = enemy;
+            }
+        }
+
+        if (nearestEnemy != null)
+        {
+            // Use PathFinder to find a path to the nearest enemy
+            targetTile = nearestEnemy.standingOnTile;
+            List<OverlayTile> path = pathFinder.FindPath(standingOnTile, targetTile, GetMovementRangeTiles());
+
+            if (path != null && path.Count > 0)
+            {
+                // Move along the path
+                StartCoroutine(MoveAlongPath(path));
+            }
+        }
+    }
+
+    private IEnumerator MoveAlongPath(List<OverlayTile> path)
+    {
+        foreach (var tile in path)
+        {
+            // Move the unit to the next tile
+            transform.position = tile.transform.position;
+            standingOnTile = tile;
+            yield return new WaitForSeconds(0.5f); // Adjust delay for animation or smooth movement
+        }
+    }
+
+    public void AttackEnemy(Unit enemy)
+    {
+        if (enemiesInRange.Contains(enemy))
+        {
+            Debug.Log($"{unitName} is attacking {enemy.unitName}");
+            // Use DamageSystem to calculate and apply damage
+            DamageSystem.Instance.Attack(this, enemy);
+            hasAttacked = true;
+        }
+    }
+
+    public void DecideAction()
+    {
+        if (!isAI || !IsAlive() || hasMoved || hasAttacked) return;
+
+        FindAllEnemies();
+        CheckForEnemiesInRange();
+
+        if (enemiesInRange.Count > 0)
+        {
+            // Attack the first enemy in range
+            AttackEnemy(enemiesInRange[0]);
+        }
+        else
+        {
+            // Move toward the nearest enemy
+            MoveTowardNearestEnemy();
+        }
+    }
+    #endregion
 }

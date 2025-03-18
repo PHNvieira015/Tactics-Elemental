@@ -464,5 +464,16 @@ public class TurnStateManager : MonoBehaviour
     {
         // No additional logic needed here unless you want to track animation state
     }
+    public void ProcessAITurn()
+    {
+        Unit[] allUnits = FindObjectsOfType<Unit>();
 
+        foreach (var unit in allUnits)
+        {
+            if (unit.isAI && unit.IsAlive())
+            {
+                unit.DecideAction();
+            }
+        }
+    }
 }
