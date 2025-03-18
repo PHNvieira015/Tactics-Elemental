@@ -445,6 +445,28 @@ public class Unit : MonoBehaviour
         }
     }
 
+    private List<OverlayTile> GetMovementRangeTiles()
+    {
+        List<OverlayTile> movementRangeTiles = new List<OverlayTile>();
+        Vector2Int startLocation = standingOnTile.grid2DLocation;
+
+        // Use a flood-fill or similar algorithm to find all tiles within movement range
+        // For now, here's a placeholder implementation
+        for (int x = -movementRange; x <= movementRange; x++)
+        {
+            for (int y = -movementRange; y <= movementRange; y++)
+            {
+                Vector2Int location = new Vector2Int(startLocation.x + x, startLocation.y + y);
+                if (MapManager.Instance.map.ContainsKey(location))
+                {
+                    movementRangeTiles.Add(MapManager.Instance.map[location]);
+                }
+            }
+        }
+
+        return movementRangeTiles;
+    }
+
     private IEnumerator MoveAlongPath(List<OverlayTile> path)
     {
         foreach (var tile in path)

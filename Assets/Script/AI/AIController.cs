@@ -117,8 +117,8 @@ public class AIController : MonoBehaviour
         if (unit.enemiesInRange.Contains(enemy))
         {
             Debug.Log($"{unit.unitName} is attacking {enemy.unitName}");
-            // Implement your attack logic here (e.g., deal damage, play animations)
-            enemy.TakeDamage(unit.characterStats.attackDamage, unit.damageSystem);
+            // Use DamageSystem to calculate and apply damage
+            DamageSystem.Instance.Attack(unit, enemy);
             unit.hasAttacked = true;
         }
     }
@@ -142,5 +142,4 @@ public class AIController : MonoBehaviour
             MoveTowardNearestEnemy();
         }
     }
-
 }

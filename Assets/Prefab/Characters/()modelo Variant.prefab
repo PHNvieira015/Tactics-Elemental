@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 8136399621069120847}
   - component: {fileID: 6701442406017429958}
   - component: {fileID: 2725242325327982056}
+  - component: {fileID: -8669173403022958456}
   m_Layer: 10
   m_Name: ()modelo Variant
   m_TagString: Untagged
@@ -205,16 +206,21 @@ MonoBehaviour:
   SelectionCircle: {fileID: 0}
   isTarget: 0
   attackRange: 1
+  movementRange: 5
   standingOnTile: {fileID: 0}
   Xposition: 0
   Yposition: 0
   battleHandler: {fileID: 0}
   damageSystem: {fileID: 0}
   unitSpriteRenderer: {fileID: 0}
+  enemiesInRange: []
   buffs: []
   debuffs: []
   skillslist: []
   directionHandler: {fileID: 0}
+  aiController: {fileID: 0}
+  isAI: 0
+  allEnemies: []
 --- !u!114 &8931217287400680452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,12 +276,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6083c4bd7ffb8c49a7f5d0bf76610ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unit: {fileID: 0}
   state: 0
   slideSpeed: 5
   reachedDistance: 1
   healthBar: {fileID: 0}
   damageManager: {fileID: 0}
   damageSystem: {fileID: 0}
+  turnStateManager: {fileID: 0}
   animatorScript: {fileID: 0}
   WaitForSeconds: 0
 --- !u!114 &6701442406017429958
@@ -304,6 +312,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 315727d94414ec14dabe4bea009b4119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-8669173403022958456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808987032276278563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10cf452666c1b5c40a2b56d08bac4ef5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unit: {fileID: 0}
+  allEnemies: []
 --- !u!1 &2002893845217513422
 GameObject:
   m_ObjectHideFlags: 0

@@ -97,8 +97,8 @@ public class AnimatorScript : MonoBehaviour
 
     private void Update()
     {
-        // Update animation based on TurnState and faceDirection
-        if (currentUnit!= null)
+        // Ensure the current unit is valid and matches the TurnStateManager's current unit
+        if (currentUnit != null && currentUnit.turnStateManager != null && currentUnit.turnStateManager.currentUnit == currentUnit)
         {
             // Map TurnState to AnimationState
             AnimationState newAnimationState = MapTurnStateToAnimationState(currentUnit.turnStateManager.currentTurnState);
@@ -108,6 +108,7 @@ public class AnimatorScript : MonoBehaviour
             SetDirection(currentUnit.characterStats.faceDirection);
         }
     }
+
 
     public void SetAnimation(AnimationState newState)
     {
