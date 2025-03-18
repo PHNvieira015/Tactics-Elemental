@@ -441,6 +441,7 @@ public class TurnStateManager : MonoBehaviour
     }
     #endregion
 
+
     private IEnumerator WaitForAttackAnimation(CharacterStat.Direction attackDirection)
     {
         //// Get the length of the attack animation dynamically
@@ -476,4 +477,5 @@ public class TurnStateManager : MonoBehaviour
             }
         }
     }
+
 }
