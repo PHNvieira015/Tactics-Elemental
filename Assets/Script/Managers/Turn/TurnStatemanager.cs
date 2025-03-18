@@ -99,6 +99,10 @@ public class TurnStateManager : MonoBehaviour
                 break;
             #region TurnStart
             case TurnState.TurnStart:
+                if (currentUnit.isAI=true)
+                {
+                    currentUnit.aiController.DecideAction();
+                }
                 // Clear existing path arrows first
                 if (mouseController != null)
                 {

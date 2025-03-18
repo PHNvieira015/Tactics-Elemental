@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using TacticsToolkit;
 using UnityEngine;
+using System.Collections;
 
 public class AIController : MonoBehaviour
 {
@@ -17,8 +17,31 @@ public class AIController : MonoBehaviour
         pathFinder = new PathFinder(); // Initialize the PathFinder
     }
 
-    // Find all enemies on the opposing team
-    public void FindAllEnemies()
+    public void SetEnemies(List<Unit> enemies)
+    {
+        allEnemies = enemies;
+    }
+
+    public void DecideAction()
+    {
+        if (!unit.IsAlive() || unit.hasMoved || unit.hasAttacked) return;
+
+        FindAllEnemies();
+        CheckForEnemiesInRange();
+
+        if (unit.enemiesInRange.Count > 0)
+        {
+            // Attack the first enemy in range
+            AttackEnemy(unit.enemiesInRange[0]);
+        }
+        else
+        {
+            // Move toward the nearest enemy
+            MoveTowardNearestEnemy();
+        }
+    }
+
+    private void FindAllEnemies()
     {
         allEnemies = new List<Unit>();
         Unit[] allUnits = FindObjectsOfType<Unit>();
@@ -32,8 +55,7 @@ public class AIController : MonoBehaviour
         }
     }
 
-    // Check if any enemies are within attack range
-    public void CheckForEnemiesInRange()
+    private void CheckForEnemiesInRange()
     {
         unit.enemiesInRange.Clear();
         foreach (var enemy in allEnemies)
@@ -46,8 +68,7 @@ public class AIController : MonoBehaviour
         }
     }
 
-    // Move toward the nearest enemy
-    public void MoveTowardNearestEnemy()
+    private void MoveTowardNearestEnemy()
     {
         Unit nearestEnemy = null;
         float shortestDistance = float.MaxValue;
@@ -77,14 +98,12 @@ public class AIController : MonoBehaviour
         }
     }
 
-    // Get all tiles within the unit's movement range
     private List<OverlayTile> GetMovementRangeTiles()
     {
         List<OverlayTile> movementRangeTiles = new List<OverlayTile>();
         Vector2Int startLocation = unit.standingOnTile.grid2DLocation;
 
         // Use a flood-fill or similar algorithm to find all tiles within movement range
-        // For now, here's a placeholder implementation
         for (int x = -unit.movementRange; x <= unit.movementRange; x++)
         {
             for (int y = -unit.movementRange; y <= unit.movementRange; y++)
@@ -109,10 +128,12 @@ public class AIController : MonoBehaviour
             unit.standingOnTile = tile;
             yield return new WaitForSeconds(0.5f); // Adjust delay for animation or smooth movement
         }
+
+        // Mark the unit as having moved
+        unit.hasMoved = true;
     }
 
-    // Attack an enemy if in range
-    public void AttackEnemy(Unit enemy)
+    private void AttackEnemy(Unit enemy)
     {
         if (unit.enemiesInRange.Contains(enemy))
         {
@@ -120,26 +141,6 @@ public class AIController : MonoBehaviour
             // Use DamageSystem to calculate and apply damage
             DamageSystem.Instance.Attack(unit, enemy);
             unit.hasAttacked = true;
-        }
-    }
-
-    // AI decision-making process
-    public void DecideAction()
-    {
-        if (!unit.IsAlive() || unit.hasMoved || unit.hasAttacked) return;
-
-        FindAllEnemies();
-        CheckForEnemiesInRange();
-
-        if (unit.enemiesInRange.Count > 0)
-        {
-            // Attack the first enemy in range
-            AttackEnemy(unit.enemiesInRange[0]);
-        }
-        else
-        {
-            // Move toward the nearest enemy
-            MoveTowardNearestEnemy();
         }
     }
 }

@@ -113,6 +113,11 @@ public class SpawningManager : MonoBehaviour
 
         GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
 
+        foreach (Unit unit in enemyList)
+        {
+            unit.isAI = true;
+        }
+
         startButton.gameObject.SetActive(false);
         Destroy(PlayerSpawningTiles.gameObject);
         Destroy(EnemySpawnerTiles.gameObject);
