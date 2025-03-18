@@ -9,6 +9,9 @@ public class DamageSystem : MonoBehaviour
     public int baseDamage = 1;
     private UnitManager unitManager;
     private GameMaster gameMaster;
+    [SerializeField] public Material flashMaterial;
+    public float flashDuration = 0.1f;
+    [SerializeField] public Color color=Color.white;
 
     public static DamageSystem Instance { get; private set; }
 
@@ -129,7 +132,7 @@ public class DamageSystem : MonoBehaviour
         }
 
         baseDamage += Mathf.RoundToInt(baseDamage * 2f);
-        baseDamage = Mathf.RoundToInt(baseDamage *1 + attacker.characterStats.equippedWeapon.WeaponDamageModifier);
+        baseDamage = Mathf.RoundToInt(baseDamage * 1 + attacker.characterStats.equippedWeapon.WeaponDamageModifier);
 
         float affinityDamageModifier = 1f;
         if (attacker.characterStats.elementType == target.characterStats.weaknessElement)

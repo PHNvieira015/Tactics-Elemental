@@ -27195,6 +27195,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleHandler: {fileID: 839183661}
   baseDamage: 1
+  flashMaterial: {fileID: 2100000, guid: 8494d253e3d2ace42831799822806e26, type: 2}
+  flashDuration: 0.15
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1884025970
 GameObject:
   m_ObjectHideFlags: 0

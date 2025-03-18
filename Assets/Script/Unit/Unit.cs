@@ -5,6 +5,7 @@ using System.Linq;
 using TacticsToolkit;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 using static TurnStateManager;
 
 [System.Serializable]
@@ -58,13 +59,26 @@ public class Unit : MonoBehaviour
     private PathFinder pathFinder; // Instance of PathFinder
     #endregion
 
+    #region flasheffect Variables
+    private Material originalMaterial;
+    private Coroutine flashRoutine;
+ 
+
+    #endregion
+
+
+
     #endregion
 
     #region skills
     private void Awake()
     {
+ 
+
+
         if (unitSpriteRenderer == null)
             unitSpriteRenderer = transform.Find("UnitSprite")?.GetComponent<SpriteRenderer>();
+            originalMaterial = unitSpriteRenderer.material;
 
         directionHandler = GetComponent<DirectionHandler>();
         turnStateManager ??= FindObjectOfType<TurnStateManager>();
@@ -170,6 +184,9 @@ public class Unit : MonoBehaviour
         }
         // damage popup
         DamagePopup.Create(transform.position, damageAmount);
+        //flashing effect
+        Flash(Color.white);
+
         //  Update health bar after taking damage
 
         if (characterStats.currentHealth <= 0)
@@ -508,4 +525,29 @@ public class Unit : MonoBehaviour
         }
     }
     #endregion
-}
+
+    #region flash Method
+    private IEnumerator FlashRoutine(Color color)
+    {
+        unitSpriteRenderer.material = damageSystem.flashMaterial;
+
+        damageSystem.flashMaterial.color = color;
+
+        yield return new WaitForSeconds(damageSystem.flashDuration);
+
+        unitSpriteRenderer.material= originalMaterial;
+
+        flashRoutine = null;
+
+    }
+    public void Flash(Color color)
+    {
+        if (flashRoutine != null)
+        {
+        StopCoroutine(flashRoutine);
+
+        }
+        flashRoutine=StartCoroutine(FlashRoutine(color));
+    }
+        #endregion
+    }
