@@ -71,48 +71,39 @@ public class Unit : MonoBehaviour
     #endregion
 
     #region skills
-    private void Awake()
+private void Awake()
+{
+    if (unitSpriteRenderer == null)
+        unitSpriteRenderer = transform.Find("UnitSprite")?.GetComponent<SpriteRenderer>();
+    originalMaterial = unitSpriteRenderer.material;
+
+    directionHandler = GetComponent<DirectionHandler>();
+    turnStateManager ??= FindObjectOfType<TurnStateManager>();
+    characterStats = GetComponent<CharacterStat>();
+    unitGameObject = gameObject;
+
+    // Ensure damageSystem is assigned
+    damageSystem ??= FindObjectOfType<DamageSystem>();
+    battleHandler ??= FindObjectOfType<BattleHandler>();
+
+    if (characterStats == null)
     {
- 
+        characterStats = gameObject.AddComponent<CharacterStat>();
+        Debug.Log(characterStats.name + " CharacterStat was not found, so it has been added automatically.");
+    }
 
-
-        if (unitSpriteRenderer == null)
-            unitSpriteRenderer = transform.Find("UnitSprite")?.GetComponent<SpriteRenderer>();
-            originalMaterial = unitSpriteRenderer.material;
-
-        directionHandler = GetComponent<DirectionHandler>();
-        turnStateManager ??= FindObjectOfType<TurnStateManager>();
-        characterStats = GetComponent<CharacterStat>();
-        unitGameObject = gameObject;
-
-        // Ensure damageSystem is assigned
-        damageSystem ??= FindObjectOfType<DamageSystem>();
-        battleHandler ??= FindObjectOfType<BattleHandler>();
-
-        if (characterStats == null)
-        {
-            characterStats = gameObject.AddComponent<CharacterStat>();
-            Debug.Log(characterStats.name + " CharacterStat was not found, so it has been added automatically.");
-        }
-
-        unitSkills = new UnitSkills();
-        unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
-        levelSystem = new LevelSystem(characterStats);
-        levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
-        battleHandler = GetComponent<BattleHandler>();
-        damageSystem ??= FindObjectOfType<DamageSystem>();
-        characterStats.SetRoundInitiative();
-        UpdateAttackRange();
-
-        if (isAI)
-        {
-            aiController = gameObject.AddComponent<AIController>();
-        }
+    unitSkills = new UnitSkills();
+    unitSkills.OnSkillUnlocked += UnitSkills_OnSkillUnlocked;
+    levelSystem = new LevelSystem(characterStats);
+    levelSystem.OnLevelChanged += LevelSystem_OnLevelChanged;
+    battleHandler = GetComponent<BattleHandler>();
+    damageSystem ??= FindObjectOfType<DamageSystem>();
+    characterStats.SetRoundInitiative();
+    UpdateAttackRange();
 
         // Initialize PathFinder
         pathFinder = new PathFinder();
-    }
-
+}
     private void UnitSkills_OnSkillUnlocked(object sender, UnitSkills.OnSkillUnlockedEventArgs e)
     {
         switch (e.skillType)
@@ -404,64 +395,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    #region AI Methods
-    public void FindAllEnemies()
-    {
-        allEnemies = new List<Unit>();
-        aiController.allEnemies = allEnemies;
-        Unit[] allUnits = FindObjectsOfType<Unit>();
-
-        foreach (var unit in allUnits)
-        {
-            if (unit.teamID != teamID && unit.IsAlive())
-            {
-                allEnemies.Add(unit);
-            }
-        }
-    }
-
-    public void CheckForEnemiesInRange()
-    {
-        enemiesInRange.Clear();
-        foreach (var enemy in allEnemies)
-        {
-            float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance <= attackRange)
-            {
-                enemiesInRange.Add(enemy);
-            }
-        }
-    }
-
-    public void MoveTowardNearestEnemy()
-    {
-        Unit nearestEnemy = null;
-        float shortestDistance = float.MaxValue;
-
-        // Find the nearest enemy
-        foreach (var enemy in allEnemies)
-        {
-            float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                nearestEnemy = enemy;
-            }
-        }
-
-        if (nearestEnemy != null)
-        {
-            // Use PathFinder to find a path to the nearest enemy
-            targetTile = nearestEnemy.standingOnTile;
-            List<OverlayTile> path = pathFinder.FindPath(standingOnTile, targetTile, GetMovementRangeTiles());
-
-            if (path != null && path.Count > 0)
-            {
-                // Move along the path
-                StartCoroutine(MoveAlongPath(path));
-            }
-        }
-    }
+  
 
     private List<OverlayTile> GetMovementRangeTiles()
     {
@@ -506,26 +440,6 @@ public class Unit : MonoBehaviour
             hasAttacked = true;
         }
     }
-
-    public void DecideAction()
-    {
-        if (!isAI || !IsAlive() || hasMoved || hasAttacked) return;
-
-        FindAllEnemies();
-        CheckForEnemiesInRange();
-
-        if (enemiesInRange.Count > 0)
-        {
-            // Attack the first enemy in range
-            AttackEnemy(enemiesInRange[0]);
-        }
-        else
-        {
-            // Move toward the nearest enemy
-            MoveTowardNearestEnemy();
-        }
-    }
-    #endregion
 
     #region flash Method
     private IEnumerator FlashRoutine(Color color)

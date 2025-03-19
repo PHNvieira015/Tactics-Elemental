@@ -40,7 +40,7 @@ public class AIController : MonoBehaviour
         }
     }
 
-    private void FindAllEnemies()
+    public void FindAllEnemies()
     {
         allEnemies = new List<Unit>();
         Unit[] allUnits = FindObjectsOfType<Unit>();
@@ -54,7 +54,7 @@ public class AIController : MonoBehaviour
         }
     }
 
-    private void CheckForEnemiesInRange()
+    public void CheckForEnemiesInRange()
     {
         unit.enemiesInRange.Clear();
         foreach (var enemy in allEnemies)
@@ -67,7 +67,7 @@ public class AIController : MonoBehaviour
         }
     }
 
-    private void MoveTowardNearestEnemy()
+    public void MoveTowardNearestEnemy()
     {
         Unit nearestEnemy = null;
         float shortestDistance = float.MaxValue;
@@ -97,7 +97,7 @@ public class AIController : MonoBehaviour
         }
     }
 
-    private List<OverlayTile> GetMovementRangeTiles()
+    public List<OverlayTile> GetMovementRangeTiles()
     {
         List<OverlayTile> movementRangeTiles = new List<OverlayTile>();
         Vector2Int startLocation = unit.standingOnTile.grid2DLocation;
@@ -118,7 +118,7 @@ public class AIController : MonoBehaviour
         return movementRangeTiles;
     }
 
-    private IEnumerator MoveAlongPath(List<OverlayTile> path)
+    public IEnumerator MoveAlongPath(List<OverlayTile> path)
     {
         foreach (var tile in path)
         {
@@ -132,7 +132,7 @@ public class AIController : MonoBehaviour
         unit.hasMoved = true;
     }
 
-    private void AttackEnemy(Unit enemy)
+    public void AttackEnemy(Unit enemy)
     {
         if (unit.enemiesInRange.Contains(enemy))
         {

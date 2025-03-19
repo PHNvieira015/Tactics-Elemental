@@ -112,7 +112,13 @@ public class SpawningManager : MonoBehaviour
         }
 
         GameMaster.instance.UpdateGameState(GameMaster.GameState.GameRound);
-
+        foreach (Unit unit in enemyList)
+        {
+            unit.isAI = true;
+            unit.aiController = unit.gameObject.AddComponent<AIController>(); // Add AIController to the unit
+            unit.aiController.unit = unit; // Set the unit reference
+            unit.aiController.FindAllEnemies(); // Populate the allEnemies list
+        }
         foreach (Unit unit in enemyList)
         {
             unit.isAI = true;

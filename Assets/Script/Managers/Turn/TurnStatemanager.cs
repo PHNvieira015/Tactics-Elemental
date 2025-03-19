@@ -99,10 +99,7 @@ public class TurnStateManager : MonoBehaviour
                 break;
             #region TurnStart
             case TurnState.TurnStart:
-                if (currentUnit.isAI=true)
-                {
-                    currentUnit.aiController.DecideAction();
-                }
+
                 // Clear existing path arrows first
                 if (mouseController != null)
                 {
@@ -137,7 +134,8 @@ public class TurnStateManager : MonoBehaviour
         mouseController.SetUnit(currentUnit);
         turnStarted = true;
     }
-    break;
+                ChangeState(TurnState.Waiting);
+                break;
             #endregion
 
             #region Moving
@@ -239,6 +237,14 @@ public class TurnStateManager : MonoBehaviour
 
             #region Waiting
             case TurnState.Waiting:
+                if (currentUnit.isAI == true)
+                {
+                    if (currentUnit.aiController != null)
+                    {
+                        currentUnit.aiController.DecideAction(); //Ai decision in TurnStart
+                    }
+                }
+
                 uiActionBar.GameObject_SkillUIGroup.SetActive(false);
                 EnableUI_Action();
                 Debug.Log($"{currentUnit.name} is waiting...");
@@ -477,7 +483,7 @@ public class TurnStateManager : MonoBehaviour
         {
             if (unit.isAI && unit.IsAlive())
             {
-                unit.DecideAction();
+                currentUnit.aiController.DecideAction();
             }
         }
     }

@@ -72,6 +72,7 @@ public class MouseController : MonoBehaviour
 
     void Update()
     {
+
         //Check if the mouse is over a UI element (e.g., a button)
         if (EventSystem.current.IsPointerOverGameObject())
         {
