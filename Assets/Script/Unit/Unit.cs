@@ -54,8 +54,8 @@ public class Unit : MonoBehaviour
     #region AI Variables
     public AIController aiController; // Reference to the AIController
     public bool isAI; // Whether this unit is controlled by AI
+
     private OverlayTile targetTile; // Tile the AI is moving toward
-    public List<Unit> allEnemies; // List of all enemy units
     private PathFinder pathFinder; // Instance of PathFinder
     #endregion
 

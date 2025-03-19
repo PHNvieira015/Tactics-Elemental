@@ -121,12 +121,9 @@ public class TurnStateManager : MonoBehaviour
                 EnableUI_Action();
                 currentUnit.GetTileUnderUnit();
                     {
-        // Set camera to currentUnit's position
-        Camera.main.transform.position = new Vector3(
-            currentUnit.transform.position.x,
-            currentUnit.transform.position.y,
-            Camera.main.transform.position.z
-        );
+                    // Set camera to currentUnit's position
+                    UpdateCameraPosition(currentUnit.transform.position);
+
         Debug.Log($"Camera set to {currentUnit.name} at {currentUnit.transform.position}");
 
         // Initialize turn-specific logic
@@ -248,11 +245,11 @@ public class TurnStateManager : MonoBehaviour
                 uiActionBar.GameObject_SkillUIGroup.SetActive(false);
                 EnableUI_Action();
                 Debug.Log($"{currentUnit.name} is waiting...");
-                Camera.main.transform.position = new Vector3(
-                    currentUnit.transform.position.x,
-                    currentUnit.transform.position.y,
-                    Camera.main.transform.position.z
-                );
+                UpdateCameraPosition(currentUnit.transform.position);
+                if (currentUnit.isAI)
+                {
+                    ProcessAITurn();
+                }
                 break;
             #endregion
 
@@ -443,11 +440,7 @@ public class TurnStateManager : MonoBehaviour
 
 
         // Reset the camera to the unit's position
-        Camera.main.transform.position = new Vector3(
-            currentUnit.transform.position.x,
-            currentUnit.transform.position.y,
-            Camera.main.transform.position.z
-        );
+        UpdateCameraPosition(currentUnit.transform.position);
     }
     #endregion
 
@@ -487,5 +480,9 @@ public class TurnStateManager : MonoBehaviour
             }
         }
     }
+    private void UpdateCameraPosition(Vector3 targetPosition)
+{
+    Camera.main.transform.position = new Vector3(targetPosition.x, targetPosition.y, Camera.main.transform.position.z);
+}
 
 }

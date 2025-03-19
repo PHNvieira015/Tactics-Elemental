@@ -118,6 +118,7 @@ public class SpawningManager : MonoBehaviour
             unit.aiController = unit.gameObject.AddComponent<AIController>(); // Add AIController to the unit
             unit.aiController.unit = unit; // Set the unit reference
             unit.aiController.FindAllEnemies(); // Populate the allEnemies list
+            unit.aiController.FindAllAllies(); // Populate the allEnemies list
         }
         foreach (Unit unit in enemyList)
         {

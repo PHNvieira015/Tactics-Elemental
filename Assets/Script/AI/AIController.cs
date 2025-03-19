@@ -7,6 +7,7 @@ public class AIController : MonoBehaviour
 {
     public Unit unit; // Reference to the Unit component
     public List<Unit> allEnemies; // List of all enemy units
+    public List<Unit> allAllies; // List of all Allies units
     private OverlayTile targetTile; // Tile the AI is moving toward
     private PathFinder pathFinder; // Instance of your PathFinder
 
@@ -23,9 +24,10 @@ public class AIController : MonoBehaviour
 
     public void DecideAction()
     {
-        if (!unit.IsAlive() || unit.hasMoved || unit.hasAttacked) return;
+        if (unit.IsAlive()) return;
 
         FindAllEnemies();
+        FindAllAllies();
         CheckForEnemiesInRange();
 
         if (unit.enemiesInRange.Count > 0)
@@ -50,6 +52,19 @@ public class AIController : MonoBehaviour
             if (enemy.teamID != unit.teamID && enemy.IsAlive())
             {
                 allEnemies.Add(enemy);
+            }
+        }
+    }
+
+    public void FindAllAllies()
+    {
+        allAllies = new List<Unit>();
+        Unit[] allUnits = FindObjectsOfType<Unit>();
+        foreach (var ally in allUnits)
+        {
+            if (ally.teamID == unit.teamID && ally.IsAlive() && ally != unit)
+            {
+                allAllies.Add(ally);
             }
         }
     }
