@@ -468,30 +468,40 @@ public class TurnStateManager : MonoBehaviour
         // No additional logic needed here unless you want to track animation state
     }
     public IEnumerator ProcessAITurn()
-{
-    Debug.Log("Processing AI turn");
-    Unit[] allUnits = FindObjectsOfType<Unit>();
-
-    foreach (var unit in allUnits)
     {
-        if (unit.isAI && unit.IsAlive())
+        Debug.Log("Processing AI turn");
+
+        // Get all AI units
+        Unit[] allUnits = FindObjectsOfType<Unit>();
+
+        foreach (var unit in allUnits)
         {
-            Debug.Log($"Processing AI unit: {unit.name}");
+            if (unit.isAI && unit.IsAlive())
+            {
+                Debug.Log($"Processing AI unit: {unit.name}");
+
+                // Set the current unit
                 SetCurrentUnit(unit);
+
+                // Let the AI unit decide its action
                 unit.aiController.DecideAction();
 
-            // Wait for the AI unit to finish its turn
-            while (!unit.hasMoved || !unit.hasAttacked)
-            {
-                yield return null; // Wait until the unit has moved and attacked
+                // Wait for the AI unit to finish its turn
+                while (!unit.hasMoved && !unit.hasAttacked)
+                {
+                    Debug.Log($"Waiting for {unit.name} to finish its turn...");
+                    yield return null; // Wait until the unit has moved and attacked
+                }
+
+                Debug.Log($"{unit.name} has finished its turn");
             }
         }
-    }
 
-    Debug.Log("All AI units have finished their turns");
-    // Transition to the player's turn
-    ChangeState(TurnState.TurnStart);
-}
+        Debug.Log("All AI units have finished their turns");
+
+        // Transition to the player's turn
+        ChangeState(TurnState.TurnStart);
+    }
     private void UpdateCameraPosition(Vector3 targetPosition)
     {
         Camera.main.transform.position = new Vector3(targetPosition.x, targetPosition.y, Camera.main.transform.position.z);

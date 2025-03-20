@@ -29,7 +29,7 @@ public class AIController : MonoBehaviour
         FindAllEnemies();
         FindAllAllies();
         CheckForEnemiesInRange();
-        
+
         if (unit.enemiesInRange.Count > 0)
         {
             // Attack the first enemy in range
@@ -39,9 +39,8 @@ public class AIController : MonoBehaviour
         else
         {
             // Move toward the nearest enemy
-            Debug.Log($"AI {unit.name} found no enemies in range, ending turn.");
+            Debug.Log($"AI {unit.name} found no enemies in range, moving toward nearest enemy.");
             MoveTowardNearestEnemy();
-            unit.turnStateManager.ChangeState(TurnStateManager.TurnState.EndTurn);
         }
     }
 
