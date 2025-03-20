@@ -24,26 +24,30 @@ public class AIController : MonoBehaviour
 
     public void DecideAction()
     {
-        if (unit.IsAlive()) return;
+        Debug.Log($"AI {unit.name} is deciding action");
 
         FindAllEnemies();
         FindAllAllies();
         CheckForEnemiesInRange();
+        MoveTowardNearestEnemy();
 
         if (unit.enemiesInRange.Count > 0)
         {
             // Attack the first enemy in range
+            Debug.Log($"AI {unit.name} found an enemy in range, attacking...");
             AttackEnemy(unit.enemiesInRange[0]);
         }
         else
         {
             // Move toward the nearest enemy
-            MoveTowardNearestEnemy();
+            Debug.Log($"AI {unit.name} found no enemies in range, ending turn.");
+            unit.turnStateManager.ChangeState(TurnStateManager.TurnState.EndTurn);
         }
     }
 
     public void FindAllEnemies()
     {
+        Debug.Log("Finding all enemies");
         allEnemies = new List<Unit>();
         Unit[] allUnits = FindObjectsOfType<Unit>();
 
@@ -58,6 +62,7 @@ public class AIController : MonoBehaviour
 
     public void FindAllAllies()
     {
+        Debug.Log("Finding all allies");
         allAllies = new List<Unit>();
         Unit[] allUnits = FindObjectsOfType<Unit>();
         foreach (var ally in allUnits)
@@ -71,6 +76,7 @@ public class AIController : MonoBehaviour
 
     public void CheckForEnemiesInRange()
     {
+        Debug.Log("Checking for enemies in range");
         unit.enemiesInRange.Clear();
         foreach (var enemy in allEnemies)
         {
@@ -84,10 +90,12 @@ public class AIController : MonoBehaviour
 
     public void MoveTowardNearestEnemy()
     {
+        unit.turnStateManager.ChangeState(TurnStateManager.TurnState.Moving);
+        Debug.Log($"{unit.name} Moving toward nearest enemy");
+
         Unit nearestEnemy = null;
         float shortestDistance = float.MaxValue;
 
-        // Find the nearest enemy
         foreach (var enemy in allEnemies)
         {
             float distance = Vector2.Distance(unit.transform.position, enemy.transform.position);
@@ -98,19 +106,49 @@ public class AIController : MonoBehaviour
             }
         }
 
-        if (nearestEnemy != null)
+        if (nearestEnemy == null)
         {
-            // Use your PathFinder to find a path to the nearest enemy
-            targetTile = nearestEnemy.standingOnTile;
-            List<OverlayTile> path = pathFinder.FindPath(unit.standingOnTile, targetTile, GetMovementRangeTiles());
-
-            if (path != null && path.Count > 0)
-            {
-                // Move along the path
-                unit.StartCoroutine(MoveAlongPath(path));
-            }
+            Debug.LogWarning($"{unit.name} found no enemies!");
+            return;
         }
+
+        if (unit.standingOnTile == null)
+        {
+            Debug.LogError($"{unit.name} has NO standingOnTile! AI cannot move.");
+            return;
+        }
+
+        if (nearestEnemy.standingOnTile == null)
+        {
+            Debug.LogError($"{nearestEnemy.name} has NO standingOnTile! AI cannot find path.");
+            return;
+        }
+
+        Debug.Log($"{unit.name} pathfinding from {unit.standingOnTile.grid2DLocation} to {nearestEnemy.standingOnTile.grid2DLocation}");
+
+        targetTile = nearestEnemy.standingOnTile;
+        List<OverlayTile> movementRangeTiles = GetMovementRangeTiles();
+
+        if (movementRangeTiles.Count == 0)
+        {
+            Debug.LogError($"{unit.name} has no movement range tiles! AI is stuck.");
+            return;
+        }
+
+        // Call FindPath to calculate the path
+        List<OverlayTile> path = pathFinder.FindPath(unit.standingOnTile, targetTile, movementRangeTiles);
+
+        if (path == null || path.Count == 0)
+        {
+            Debug.LogWarning($"No path found from {unit.standingOnTile.grid2DLocation} to {targetTile.grid2DLocation}!");
+            return;
+        }
+
+        Debug.Log($"Path found for {unit.name} with {path.Count} tiles");
+        unit.StartCoroutine(MoveAlongPath(path));
     }
+
+
 
     public List<OverlayTile> GetMovementRangeTiles()
     {
@@ -135,20 +173,25 @@ public class AIController : MonoBehaviour
 
     public IEnumerator MoveAlongPath(List<OverlayTile> path)
     {
+        Debug.Log("Starting movement along path");
         foreach (var tile in path)
         {
+            Debug.Log($"Moving to tile at {tile.transform.position}");
             // Move the unit to the next tile
             unit.transform.position = tile.transform.position;
             unit.standingOnTile = tile;
             yield return new WaitForSeconds(0.5f); // Adjust delay for animation or smooth movement
         }
 
+        Debug.Log("Movement complete");
         // Mark the unit as having moved
         unit.hasMoved = true;
     }
 
     public void AttackEnemy(Unit enemy)
     {
+        unit.turnStateManager.ChangeState(TurnStateManager.TurnState.Attacking);
+        Debug.Log($"Attempting to attack {enemy.unitName}");
         if (unit.enemiesInRange.Contains(enemy))
         {
             Debug.Log($"{unit.unitName} is attacking {enemy.unitName}");

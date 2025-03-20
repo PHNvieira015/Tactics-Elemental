@@ -48,7 +48,7 @@ public class HealthBar : MonoBehaviour
     {
         if (HealthBarImage != null)
         {
-            Debug.Log($"Setting health bar size to {healthNormalized}");
+            //Debug.Log($"Setting health bar size to {healthNormalized}");
             HealthBarImage.fillAmount = healthNormalized;
         }
         else

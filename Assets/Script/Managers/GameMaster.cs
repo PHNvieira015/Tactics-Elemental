@@ -55,7 +55,7 @@ public class GameMaster : MonoBehaviour
     public void UpdateGameState(GameState newState)
     {
         State = newState;
-        Debug.Log($"Game state changed to: {newState}");
+        //Debug.Log($"Game state changed to: {newState}");
 
         switch (newState)
         {
@@ -229,17 +229,17 @@ public class GameMaster : MonoBehaviour
         }
 
         // Log the turn order after sorting
-        Debug.Log("Turn order initialized:");
+        //Debug.Log("Turn order initialized:");
         foreach (var unit in turnQueue)
         {
-            Debug.Log($"Unit in queue: {unit.name} with initiative {unit.characterStats.initiative}");
+            //Debug.Log($"Unit in queue: {unit.name} with initiative {unit.characterStats.initiative}");
         }
 
         // Set the first unit as currentUnit
         if (turnQueue.Count > 0)
         {
             currentUnit = turnQueue.Dequeue(); // Dequeue the first unit
-            Debug.Log($"First unit in turn queue: {currentUnit.name}");
+            //Debug.Log($"First unit in turn queue: {currentUnit.name}");
             // Proceed to the next game state
             UpdateGameState(GameState.UnitTurn);
         }
@@ -342,7 +342,7 @@ public class GameMaster : MonoBehaviour
         bool playersAlive = playerList.Any(unit => unit.isAlive);
         bool enemiesAlive = enemyList.Any(unit => unit.isAlive);
 
-        Debug.Log($"Players alive: {playersAlive}, Enemies alive: {enemiesAlive}");
+        //Debug.Log($"Players alive: {playersAlive}, Enemies alive: {enemiesAlive}");
 
         if (playersAlive && !enemiesAlive)
         {
@@ -356,7 +356,7 @@ public class GameMaster : MonoBehaviour
         }
         else
         {
-            Debug.Log("Continuing to the next round.");
+            //Debug.Log("Continuing to the next round.");
             UpdateGameState(GameState.GameRound);  // Continue with the next round
         }
     }
@@ -401,7 +401,7 @@ public class GameMaster : MonoBehaviour
     {
         if (newState == TurnStateManager.TurnState.EndTurn)
         {
-            Debug.Log($"Turn ended for {currentUnit.name}. Moving to the next unit.");
+            //Debug.Log($"Turn ended for {currentUnit.name}. Moving to the next unit.");
 
             // After this unit's turn ends, move to the next unit in the queue
             ProcessUnitTurn();  // This will either find the next living unit or handle the end of the round.

@@ -115,7 +115,7 @@ public class MouseController : MonoBehaviour
             {
                 // Get the unit from the tile
                 Unit unitOnTile = tile.unitOnTile;
-                Debug.Log("Unit on tile: " + (unitOnTile != null ? unitOnTile.name : "None"));
+                //Debug.Log("Unit on tile: " + (unitOnTile != null ? unitOnTile.name : "None"));
 
 
                 #region movement
@@ -434,7 +434,7 @@ public class MouseController : MonoBehaviour
 
     public void SetUnit(Unit newUnit)
     {
-        Debug.Log($"Setting MouseController's currentUnit to: {newUnit?.name}");
+        //Debug.Log($"Setting MouseController's currentUnit to: {newUnit?.name}");
 
         ClearPathArrows();
         ClearAttackRangeTiles(); // Clear old attack tiles

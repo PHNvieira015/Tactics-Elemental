@@ -129,7 +129,7 @@ public class AnimatorScript : MonoBehaviour
     private void UpdateAnimation()
     {
         int stateHash = GetAnimationHash(currentAnimationState, currentDirection);
-        Debug.Log($"Playing animation: {currentAnimationState} {currentDirection} (Hash: {stateHash})");
+        //Debug.Log($"Playing animation: {currentAnimationState} {currentDirection} (Hash: {stateHash})");
         animator.CrossFade(stateHash, 0f, 0); // Instant transition
     }
 

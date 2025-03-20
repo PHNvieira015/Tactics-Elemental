@@ -43,7 +43,7 @@ public class CharacterBattle : MonoBehaviour
             if (damageSystem != null)
             {
                 // Successfully got the DamageSystem component
-                Debug.Log("DamageSystem component found!");
+                //Debug.Log("DamageSystem component found!");
             }
             else
             {

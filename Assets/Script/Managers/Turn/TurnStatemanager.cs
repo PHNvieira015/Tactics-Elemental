@@ -72,8 +72,10 @@ public class TurnStateManager : MonoBehaviour
         currentUnit = unit;
         currentUnitObject = unit.gameObject;
         currentTurnState = TurnState.Waiting; // Default state at waiting
-        Debug.Log($"Current unit set to {currentUnit.name}");
-        // Trigger the UI update after setting the current unit
+                                              //Debug.Log($"Current unit set to {currentUnit.name}");
+                                              // Trigger the UI update after setting the current unit
+
+        Debug.Log($"Current unit set to {currentUnit.name}, AI: {currentUnit.isAI}");
         OnTurnStateChanged?.Invoke(currentTurnState);
         //Debug.Log("UI update triggered");
     }
@@ -118,19 +120,20 @@ public class TurnStateManager : MonoBehaviour
                 }
 
                 //currentUnit.hasMoved = false;  // Reset movement status
-                EnableUI_Action();
+                EnableActionBarforPlayerUnit();
+
                 currentUnit.GetTileUnderUnit();
-                    {
+                {
                     // Set camera to currentUnit's position
                     UpdateCameraPosition(currentUnit.transform.position);
 
-        Debug.Log($"Camera set to {currentUnit.name} at {currentUnit.transform.position}");
+                    //Debug.Log($"Camera set to {currentUnit.name} at {currentUnit.transform.position}");
 
-        // Initialize turn-specific logic
-        currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
-        mouseController.SetUnit(currentUnit);
-        turnStarted = true;
-    }
+                    // Initialize turn-specific logic
+                    currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
+                    mouseController.SetUnit(currentUnit);
+                    turnStarted = true;
+                }
                 ChangeState(TurnState.Waiting);
                 break;
             #endregion
@@ -138,39 +141,38 @@ public class TurnStateManager : MonoBehaviour
             #region Moving
             case TurnState.Moving:
 
-    OverlayTile previousTile = currentUnit.standingOnTile;  //old tile reference
-    // Ensure that currentUnit's standingOnTile is updated when movement starts
-    currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
-    mouseController.SetUnit(currentUnit);  // Pass the unit reference to MouseController
-    mouseController.currentUnit = currentUnit;
-    mouseController.isMoving = false; // Enable movement logic
-    mouseController.GetInRangeTiles(); // Highlight movement tiles
+                OverlayTile previousTile = currentUnit.standingOnTile;  //old tile reference
+                                                                        // Ensure that currentUnit's standingOnTile is updated when movement starts
+                currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
+                mouseController.SetUnit(currentUnit);  // Pass the unit reference to MouseController
+                mouseController.currentUnit = currentUnit;
+                mouseController.isMoving = false; // Enable movement logic
+                mouseController.GetInRangeTiles(); // Highlight movement tiles
 
-    // Log the coordinates of the standingOnTile
-    if (currentUnit.standingOnTile != null)
-    {
-        Vector3 tilePosition = currentUnit.standingOnTile.transform.position;
-        //Debug.Log($"Tile position: (X: {tilePosition.x}, Y: {tilePosition.y}, Z: {tilePosition.z})");
-    }
-    else
-    {
-        Debug.LogWarning("Current unit's standingOnTile is null!");
-    }
+                // Log the coordinates of the standingOnTile
+                if (currentUnit.standingOnTile != null)
+                {
+                    Vector3 tilePosition = currentUnit.standingOnTile.transform.position;
+                    //Debug.Log($"Tile position: (X: {tilePosition.x}, Y: {tilePosition.y}, Z: {tilePosition.z})");
+                }
+                else
+                {
+                    Debug.LogWarning("Current unit's standingOnTile is null!");
+                }
 
 
-    // After moving, update standingOnTile
-    UpdateStandingOnTile(); // Update the tile after the unit has moved
+                // After moving, update standingOnTile
+                UpdateStandingOnTile(); // Update the tile after the unit has moved
+                EnableActionBarforPlayerUnit();
 
-    EnableUI_Action();
-
-    uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
+                uiActionBar.GameObjectButton_move.SetActive(false); // Deactivate Move button
 
                 if (currentUnit.hasAttacked == false)
                 {
                     uiActionBar.GameObjectButton_return.SetActive(true); // Activate Return button
                 }
-                
-    break;
+
+                break;
             #endregion
 
             #region Attacking
@@ -183,14 +185,14 @@ public class TurnStateManager : MonoBehaviour
                     DisableUI_Action();
                     Debug.Log($"{currentUnit.name} is attacking...");
                     // Attack logic
-                    EnableUI_Action();
+                    EnableActionBarforPlayerUnit();
                     uiActionBar.GameObjectButton_attack.SetActive(false);
                     //Changing to AttackingAnimation on TriggerAttackAnimationnearattacker from mousecontroller
                 }
                 else
                 {
                     Debug.Log($"{currentUnit.name} has already attacked.");
-                    EnableUI_Action();
+                    EnableActionBarforPlayerUnit();
                 }
                 break;
             #endregion
@@ -198,7 +200,7 @@ public class TurnStateManager : MonoBehaviour
             #region AttackingAnimation
             case TurnState.AttackingAnimation:
                 StartCoroutine(WaitForAttackAnimation(currentUnit.characterStats.faceDirection));
-//                ChangeState(TurnState.Waiting);
+                //                ChangeState(TurnState.Waiting);
                 break;
             #endregion
 
@@ -207,7 +209,7 @@ public class TurnStateManager : MonoBehaviour
                 DisableUI_Action();
                 Debug.Log($"{currentUnit.name} is using a skill...");
                 // Skill usage logic
-                EnableUI_Action();
+                EnableActionBarforPlayerUnit();
                 if (uiActionBar != null && uiActionBar.GameObject_SkillUIGroup != null)
                 {
                     uiActionBar.GameObject_SkillUIGroup.SetActive(true);
@@ -238,12 +240,12 @@ public class TurnStateManager : MonoBehaviour
                 {
                     if (currentUnit.aiController != null)
                     {
-                        currentUnit.aiController.DecideAction(); //Ai decision in TurnStart
+                        currentUnit.aiController.DecideAction(); //Ai decision in Waiting
                     }
                 }
 
                 uiActionBar.GameObject_SkillUIGroup.SetActive(false);
-                EnableUI_Action();
+                EnableActionBarforPlayerUnit();
                 Debug.Log($"{currentUnit.name} is waiting...");
                 UpdateCameraPosition(currentUnit.transform.position);
                 if (currentUnit.isAI)
@@ -285,7 +287,7 @@ public class TurnStateManager : MonoBehaviour
                 Debug.LogWarning($"Unhandled turn state: {state}");
                 break;
         }
-#endregion
+        #endregion
     }
 
 
@@ -431,7 +433,7 @@ public class TurnStateManager : MonoBehaviour
 
         // Refresh the UI
         EnableUI_Action();
-        
+
         if (currentUnit.hasAttacked == false)
         {
             uiActionBar.GameObjectButton_attack.SetActive(true);
@@ -470,6 +472,7 @@ public class TurnStateManager : MonoBehaviour
     }
     public void ProcessAITurn()
     {
+        Debug.Log("Processing AI turn");
         Unit[] allUnits = FindObjectsOfType<Unit>();
 
         foreach (var unit in allUnits)
@@ -481,8 +484,17 @@ public class TurnStateManager : MonoBehaviour
         }
     }
     private void UpdateCameraPosition(Vector3 targetPosition)
-{
-    Camera.main.transform.position = new Vector3(targetPosition.x, targetPosition.y, Camera.main.transform.position.z);
-}
+    {
+        Camera.main.transform.position = new Vector3(targetPosition.x, targetPosition.y, Camera.main.transform.position.z);
+    }
 
+
+
+    public void EnableActionBarforPlayerUnit()
+    {
+    if (currentUnit.isAI == false) //turn off UI if AI
+        {
+        EnableUI_Action();
+        }
+    }
 }

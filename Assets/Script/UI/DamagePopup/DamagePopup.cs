@@ -53,7 +53,7 @@ public class DamagePopup : MonoBehaviour
     public void Setup(int damageAmount)
     {
         //// Set the damage amount as text in the popup.
-        Debug.Log($"Setting damage amount: {damageAmount}");
+        //Debug.Log($"Setting damage amount: {damageAmount}");
         textMesh.SetText(damageAmount.ToString());
         textColor = textMesh.color;
         disappearTimer = 1f; // You might want to tweak this value to change how long the popup stays visible.
