@@ -22,15 +22,14 @@ public class AIController : MonoBehaviour
         allEnemies = enemies;
     }
 
-    public void DecideAction(Unit unit)
+    public void DecideAction()
     {
         Debug.Log($"AI {unit.name} is deciding action");
 
         FindAllEnemies();
         FindAllAllies();
         CheckForEnemiesInRange();
-        MoveTowardNearestEnemy();
-
+        
         if (unit.enemiesInRange.Count > 0)
         {
             // Attack the first enemy in range
@@ -41,6 +40,7 @@ public class AIController : MonoBehaviour
         {
             // Move toward the nearest enemy
             Debug.Log($"AI {unit.name} found no enemies in range, ending turn.");
+            MoveTowardNearestEnemy();
             unit.turnStateManager.ChangeState(TurnStateManager.TurnState.EndTurn);
         }
     }

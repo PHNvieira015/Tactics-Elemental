@@ -246,7 +246,7 @@ public class TurnStateManager : MonoBehaviour
                 {
                     if (currentUnit.aiController != null)
                     {
-                        currentUnit.aiController.DecideAction(currentUnit); //Ai decision in Waiting
+                        currentUnit.aiController.DecideAction(); //Ai decision in Waiting
                     }
                 }
                 break;
@@ -477,7 +477,8 @@ public class TurnStateManager : MonoBehaviour
         if (unit.isAI && unit.IsAlive())
         {
             Debug.Log($"Processing AI unit: {unit.name}");
-            unit.aiController.DecideAction(currentUnit);
+                SetCurrentUnit(unit);
+                unit.aiController.DecideAction();
 
             // Wait for the AI unit to finish its turn
             while (!unit.hasMoved || !unit.hasAttacked)
