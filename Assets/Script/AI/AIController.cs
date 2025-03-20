@@ -22,7 +22,7 @@ public class AIController : MonoBehaviour
         allEnemies = enemies;
     }
 
-    public void DecideAction()
+    public void DecideAction(Unit unit)
     {
         Debug.Log($"AI {unit.name} is deciding action");
 
@@ -90,12 +90,19 @@ public class AIController : MonoBehaviour
 
     public void MoveTowardNearestEnemy()
     {
+        if (unit.hasMoved)
+        {
+            Debug.LogWarning($"{unit.name} has already moved this turn!");
+            return;
+        }
+
         unit.turnStateManager.ChangeState(TurnStateManager.TurnState.Moving);
         Debug.Log($"{unit.name} Moving toward nearest enemy");
 
         Unit nearestEnemy = null;
         float shortestDistance = float.MaxValue;
 
+        // Find the nearest enemy
         foreach (var enemy in allEnemies)
         {
             float distance = Vector2.Distance(unit.transform.position, enemy.transform.position);
@@ -104,6 +111,7 @@ public class AIController : MonoBehaviour
                 shortestDistance = distance;
                 nearestEnemy = enemy;
             }
+
         }
 
         if (nearestEnemy == null)
@@ -126,7 +134,7 @@ public class AIController : MonoBehaviour
 
         Debug.Log($"{unit.name} pathfinding from {unit.standingOnTile.grid2DLocation} to {nearestEnemy.standingOnTile.grid2DLocation}");
 
-        targetTile = nearestEnemy.standingOnTile;
+        // Get all tiles within movement range
         List<OverlayTile> movementRangeTiles = GetMovementRangeTiles();
 
         if (movementRangeTiles.Count == 0)
@@ -135,17 +143,40 @@ public class AIController : MonoBehaviour
             return;
         }
 
+        // Find the closest tile to the enemy within movement range
+        OverlayTile closestTile = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (var tile in movementRangeTiles)
+        {
+            float distance = Vector2.Distance(tile.transform.position, nearestEnemy.transform.position);
+            if (distance < closestDistance && !tile.isBlocked)
+            {
+                closestDistance = distance;
+                closestTile = tile;
+            }
+        }
+
+        if (closestTile == null)
+        {
+            Debug.LogWarning($"No valid tile found for {unit.name} to move toward {nearestEnemy.name}!");
+            return;
+        }
+
+        Debug.Log($"{unit.name} moving to tile at {closestTile.grid2DLocation}");
+
         // Call FindPath to calculate the path
-        List<OverlayTile> path = pathFinder.FindPath(unit.standingOnTile, targetTile, movementRangeTiles);
+        List<OverlayTile> path = pathFinder.FindPath(unit.standingOnTile, closestTile, movementRangeTiles);
 
         if (path == null || path.Count == 0)
         {
-            Debug.LogWarning($"No path found from {unit.standingOnTile.grid2DLocation} to {targetTile.grid2DLocation}!");
+            Debug.LogWarning($"No path found from {unit.standingOnTile.grid2DLocation} to {closestTile.grid2DLocation}!");
             return;
         }
 
         Debug.Log($"Path found for {unit.name} with {path.Count} tiles");
         unit.StartCoroutine(MoveAlongPath(path));
+        unit.hasMoved = true;
     }
 
 
@@ -163,7 +194,11 @@ public class AIController : MonoBehaviour
                 Vector2Int location = new Vector2Int(startLocation.x + x, startLocation.y + y);
                 if (MapManager.Instance.map.ContainsKey(location))
                 {
-                    movementRangeTiles.Add(MapManager.Instance.map[location]);
+                    OverlayTile tile = MapManager.Instance.map[location];
+                    if (!tile.isBlocked) // Only add tiles that are not blocked
+                    {
+                        movementRangeTiles.Add(tile);
+                    }
                 }
             }
         }
@@ -174,12 +209,28 @@ public class AIController : MonoBehaviour
     public IEnumerator MoveAlongPath(List<OverlayTile> path)
     {
         Debug.Log("Starting movement along path");
+
+        // Clear the unit's current tile
+        if (unit.standingOnTile != null)
+        {
+            unit.standingOnTile.unitOnTile = null;
+            unit.standingOnTile.isBlocked = false;
+        }
+
         foreach (var tile in path)
         {
             Debug.Log($"Moving to tile at {tile.transform.position}");
-            // Move the unit to the next tile
+
+            // Update the unit's position
             unit.transform.position = tile.transform.position;
+
+            // Update the unit's standingOnTile
             unit.standingOnTile = tile;
+
+            // Update the tile's unitOnTile and isBlocked status
+            tile.unitOnTile = unit;
+            tile.isBlocked = true;
+
             yield return new WaitForSeconds(0.5f); // Adjust delay for animation or smooth movement
         }
 
@@ -190,6 +241,12 @@ public class AIController : MonoBehaviour
 
     public void AttackEnemy(Unit enemy)
     {
+        if (unit.hasAttacked)
+        {
+            Debug.LogWarning($"{unit.name} has already moved this turn!");
+            return;
+        }
+
         unit.turnStateManager.ChangeState(TurnStateManager.TurnState.Attacking);
         Debug.Log($"Attempting to attack {enemy.unitName}");
         if (unit.enemiesInRange.Contains(enemy))

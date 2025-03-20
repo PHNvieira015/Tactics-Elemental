@@ -236,21 +236,18 @@ public class TurnStateManager : MonoBehaviour
 
             #region Waiting
             case TurnState.Waiting:
-                if (currentUnit.isAI == true)
-                {
-                    if (currentUnit.aiController != null)
-                    {
-                        currentUnit.aiController.DecideAction(); //Ai decision in Waiting
-                    }
-                }
+ 
 
                 uiActionBar.GameObject_SkillUIGroup.SetActive(false);
                 EnableActionBarforPlayerUnit();
                 Debug.Log($"{currentUnit.name} is waiting...");
                 UpdateCameraPosition(currentUnit.transform.position);
-                if (currentUnit.isAI)
+                if (currentUnit.isAI == true)
                 {
-                    ProcessAITurn();
+                    if (currentUnit.aiController != null)
+                    {
+                        currentUnit.aiController.DecideAction(currentUnit); //Ai decision in Waiting
+                    }
                 }
                 break;
             #endregion
@@ -470,19 +467,30 @@ public class TurnStateManager : MonoBehaviour
     {
         // No additional logic needed here unless you want to track animation state
     }
-    public void ProcessAITurn()
-    {
-        Debug.Log("Processing AI turn");
-        Unit[] allUnits = FindObjectsOfType<Unit>();
+    public IEnumerator ProcessAITurn()
+{
+    Debug.Log("Processing AI turn");
+    Unit[] allUnits = FindObjectsOfType<Unit>();
 
-        foreach (var unit in allUnits)
+    foreach (var unit in allUnits)
+    {
+        if (unit.isAI && unit.IsAlive())
         {
-            if (unit.isAI && unit.IsAlive())
+            Debug.Log($"Processing AI unit: {unit.name}");
+            unit.aiController.DecideAction(currentUnit);
+
+            // Wait for the AI unit to finish its turn
+            while (!unit.hasMoved || !unit.hasAttacked)
             {
-                currentUnit.aiController.DecideAction();
+                yield return null; // Wait until the unit has moved and attacked
             }
         }
     }
+
+    Debug.Log("All AI units have finished their turns");
+    // Transition to the player's turn
+    ChangeState(TurnState.TurnStart);
+}
     private void UpdateCameraPosition(Vector3 targetPosition)
     {
         Camera.main.transform.position = new Vector3(targetPosition.x, targetPosition.y, Camera.main.transform.position.z);
