@@ -23,44 +23,57 @@ public class AIController : MonoBehaviour
         allEnemies = enemies;
     }
 
+    public void StartTurn()
+    {
+        Debug.Log($"AI {unit.name} is starting its turn.");
+        unit.hasMoved = false; // Reset movement flag
+        unit.hasAttacked = false; // Reset attack flag
+        StartCoroutine(RunTurn());
+    }
+
+    private IEnumerator RunTurn()
+    {
+        while (true)
+        {
+            DecideAction();
+
+            // If the AI has moved and attacked, or has no actions left, end the turn
+            if ((unit.hasMoved && unit.hasAttacked) || (unit.hasMoved && unit.enemiesInRange.Count == 0))
+            {
+                EndTurn();
+                yield break; // Exit the coroutine
+            }
+
+            // Wait for the next frame to re-evaluate
+            yield return null;
+        }
+    }
+
     public void DecideAction()
     {
-        Debug.Log($"AI {unit.name} is deciding action");
+        Debug.Log($"AI {unit.name} is deciding action. hasMoved: {unit.hasMoved}, hasAttacked: {unit.hasAttacked}");
 
         FindAllEnemies();
         FindAllAllies();
-        CheckForEnemiesInRange();
+        CheckForEnemiesInRange(); // Update enemies in range
 
-        if (unit.enemiesInRange.Count > 0)
+        if (unit.enemiesInRange.Count > 0 && !unit.hasAttacked)
         {
-            if (unit.hasAttacked == false)
-            {
-                // Attack the first enemy in range
-                Debug.Log($"AI {unit.name} found an enemy in range, attacking...");
-                AttackEnemy(unit.enemiesInRange[0]);
-            }
+            // Attack the first enemy in range
+            Debug.Log($"AI {unit.name} found an enemy in range, attacking...");
+            AttackEnemy(unit.enemiesInRange[0]);
+        }
+        else if (!unit.hasMoved)
+        {
+            // Move toward the nearest enemy
+            Debug.Log($"AI {unit.name} found no enemies in range, moving toward nearest enemy.");
+            MoveTowardNearestEnemy();
         }
         else
         {
-            if (unit.hasMoved == false)
-            {
-                // Move toward the nearest enemy
-                Debug.Log($"AI {unit.name} found no enemies in range, moving toward nearest enemy.");
-                MoveTowardNearestEnemy();
-            }
-
-            // End the turn if:
-            // 1. The AI has moved and there are no enemies in range, or
-            // 2. The AI has moved and attacked
-            if ((unit.hasMoved && unit.enemiesInRange.Count == 0) || (unit.hasMoved && unit.hasAttacked))
-            {
-                Debug.Log($"AI {unit.name} has completed its actions, ending turn.");
-                turnStateManager.ChangeState(TurnState.EndTurn);
-            }
-            else
-            {
-                Debug.Log($"AI {unit.name} cannot end turn yet. hasMoved: {unit.hasMoved}, hasAttacked: {unit.hasAttacked}, enemiesInRange: {unit.enemiesInRange.Count}");
-            }
+            // If no actions are possible, end the turn
+            Debug.Log($"AI {unit.name} has no actions to perform, ending turn.");
+            EndTurn();
         }
     }
 
@@ -103,6 +116,7 @@ public class AIController : MonoBehaviour
             if (distance <= unit.attackRange)
             {
                 unit.enemiesInRange.Add(enemy);
+                Debug.Log($"Enemy {enemy.name} is in range. Distance: {distance}, Attack Range: {unit.attackRange}");
             }
         }
     }
@@ -132,6 +146,7 @@ public class AIController : MonoBehaviour
         if (nearestEnemy == null)
         {
             Debug.LogWarning($"{unit.name} found no enemies!");
+            EndTurn(); // End turn if no enemies are found
             return;
         }
 
@@ -158,11 +173,34 @@ public class AIController : MonoBehaviour
         if (closestTile == null)
         {
             Debug.LogWarning($"No valid tile found for {unit.name} to move toward {nearestEnemy.name}!");
+            EndTurn(); // End turn if no valid tile is found
             return;
         }
 
         // Move the unit to the closest tile
-        mouseController.HandleMovement(closestTile);
+        StartCoroutine(MoveAndReevaluate(closestTile));
+    }
+
+    private IEnumerator MoveAndReevaluate(OverlayTile targetTile)
+    {
+        // Move the unit
+        mouseController.HandleMovement(targetTile);
+
+        // Wait for the movement to complete
+        while (mouseController.isMoving)
+        {
+            yield return null;
+        }
+
+        // Mark the unit as having moved
+        unit.hasMoved = true;
+        Debug.Log($"{unit.name} has moved. hasMoved: {unit.hasMoved}");
+
+        // Update enemies in range after moving
+        CheckForEnemiesInRange();
+
+        // Re-evaluate after moving
+        DecideAction();
     }
 
     public void AttackEnemy(Unit enemy)
@@ -178,5 +216,18 @@ public class AIController : MonoBehaviour
 
         // Attack the enemy
         mouseController.HandleAttack(enemy.standingOnTile);
+
+        // Mark the unit as having attacked
+        unit.hasAttacked = true;
+        Debug.Log($"{unit.name} has attacked. hasAttacked: {unit.hasAttacked}");
+
+        // End the turn after attacking
+        EndTurn();
+    }
+
+    private void EndTurn()
+    {
+        Debug.Log($"AI {unit.name} is ending its turn.");
+        turnStateManager.ChangeState(TurnState.EndTurn);
     }
 }
