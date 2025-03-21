@@ -250,7 +250,7 @@ public class TurnStateManager : MonoBehaviour
                 {
                     if (currentUnit.aiController != null)
                     {
-                        //currentUnit.aiController.DecideAction(); //Ai decision in Waiting
+                        currentUnit.aiController.DecideAction(); //Ai decision in Waiting
                     }
                 }
                 break;

@@ -305,12 +305,12 @@ public class MouseController : MonoBehaviour
         return null;
     }
 
-    public void GetInRangeTiles()
+    public List<OverlayTile> GetInRangeTiles()
     {
         if (currentUnit == null || currentUnit.standingOnTile == null)
         {
-            //Debug.LogError("CurrentUnit is null or not on a tile!");
-            return;
+            Debug.LogError("CurrentUnit is null or not on a tile!");
+            return new List<OverlayTile>(); // Return an empty list if there's an error
         }
 
         rangeFinderTiles = rangeFinder.GetTilesInRange(
@@ -334,6 +334,8 @@ public class MouseController : MonoBehaviour
                 }
             }
         }
+
+        return rangeFinderTiles; // Return the list of tiles
     }
 
     public void SetUnit(Unit newUnit)
@@ -458,7 +460,7 @@ public class MouseController : MonoBehaviour
         // Transition to Waiting state after both animation and movement are complete
         turnStateManager.ChangeState(TurnState.Waiting);
     }
-    private void HandleAttack(OverlayTile tile)
+    public void HandleAttack(OverlayTile tile)
     {
         // Get the target unit from the tile
         Unit targetUnit = tile.unitOnTile;
@@ -502,7 +504,7 @@ public class MouseController : MonoBehaviour
                       $"Hasn't Attacked: {!currentUnit.hasAttacked}");
         }
     }
-    private void HandleMovement(OverlayTile tile)
+    public void HandleMovement(OverlayTile tile)
     {
         if (tile.unitOnTile == null)  // Prevent landing on occupied tiles
         {
