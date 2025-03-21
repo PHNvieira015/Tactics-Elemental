@@ -41,7 +41,7 @@ public class MouseController : MonoBehaviour
 
     void Start()
     {
-        //SelectedUnitInfo.SetActive(false);
+        SelectedUnitInfo.SetActive(false);
         //Pathfinder
         pathFinder = new PathFinder();
         rangeFinder = new RangeFinder();
