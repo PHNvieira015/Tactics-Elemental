@@ -30,17 +30,20 @@ public class AIController : MonoBehaviour
         FindAllAllies();
         CheckForEnemiesInRange();
 
+
         if (unit.enemiesInRange.Count > 0)
         {
             // Attack the first enemy in range
             Debug.Log($"AI {unit.name} found an enemy in range, attacking...");
-            AttackEnemy(unit.enemiesInRange[0]);
+            AIAttackMethod();            
+            //AttackEnemy(unit.enemiesInRange[0]);
         }
         else
         {
             // Move toward the nearest enemy
             Debug.Log($"AI {unit.name} found no enemies in range, moving toward nearest enemy.");
-            MoveTowardNearestEnemy();
+
+            //MoveTowardNearestEnemy();
         }
     }
 
@@ -255,5 +258,10 @@ public class AIController : MonoBehaviour
             DamageSystem.Instance.Attack(unit, enemy);
             unit.hasAttacked = true;
         }
+    }
+    public void AIAttackMethod()
+    {
+        unit.turnStateManager.ChangeState(TurnStateManager.TurnState.Attacking);
+        //targetTile.target //WIP work to get the enemy tile
     }
 }

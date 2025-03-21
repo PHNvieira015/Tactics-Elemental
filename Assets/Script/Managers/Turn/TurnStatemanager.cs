@@ -159,6 +159,10 @@ public class TurnStateManager : MonoBehaviour
                 {
                     Debug.LogWarning("Current unit's standingOnTile is null!");
                 }
+                if(currentUnit.isAI==true)
+                {
+                    //currentUnit.aiController.DecideAction(); //Ai decision in Waiting
+                }
 
 
                 // After moving, update standingOnTile
@@ -246,7 +250,7 @@ public class TurnStateManager : MonoBehaviour
                 {
                     if (currentUnit.aiController != null)
                     {
-                        currentUnit.aiController.DecideAction(); //Ai decision in Waiting
+                        //currentUnit.aiController.DecideAction(); //Ai decision in Waiting
                     }
                 }
                 break;
@@ -484,7 +488,7 @@ public class TurnStateManager : MonoBehaviour
                 SetCurrentUnit(unit);
 
                 // Let the AI unit decide its action
-                unit.aiController.DecideAction();
+                //unit.aiController.DecideAction();
 
                 // Wait for the AI unit to finish its turn
                 while (!unit.hasMoved && !unit.hasAttacked)
