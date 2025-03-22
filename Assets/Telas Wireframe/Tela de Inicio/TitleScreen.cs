@@ -12,12 +12,12 @@ public class TitleScreen : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Dialogue/Sinar");
+    SceneLoader.Instance.LoadNextScene();
     }
 
     public void LoadGame()
     {
-        SceneManager.LoadScene("Dialogue/Sinar 1");
+    SceneLoader.Instance.LoadSceneByName("Main Combat Scene");
     }
 
     public void Options()

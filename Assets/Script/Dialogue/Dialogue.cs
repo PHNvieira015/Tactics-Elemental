@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
-public class Dialogue : MonoBehaviour
+public class Cutscene : MonoBehaviour
 {
+    public GameObject nameSelector;
+    public AudioSource music;
     public TextMeshProUGUI textComponent;
     public Image framesComponent;
     public Sprite[] frames;
@@ -64,6 +67,8 @@ public class Dialogue : MonoBehaviour
         else
         {
             gameObject.SetActive(false);
+            nameSelector.SetActive(true);
+            music.mute = true;
         }
     }
 }

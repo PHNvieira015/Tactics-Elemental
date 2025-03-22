@@ -93,11 +93,14 @@ public class GameMaster : MonoBehaviour
             case GameState.Victory:
                 Debug.Log("Victory! You have defeated all enemies.");
                 // Handle victory logic here (e.g., show victory screen)
+                StartNextScene();
+
                 break;
 
             case GameState.Defeat:
                 Debug.Log("Defeat! All your units have been defeated.");
                 // Handle defeat logic here (e.g., show defeat screen)
+                SceneLoader.Instance.ReloadScene();
                 break;
 
             default:
@@ -464,8 +467,8 @@ public class GameMaster : MonoBehaviour
         // Remove all null elements from the list
         unitList.RemoveAll(unit => unit == null);
     }
-
-
-
-
+    void StartNextScene()
+    {
+        SceneLoader.Instance.LoadNextScene();
+    }
 }

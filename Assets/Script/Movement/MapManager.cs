@@ -48,12 +48,20 @@ namespace TacticsToolkit
                 {
                     foreach (var item in tileData.baseTiles)
                     {
-                        dataFromTiles.Add(item, tileData);
+                        if (item != null) // Ensure the tile is not null
+                        {
+                            dataFromTiles.Add(item, tileData);
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Found a null tile in tileTypeList. Skipping.");
+                        }
                     }
+
                 }
             }
 
-            tilemap = gameObject.GetComponentInChildren<Tilemap>();
+                tilemap = gameObject.GetComponentInChildren<Tilemap>();
             map = new Dictionary<Vector2Int, OverlayTile>();
             BoundsInt bounds = tilemap.cellBounds;
 

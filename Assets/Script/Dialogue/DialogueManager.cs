@@ -14,7 +14,10 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI characterName;
     public TextMeshProUGUI textComponent;
 
-    public static string ProtagonistName = "Edu";
+    public static gender ProtagonistGender;
+    public static gender SiblingGender;
+
+    public static string ProtagonistName;
     public DialogueTrigger[] triggers;
     public int triggerIndex = 0;
     public Message currentMessage;
@@ -91,6 +94,14 @@ public class DialogueManager : MonoBehaviour
     {
         textComponent.text = "";
         currentMessage.message = currentMessage.message.Replace("{ProtagonistName}", ProtagonistName);
+        currentMessage.message = currentMessage.message.Replace("{G1}", ProtagonistGender == gender.Masculino ? "o" : "a");
+        currentMessage.message = currentMessage.message.Replace("{G2}", ProtagonistGender == gender.Masculino ? "meu" : "minha");
+        currentMessage.message = currentMessage.message.Replace("{G3}", ProtagonistGender == gender.Masculino ? "ão" : "ã");
+        currentMessage.message = currentMessage.message.Replace("{G4}", ProtagonistGender == gender.Masculino ? "ele" : "ela");
+        currentMessage.message = currentMessage.message.Replace("{GS1}", SiblingGender == gender.Masculino ? "o" : "a");
+        currentMessage.message = currentMessage.message.Replace("{GS2}", SiblingGender == gender.Masculino ? "meu" : "minha");
+        currentMessage.message = currentMessage.message.Replace("{GS3}", SiblingGender == gender.Masculino ? "ã" : "ã");
+        currentMessage.message = currentMessage.message.Replace("{GS4}", SiblingGender == gender.Masculino ? "ele" : "ela");
 
         bool isTag = false;
         string currentTag = "";
