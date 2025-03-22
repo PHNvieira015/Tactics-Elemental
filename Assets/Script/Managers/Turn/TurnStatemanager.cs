@@ -520,4 +520,21 @@ public class TurnStateManager : MonoBehaviour
         EnableUI_Action();
         }
     }
+    public void AIWaitTime(TurnState nextState)
+    {
+        if (currentUnit.isAI)
+        {
+            StartCoroutine(WaitAndDoAction(nextState));
+        }
+    }
+
+    IEnumerator WaitAndDoAction(TurnState nextState)
+    {
+        // Wait for 2 seconds
+        yield return new WaitForSeconds(20f);
+
+        // Action to perform after waiting
+        Debug.Log("2 seconds have passed!");
+        ChangeState(nextState);
+    }
 }

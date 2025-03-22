@@ -1,7 +1,7 @@
-using System.Collections;
+using static TurnStateManager;
 using System.Collections.Generic;
 using UnityEngine;
-using static TurnStateManager;
+using System.Collections;
 
 public class AIController : MonoBehaviour
 {
@@ -18,16 +18,8 @@ public class AIController : MonoBehaviour
         turnStateManager = FindObjectOfType<TurnStateManager>(); // Get the TurnStateManager instance
     }
 
-    public void SetEnemies(List<Unit> enemies)
-    {
-        allEnemies = enemies;
-    }
-
     public void StartTurn()
     {
-        Debug.Log($"AI {unit.name} is starting its turn.");
-        unit.hasMoved = false; // Reset movement flag
-        unit.hasAttacked = false; // Reset attack flag
         StartCoroutine(RunTurn());
     }
 
@@ -35,6 +27,11 @@ public class AIController : MonoBehaviour
     {
         while (true)
         {
+            // Wait for 1 second before deciding action
+            yield return new WaitForSeconds(0.5f);
+
+            // Check for enemies in range and decide action
+            CheckForEnemiesInRange();
             DecideAction();
 
             // If the AI has moved and attacked, or has no actions left, end the turn
@@ -43,19 +40,24 @@ public class AIController : MonoBehaviour
                 EndTurn();
                 yield break; // Exit the coroutine
             }
-
-            // Wait for the next frame to re-evaluate
-            yield return null;
         }
     }
 
     public void DecideAction()
     {
+        // Ensure this unit is the current unit
+        if (turnStateManager.currentUnit != unit)
+        {
+            Debug.LogWarning($"{unit.name} is not the current unit. Skipping action.");
+            return;
+        }
+
         Debug.Log($"AI {unit.name} is deciding action. hasMoved: {unit.hasMoved}, hasAttacked: {unit.hasAttacked}");
 
+        // Update enemies and allies
         FindAllEnemies();
         FindAllAllies();
-        CheckForEnemiesInRange(); // Update enemies in range
+        CheckForEnemiesInRange();
 
         if (unit.enemiesInRange.Count > 0 && !unit.hasAttacked)
         {
@@ -77,6 +79,141 @@ public class AIController : MonoBehaviour
         }
     }
 
+    public void MoveTowardNearestEnemy()
+    {
+        if (unit.hasMoved)
+        {
+            Debug.LogWarning($"{unit.name} has already moved this turn!");
+            return;
+        }
+
+        Unit nearestEnemy = null;
+        int shortestDistance = int.MaxValue;
+
+        // Find the nearest enemy using tile-based distance
+        foreach (var enemy in allEnemies)
+        {
+            OverlayTile unitTile = unit.standingOnTile;
+            OverlayTile enemyTile = enemy.standingOnTile;
+
+            if (unitTile == null || enemyTile == null)
+            {
+                Debug.LogWarning("Unit or enemy tile is null!");
+                continue;
+            }
+
+            // Calculate the Manhattan distance between tiles
+            int distance = Mathf.Abs(unitTile.gridLocation.x - enemyTile.gridLocation.x) +
+                           Mathf.Abs(unitTile.gridLocation.y - enemyTile.gridLocation.y);
+
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                nearestEnemy = enemy;
+            }
+        }
+
+        if (nearestEnemy == null)
+        {
+            Debug.LogWarning($"{unit.name} found no enemies!");
+            EndTurn(); // End turn if no enemies are found
+            return;
+        }
+
+        // Set the AI unit as the current unit in MouseController
+        mouseController.SetUnit(unit);
+
+        // Get the movement range tiles
+        List<OverlayTile> movementRangeTiles = mouseController.GetInRangeTiles();
+
+        // Find the closest tile to the enemy within movement range
+        OverlayTile closestTile = null;
+        int closestDistance = int.MaxValue;
+
+        foreach (var tile in movementRangeTiles)
+        {
+            OverlayTile enemyTile = nearestEnemy.standingOnTile;
+
+            if (enemyTile == null)
+            {
+                Debug.LogWarning("Enemy tile is null!");
+                continue;
+            }
+
+            // Calculate the Manhattan distance between the tile and the enemy
+            int distance = Mathf.Abs(tile.gridLocation.x - enemyTile.gridLocation.x) +
+                           Mathf.Abs(tile.gridLocation.y - enemyTile.gridLocation.y);
+
+            if (distance < closestDistance && !tile.isBlocked)
+            {
+                closestDistance = distance;
+                closestTile = tile;
+            }
+        }
+
+        if (closestTile == null)
+        {
+            Debug.LogWarning($"No valid tile found for {unit.name} to move toward {nearestEnemy.name}!");
+            EndTurn(); // End turn if no valid tile is found
+            return;
+        }
+
+        // Move the unit to the closest tile
+        StartCoroutine(MoveAndReevaluate(closestTile));
+    }
+
+    private IEnumerator MoveAndReevaluate(OverlayTile targetTile)
+    {
+        // Simulate player input by calling HandleMovement
+        mouseController.HandleMovement(targetTile);
+
+        // Wait for the movement to complete
+        while (mouseController.isMoving)
+        {
+            yield return null;
+        }
+
+        // Mark the unit as having moved
+        unit.hasMoved = true;
+        Debug.Log($"{unit.name} has moved. hasMoved: {unit.hasMoved}");
+
+        // Wait for 2 seconds before re-evaluating
+        yield return new WaitForSeconds(2f);
+
+        // Re-evaluate after moving
+        DecideAction();
+    }
+
+    public void AttackEnemy(Unit enemy)
+    {
+        if (unit.hasAttacked)
+        {
+            Debug.LogWarning($"{unit.name} has already attacked this turn!");
+            return;
+        }
+
+        // Simulate player input by calling HandleAttack
+        mouseController.HandleAttack(enemy.standingOnTile);
+
+        // Mark the unit as having attacked
+        unit.hasAttacked = true;
+        Debug.Log($"{unit.name} has attacked. hasAttacked: {unit.hasAttacked}");
+
+        // Wait for 2 seconds before ending the turn
+        StartCoroutine(WaitAndEndTurn());
+    }
+
+    private IEnumerator WaitAndEndTurn()
+    {
+        yield return new WaitForSeconds(2f);
+        EndTurn();
+    }
+
+    private void EndTurn()
+    {
+        Debug.Log($"AI {unit.name} is ending its turn.");
+        turnStateManager.ChangeState(TurnState.EndTurn);
+    }
     public void FindAllEnemies()
     {
         Debug.Log("Finding all enemies");
@@ -108,126 +245,31 @@ public class AIController : MonoBehaviour
 
     public void CheckForEnemiesInRange()
     {
-        Debug.Log("Checking for enemies in range");
+        Debug.Log("Checking for enemies in range using tile-based distance.");
         unit.enemiesInRange.Clear();
+
         foreach (var enemy in allEnemies)
         {
-            float distance = Vector2.Distance(unit.transform.position, enemy.transform.position);
+            // Get the tiles under the unit and the enemy
+            OverlayTile unitTile = unit.standingOnTile;
+            OverlayTile enemyTile = enemy.standingOnTile;
+
+            if (unitTile == null || enemyTile == null)
+            {
+                Debug.LogWarning("Unit or enemy tile is null!");
+                continue;
+            }
+
+            // Calculate the Manhattan distance between tiles
+            int distance = Mathf.Abs(unitTile.gridLocation.x - enemyTile.gridLocation.x) +
+                           Mathf.Abs(unitTile.gridLocation.y - enemyTile.gridLocation.y);
+
+            // Check if the enemy is within attack range
             if (distance <= unit.attackRange)
             {
                 unit.enemiesInRange.Add(enemy);
                 Debug.Log($"Enemy {enemy.name} is in range. Distance: {distance}, Attack Range: {unit.attackRange}");
             }
         }
-    }
-
-    public void MoveTowardNearestEnemy()
-    {
-        if (unit.hasMoved)
-        {
-            Debug.LogWarning($"{unit.name} has already moved this turn!");
-            return;
-        }
-
-        Unit nearestEnemy = null;
-        float shortestDistance = float.MaxValue;
-
-        // Find the nearest enemy
-        foreach (var enemy in allEnemies)
-        {
-            float distance = Vector2.Distance(unit.transform.position, enemy.transform.position);
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                nearestEnemy = enemy;
-            }
-        }
-
-        if (nearestEnemy == null)
-        {
-            Debug.LogWarning($"{unit.name} found no enemies!");
-            EndTurn(); // End turn if no enemies are found
-            return;
-        }
-
-        // Set the AI unit as the current unit in MouseController
-        mouseController.SetUnit(unit);
-
-        // Get the movement range tiles
-        List<OverlayTile> movementRangeTiles = mouseController.GetInRangeTiles();
-
-        // Find the closest tile to the enemy within movement range
-        OverlayTile closestTile = null;
-        float closestDistance = float.MaxValue;
-
-        foreach (var tile in movementRangeTiles)
-        {
-            float distance = Vector2.Distance(tile.transform.position, nearestEnemy.transform.position);
-            if (distance < closestDistance && !tile.isBlocked)
-            {
-                closestDistance = distance;
-                closestTile = tile;
-            }
-        }
-
-        if (closestTile == null)
-        {
-            Debug.LogWarning($"No valid tile found for {unit.name} to move toward {nearestEnemy.name}!");
-            EndTurn(); // End turn if no valid tile is found
-            return;
-        }
-
-        // Move the unit to the closest tile
-        StartCoroutine(MoveAndReevaluate(closestTile));
-    }
-
-    private IEnumerator MoveAndReevaluate(OverlayTile targetTile)
-    {
-        // Move the unit
-        mouseController.HandleMovement(targetTile);
-
-        // Wait for the movement to complete
-        while (mouseController.isMoving)
-        {
-            yield return null;
-        }
-
-        // Mark the unit as having moved
-        unit.hasMoved = true;
-        Debug.Log($"{unit.name} has moved. hasMoved: {unit.hasMoved}");
-
-        // Update enemies in range after moving
-        CheckForEnemiesInRange();
-
-        // Re-evaluate after moving
-        DecideAction();
-    }
-
-    public void AttackEnemy(Unit enemy)
-    {
-        if (unit.hasAttacked)
-        {
-            Debug.LogWarning($"{unit.name} has already attacked this turn!");
-            return;
-        }
-
-        // Set the AI unit as the current unit in MouseController
-        mouseController.SetUnit(unit);
-
-        // Attack the enemy
-        mouseController.HandleAttack(enemy.standingOnTile);
-
-        // Mark the unit as having attacked
-        unit.hasAttacked = true;
-        Debug.Log($"{unit.name} has attacked. hasAttacked: {unit.hasAttacked}");
-
-        // End the turn after attacking
-        EndTurn();
-    }
-
-    private void EndTurn()
-    {
-        Debug.Log($"AI {unit.name} is ending its turn.");
-        turnStateManager.ChangeState(TurnState.EndTurn);
     }
 }

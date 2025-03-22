@@ -253,6 +253,14 @@ PrefabInstance:
       value: Protagonista
       objectReference: {fileID: 0}
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: currentHealth
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: maxBaseHealth
+      value: 10000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: movementRange
       value: 3
       objectReference: {fileID: 0}
