@@ -123,7 +123,7 @@ PrefabInstance:
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: equippedWeapon
       value: 
-      objectReference: {fileID: 11400000, guid: 99c17806b082e244ab8ed984c5705ff6, type: 2}
+      objectReference: {fileID: 11400000, guid: 8f762d3c071767d4a97729d723070a3b, type: 2}
     - target: {fileID: 9133800873727368985, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_RaycastTarget
       value: 0

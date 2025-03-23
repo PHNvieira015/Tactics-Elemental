@@ -34,7 +34,7 @@ PrefabInstance:
       objectReference: {fileID: 6498419168252256624}
     - target: {fileID: 1808987032276278563, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_Name
-      value: Mago Base
+      value: Mago Base 2
       objectReference: {fileID: 0}
     - target: {fileID: 2295914053566022050, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_LocalPosition.x
@@ -123,7 +123,7 @@ PrefabInstance:
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: equippedWeapon
       value: 
-      objectReference: {fileID: 11400000, guid: 99c17806b082e244ab8ed984c5705ff6, type: 2}
+      objectReference: {fileID: 11400000, guid: 8f762d3c071767d4a97729d723070a3b, type: 2}
     - target: {fileID: 9133800873727368985, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_RaycastTarget
       value: 0

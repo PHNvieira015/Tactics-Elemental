@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dc16548d0b2af94da409af52005eb0f, type: 3}
+  m_Name: Staff
+  m_EditorClassIdentifier: 
+  itemName: Mace
+  itemDescription: Simple Mace
+  itemIcon: {fileID: 21300000, guid: 2b8b8dc1513cbc940b6c7011d2bf945d, type: 3}
+  strengthBonus: 0
+  agilityBonus: 0
+  intellectBonus: 1
+  WeightBonus: 1
+  MovementBonus: 0
+  itemClass: 0
+  value: 0
+  requiredClass: 1
+  weapon: 0
+  WeaponDamageModifier: 1
+  WeaponRange: 1
+  weaponType: 2
+  PrimaryAttackType: 3

@@ -2,6 +2,7 @@ using static TurnStateManager;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using System.IO;
 
 public class AIController : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class AIController : MonoBehaviour
     public void StartTurn()
     {
         Debug.Log($"Starting turn for {unit.name}. Current unit: {turnStateManager.currentUnit.name}");
-        if (unit == turnStateManager.currentUnit && turnStateManager.currentUnit.isAI==true)
+        if (unit == turnStateManager.currentUnit)
         {
             StartCoroutine(RunTurn());
         }
@@ -33,7 +34,7 @@ public class AIController : MonoBehaviour
 
     private IEnumerator RunTurn()
     {
-        if (unit != turnStateManager.currentUnit)
+        if (unit != turnStateManager.currentUnit && unit.isAI)
         {
             Debug.LogWarning($"{unit.name} tried to act but is not the current unit!");
             yield break;
@@ -50,6 +51,7 @@ public class AIController : MonoBehaviour
 
             if ((unit.hasMoved && unit.hasAttacked) || (unit.hasMoved && unit.enemiesInRange.Count == 0) || (unit.hasAttacked))
             {
+                mouseController.path.Clear();
                 EndTurn();
                 yield break;
             }
@@ -79,7 +81,7 @@ public class AIController : MonoBehaviour
             AttackEnemy(unit.enemiesInRange[0]);
         }
         // If there are no enemies in range, move the unit towards the nearest enemy, but only if it hasn't moved yet
-        else if (!unit.hasMoved)
+        else if (!unit.hasMoved && unit.enemiesInRange.Count == 0)
         {
             MoveTowardNearestEnemy();
         }
@@ -203,8 +205,8 @@ public class AIController : MonoBehaviour
 
         Debug.Log($"Ending turn for {unit.name}.");
 
-        unit.hasMoved = false;
-        unit.hasAttacked = false;
+        unit.hasMoved = true;
+        unit.hasAttacked = true;
 
         turnStateManager.ChangeState(TurnState.EndTurn);
     }
@@ -271,6 +273,10 @@ public class AIController : MonoBehaviour
     {
         Debug.Log($"[{unit.name}] Finding closest valid tile to {targetTile.gridLocation}.");
 
+        // Calculate the desired distance based on attack range
+        int desiredDistance = unit.attackRange;
+
+        // Find the closest valid tile in the movement range
         OverlayTile closestTile = null;
         int closestDistance = int.MaxValue;
 
@@ -287,6 +293,15 @@ public class AIController : MonoBehaviour
             int distance = Mathf.Abs(tile.gridLocation.x - targetTile.gridLocation.x) +
                            Mathf.Abs(tile.gridLocation.y - targetTile.gridLocation.y);
 
+            // Check if the tile is at the desired distance
+            if (distance == desiredDistance)
+            {
+                // If the tile is at the desired distance, return it immediately
+                Debug.Log($"[{unit.name}] Found a valid tile at the desired distance: {tile.gridLocation}.");
+                return tile;
+            }
+
+            // If no tile is found at the desired distance, track the closest tile as a fallback
             if (distance < closestDistance)
             {
                 closestDistance = distance;
@@ -294,7 +309,8 @@ public class AIController : MonoBehaviour
             }
         }
 
-        Debug.Log($"[{unit.name}] Closest valid tile: {closestTile?.gridLocation}");
+        // If no tile is found at the desired distance, return the closest valid tile as a fallback
+        Debug.Log($"[{unit.name}] No tile found at the desired distance. Returning closest tile: {closestTile?.gridLocation}.");
         return closestTile;
     }
     private Unit FindNearestEnemy()
