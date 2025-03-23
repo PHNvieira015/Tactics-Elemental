@@ -33,6 +33,7 @@ public class MouseController : MonoBehaviour
     public List<OverlayTile> attackRangeTiles; // Store attack range tiles
     public Color attackColor = Color.red;  // Red color for attack range
     public GameObject SelectedUnitInfo;
+    private bool isAttacking = false; // Add this flag
 
     public Vector3 TargetPosition { get; private set; } // Property to store the target position
     public Color color = Color.blue;  // Default color for the tiles (you can change this)
@@ -72,11 +73,18 @@ public class MouseController : MonoBehaviour
 
     void Update()
     {
+
         // Check if the mouse is over a UI element (e.g., a button)
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return; // Skip further processing if the mouse is over a UI element
         }
+        // Check if the current unit is valid and not an AI
+        if (currentUnit == null || currentUnit.isAI)
+        {
+            cursor.active = false; // Hide the cursor if there's no current unit
+        }
+
 
         if (currentUnit != null)
         {
@@ -137,12 +145,12 @@ public class MouseController : MonoBehaviour
                 }
 
                 // Handle movement and attack logic
-                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving)
+                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Moving && currentUnit.isAI==false)
                 {
                     HandleMovement(tile); // Call the refactored movement method
                 }
 
-                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
+                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile) && currentUnit.isAI == false)
                 {
                     HandleAttack(tile); // Call the refactored attack method
                 }
@@ -455,13 +463,18 @@ public class MouseController : MonoBehaviour
         while (attackerBattle.GetState() != CharacterBattle.State.Idle)
         {
             yield return null; // Wait until the character stops moving
-        }
 
-        // Transition to Waiting state after both animation and movement are complete
-        turnStateManager.ChangeState(TurnState.Waiting);
+            // Reset the attacking flag
+            isAttacking = false;
+
+            // Transition to Waiting state after both animation and movement are complete
+            turnStateManager.ChangeState(TurnState.Waiting);
+        }
     }
     public void HandleAttack(OverlayTile tile)
     {
+            if (isAttacking || currentUnit.hasAttacked) return; // Skip if already attacking or has attacked
+        if (isAttacking) return; // Skip if already attacking
         // Get the target unit from the tile
         Unit targetUnit = tile.unitOnTile;
         Debug.Log($"Attempting to attack. Target unit found: {targetUnit != null}");
@@ -470,7 +483,7 @@ public class MouseController : MonoBehaviour
         {
             Debug.Log($"Attack conditions met! Current unit: {currentUnit.name}, Target: {targetUnit.name}");
 
-            if (targetUnit.playerOwner != currentUnit.playerOwner)
+            if (targetUnit != currentUnit)
             {
                 UpdateFaceDirection(targetUnit.standingOnTile);
                 CharacterBattle attackerBattle = currentUnit.GetComponent<CharacterBattle>();
@@ -538,6 +551,11 @@ public class MouseController : MonoBehaviour
         {
             Debug.Log("Cannot move to occupied tile");
         }
+    }
+    private IEnumerator ResetAttackCooldown()
+    {
+        yield return new WaitForSeconds(1.0f); // Adjust the cooldown duration as needed
+        isAttacking = false; // Reset the flag
     }
 
 }

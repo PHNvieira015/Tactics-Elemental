@@ -23159,6 +23159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45f22ad3e39ded1439ac0d3571fc6d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnStarted: 0
   mouseController: {fileID: 583550734}
   TurnStartingPosition: {x: 0, y: 0, z: 0}
   unitManager: {fileID: 842386234}
@@ -26385,7 +26386,7 @@ MonoBehaviour:
   enemyList:
   - {fileID: 6799471685966266938, guid: d7530a2780dd20044b39d0c4c11cfb72, type: 3}
   - {fileID: 5883015407676484983, guid: 24c395dda9ecad042b6903eb0a7d0bd8, type: 3}
-  - {fileID: 5883015407676484983, guid: 24c395dda9ecad042b6903eb0a7d0bd8, type: 3}
+  - {fileID: 5883015407676484983, guid: 37021d9eb7af7e149ac922b1f792e9bf, type: 3}
   playerList: []
   spawnedUnits: []
   enemySpawner: {fileID: 1791059474}

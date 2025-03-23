@@ -8,13 +8,13 @@ public class TurnStateManager : MonoBehaviour
 {
     #region Variables
 
-    private bool turnStarted;
+    [SerializeField] bool turnStarted;
     [SerializeField] public MouseController mouseController; // Use MouseController instead of PathFinder
     [HideInInspector] public Vector3 TurnStartingPosition;
     private TurnStateManager turnStateManager;
     [SerializeField] private UnitManager unitManager;
     public Skill selectedSkill; // Track selected skill
-
+    private bool isEndTurnCoroutineRunning = false; // Add this flag
     public enum TurnState
     {
         None,
@@ -43,6 +43,7 @@ public class TurnStateManager : MonoBehaviour
     [SerializeField] public GameMaster gameMaster;  // Direct reference to GameMaster
     public OverlayTile previousTile; // Store the tile before movement
     #endregion
+   
     private void Awake()
     {
         // Optionally find GameMaster if not assigned in the inspector
@@ -101,13 +102,22 @@ public class TurnStateManager : MonoBehaviour
                 break;
             #region TurnStart
             case TurnState.TurnStart:
-
+                Debug.Log("Turn started");
                 // Clear existing path arrows first
                 if (mouseController != null)
                 {
                     mouseController.ClearPathArrows();
                     TurnStartingPosition = currentUnit.transform.position;
                     currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
+
+                    if (currentUnit.isAI == true)
+                    {
+                        AIController aiController = currentUnit.GetComponent<AIController>();
+                        if (aiController != null)
+                        {
+                            aiController.StartTurn();
+                        }
+                    }
                     // Clear previous tile references
                     if (currentUnit.standingOnTile != null)
                     {
@@ -258,35 +268,9 @@ public class TurnStateManager : MonoBehaviour
 
             #region endTurn
             case TurnState.EndTurn:
-                DisableUI_Action();
-                currentUnit.selected = false;
+                StartCoroutine(EndTurnCoroutine());
+                break; // Exit the function immediately to let coroutine handle the rest.
 
-                // Reset flags
-                turnStarted = false;
-                currentUnit.hasMoved = false;
-                currentUnit.hasAttacked = false;
-                currentUnit.characterStats.EndTurnRoundInitiative();
-
-                // Handle end-of-round logic
-                if (gameMaster != null)
-                {
-                    gameMaster.HandleEndOfRound();
-                }
-
-                // Update turn order and start new turn
-                unitManager.SetTurnOrderList();
-                if (unitManager.turnOrderList.Count > 0)
-                {
-                    SetCurrentUnit(unitManager.turnOrderList[0]);
-                }
-
-                // Transition to TurnStart
-                ChangeState(TurnState.TurnStart);
-                break;
-
-            default:
-                Debug.LogWarning($"Unhandled turn state: {state}");
-                break;
         }
         #endregion
     }
@@ -328,6 +312,12 @@ public class TurnStateManager : MonoBehaviour
     #region ChangeState
     public void ChangeState(TurnState newState)
     {
+        // Ensure the current unit is valid
+        if (currentUnit == null)
+        {
+            Debug.LogError("No current unit set. Cannot change state.");
+            return;
+        }
         if (currentTurnState == newState)
         {
             return; // Avoid redundant state processing
@@ -450,62 +440,53 @@ public class TurnStateManager : MonoBehaviour
 
     private IEnumerator WaitForAttackAnimation(CharacterStat.Direction attackDirection)
     {
-        //// Get the length of the attack animation dynamically
-        //AnimatorScript animatorScript = currentUnit.GetComponentInChildren<AnimatorScript>();
-        //if (animatorScript != null)
-        //{
-        //    float animationLength = animatorScript.GetAttackAnimationLength(attackDirection);
-        //    yield return new WaitForSeconds(animationLength); // Wait for the exact duration of the animation
-        //}
-        //else
-        //{
-        //    Debug.LogWarning("AnimatorScript not found. Using default animation duration.");
-        //    yield return new WaitForSeconds(1.0f); // Fallback to a default duration
-        //}
-        yield return new WaitForSeconds(1.0f); // Fallback to a default duration
+        yield return new WaitForSeconds(1.0f); // Wait for the attack animation to complete
 
-        // Transition to Waiting state after the animation is complete
-        ChangeState(TurnState.Waiting);
+        // Ensure the state is updated after the animation
+        if (currentTurnState == TurnState.AttackingAnimation)
+        {
+            ChangeState(TurnState.Waiting); // Transition to Waiting state
+        }
     }
     public void OnAttackAnimationStarted()
     {
         // No additional logic needed here unless you want to track animation state
     }
-    public IEnumerator ProcessAITurn()
-    {
-        Debug.Log("Processing AI turn");
+    //public IEnumerator ProcessAITurn()
+    //{
+    //    Debug.Log("Processing AI turn");
 
-        // Get all AI units
-        Unit[] allUnits = FindObjectsOfType<Unit>();
+    //    // Get all AI units
+    //    Unit[] allUnits = FindObjectsOfType<Unit>();
 
-        foreach (var unit in allUnits)
-        {
-            if (unit.isAI && unit.IsAlive())
-            {
-                Debug.Log($"Processing AI unit: {unit.name}");
+    //    foreach (var unit in allUnits)
+    //    {
+    //        if (unit.isAI && unit.IsAlive())
+    //        {
+    //            Debug.Log($"Processing AI unit: {unit.name}");
 
-                // Set the current unit
-                SetCurrentUnit(unit);
+    //            // Set the current unit
+    //            SetCurrentUnit(unit);
 
-                // Let the AI unit decide its action
-                //unit.aiController.DecideAction();
+    //            // Let the AI unit decide its action
+    //            //unit.aiController.DecideAction();
 
-                // Wait for the AI unit to finish its turn
-                while (!unit.hasMoved && !unit.hasAttacked)
-                {
-                    Debug.Log($"Waiting for {unit.name} to finish its turn...");
-                    yield return null; // Wait until the unit has moved and attacked
-                }
+    //            // Wait for the AI unit to finish its turn
+    //            while (!unit.hasMoved && !unit.hasAttacked)
+    //            {
+    //                Debug.Log($"Waiting for {unit.name} to finish its turn...");
+    //                yield return null; // Wait until the unit has moved and attacked
+    //            }
 
-                Debug.Log($"{unit.name} has finished its turn");
-            }
-        }
+    //            Debug.Log($"{unit.name} has finished its turn");
+    //        }
+    //    }
 
-        Debug.Log("All AI units have finished their turns");
+    //    Debug.Log("All AI units have finished their turns");
 
-        // Transition to the player's turn
-        ChangeState(TurnState.TurnStart);
-    }
+    //    // Transition to the player's turn
+    //    ChangeState(TurnState.TurnStart);
+    //}
     private void UpdateCameraPosition(Vector3 targetPosition)
     {
         Camera.main.transform.position = new Vector3(targetPosition.x, targetPosition.y, Camera.main.transform.position.z);
@@ -531,10 +512,46 @@ public class TurnStateManager : MonoBehaviour
     IEnumerator WaitAndDoAction(TurnState nextState)
     {
         // Wait for 2 seconds
-        yield return new WaitForSeconds(20f);
+        yield return new WaitForSeconds(5.0f);
 
         // Action to perform after waiting
         Debug.Log("2 seconds have passed!");
         ChangeState(nextState);
     }
+    private IEnumerator EndTurnCoroutine()
+    {
+        Debug.Log("Waiting before processing EndTurn...");
+        isEndTurnCoroutineRunning = true; // Set the flag
+        yield return new WaitForSeconds(0.2f); // Wait for the full duration
+
+        Debug.Log("EndTurn coroutine finished. Now executing EndTurn logic.");
+
+        DisableUI_Action();
+        currentUnit.selected = false;
+
+        // Reset flags
+        currentUnit.hasMoved = false;
+        currentUnit.hasAttacked = false;
+        currentUnit.characterStats.EndTurnRoundInitiative();
+
+        // Handle end-of-round logic
+        if (gameMaster != null)
+        {
+            gameMaster.HandleEndOfRound();
+        }
+
+        // Update turn order and start new turn
+        unitManager.SetTurnOrderList();
+        if (unitManager.turnOrderList.Count > 0)
+        {
+            SetCurrentUnit(unitManager.turnOrderList[0]);
+        }
+
+        // Transition to TurnStart **AFTER** waiting
+        ChangeState(TurnState.TurnStart);
+        yield return new WaitForSeconds(0.2f); // Wait for the full duration
+        isEndTurnCoroutineRunning = false; // Reset the flag
+    }
+
+
 }

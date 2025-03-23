@@ -20,103 +20,98 @@ public class AIController : MonoBehaviour
 
     public void StartTurn()
     {
-        StartCoroutine(RunTurn());
+        Debug.Log($"Starting turn for {unit.name}. Current unit: {turnStateManager.currentUnit.name}");
+        if (unit == turnStateManager.currentUnit && turnStateManager.currentUnit.isAI==true)
+        {
+            StartCoroutine(RunTurn());
+        }
+        else
+        {
+            Debug.LogWarning($"{unit.name} is not the current unit. Current unit is {turnStateManager.currentUnit.name}");
+        }
     }
 
     private IEnumerator RunTurn()
     {
-        while (true)
+        if (unit != turnStateManager.currentUnit)
         {
-            // Wait for 1 second before deciding action
+            Debug.LogWarning($"{unit.name} tried to act but is not the current unit!");
+            yield break;
+        }
+
+        while (unit == turnStateManager.currentUnit)
+        {
+            Debug.Log($"AI {unit.name} is running its turn.");
+
             yield return new WaitForSeconds(0.5f);
 
-            // Check for enemies in range and decide action
             CheckForEnemiesInRange();
             DecideAction();
 
-            // If the AI has moved and attacked, or has no actions left, end the turn
-            if ((unit.hasMoved && unit.hasAttacked) || (unit.hasMoved && unit.enemiesInRange.Count == 0))
+            if ((unit.hasMoved && unit.hasAttacked) || (unit.hasMoved && unit.enemiesInRange.Count == 0) || (unit.hasAttacked))
             {
                 EndTurn();
-                yield break; // Exit the coroutine
+                yield break;
             }
         }
     }
 
+
     public void DecideAction()
     {
-        // Ensure this unit is the current unit
-        if (turnStateManager.currentUnit != unit)
+        Debug.Log($"[{unit.name}] Deciding action. hasMoved: {unit.hasMoved}, hasAttacked: {unit.hasAttacked}");
+
+        // Skip action if unit already moved or attacked
+        if (unit.hasMoved && unit.hasAttacked)
         {
-            Debug.LogWarning($"{unit.name} is not the current unit. Skipping action.");
+            Debug.Log($"[{unit.name}] Already moved and attacked, ending turn.");
+            StartCoroutine(WaitAndEndTurn());
             return;
         }
 
-        Debug.Log($"AI {unit.name} is deciding action. hasMoved: {unit.hasMoved}, hasAttacked: {unit.hasAttacked}");
-
-        // Update enemies and allies
         FindAllEnemies();
         FindAllAllies();
         CheckForEnemiesInRange();
 
+        // If there are enemies in range and the unit hasn't attacked yet, prioritize attacking
         if (unit.enemiesInRange.Count > 0 && !unit.hasAttacked)
         {
-            // Attack the first enemy in range
-            Debug.Log($"AI {unit.name} found an enemy in range, attacking...");
             AttackEnemy(unit.enemiesInRange[0]);
         }
+        // If there are no enemies in range, move the unit towards the nearest enemy, but only if it hasn't moved yet
         else if (!unit.hasMoved)
         {
-            // Move toward the nearest enemy
-            Debug.Log($"AI {unit.name} found no enemies in range, moving toward nearest enemy.");
             MoveTowardNearestEnemy();
         }
         else
         {
-            // If no actions are possible, end the turn
-            Debug.Log($"AI {unit.name} has no actions to perform, ending turn.");
-            EndTurn();
+            // If no action is required, end the turn
+            StartCoroutine(WaitAndEndTurn());
         }
     }
 
+
+
     public void MoveTowardNearestEnemy()
     {
-        if (unit.hasMoved)
+        // Ensure this unit is the current unit
+        if (turnStateManager.currentUnit != unit)
         {
-            Debug.LogWarning($"{unit.name} has already moved this turn!");
+            Debug.LogWarning($"{unit.name} is not the current unit. Skipping movement.");
             return;
         }
 
-        Unit nearestEnemy = null;
-        int shortestDistance = int.MaxValue;
-
-        // Find the nearest enemy using tile-based distance
-        foreach (var enemy in allEnemies)
+        if (unit.hasMoved)
         {
-            OverlayTile unitTile = unit.standingOnTile;
-            OverlayTile enemyTile = enemy.standingOnTile;
-
-            if (unitTile == null || enemyTile == null)
-            {
-                Debug.LogWarning("Unit or enemy tile is null!");
-                continue;
-            }
-
-            // Calculate the Manhattan distance between tiles
-            int distance = Mathf.Abs(unitTile.gridLocation.x - enemyTile.gridLocation.x) +
-                           Mathf.Abs(unitTile.gridLocation.y - enemyTile.gridLocation.y);
-
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                nearestEnemy = enemy;
-            }
+            Debug.LogWarning($"{unit.name} has already moved this turn!");
+            return; // Avoid moving again if the unit has already moved
         }
 
+        Unit nearestEnemy = FindNearestEnemy();
         if (nearestEnemy == null)
         {
             Debug.LogWarning($"{unit.name} found no enemies!");
-            EndTurn(); // End turn if no enemies are found
+            StartCoroutine(WaitAndEndTurn());
             return;
         }
 
@@ -126,30 +121,8 @@ public class AIController : MonoBehaviour
         // Get the movement range tiles
         List<OverlayTile> movementRangeTiles = mouseController.GetInRangeTiles();
 
-        // Find the closest tile to the enemy within movement range
-        OverlayTile closestTile = null;
-        int closestDistance = int.MaxValue;
-
-        foreach (var tile in movementRangeTiles)
-        {
-            OverlayTile enemyTile = nearestEnemy.standingOnTile;
-
-            if (enemyTile == null)
-            {
-                Debug.LogWarning("Enemy tile is null!");
-                continue;
-            }
-
-            // Calculate the Manhattan distance between the tile and the enemy
-            int distance = Mathf.Abs(tile.gridLocation.x - enemyTile.gridLocation.x) +
-                           Mathf.Abs(tile.gridLocation.y - enemyTile.gridLocation.y);
-
-            if (distance < closestDistance && !tile.isBlocked)
-            {
-                closestDistance = distance;
-                closestTile = tile;
-            }
-        }
+        // Find the closest valid tile to the enemy
+        OverlayTile closestTile = FindClosestValidTile(nearestEnemy.standingOnTile, movementRangeTiles);
 
         if (closestTile == null)
         {
@@ -158,9 +131,13 @@ public class AIController : MonoBehaviour
             return;
         }
 
+        // Notify TurnStateManager of state change
+        turnStateManager.ChangeState(TurnState.Moving);
+
         // Move the unit to the closest tile
         StartCoroutine(MoveAndReevaluate(closestTile));
     }
+
 
     private IEnumerator MoveAndReevaluate(OverlayTile targetTile)
     {
@@ -181,7 +158,7 @@ public class AIController : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         // Re-evaluate after moving
-        DecideAction();
+        DecideAction(); // Re-decide action after moving
     }
 
     public void AttackEnemy(Unit enemy)
@@ -195,25 +172,43 @@ public class AIController : MonoBehaviour
         // Simulate player input by calling HandleAttack
         mouseController.HandleAttack(enemy.standingOnTile);
 
-        // Mark the unit as having attacked
-        unit.hasAttacked = true;
         Debug.Log($"{unit.name} has attacked. hasAttacked: {unit.hasAttacked}");
 
-        // Wait for 2 seconds before ending the turn
-        StartCoroutine(WaitAndEndTurn());
+        // Wait for 2 seconds before re-evaluating or ending the turn
+        StartCoroutine(WaitAfterAttack());
+    }
+
+    private IEnumerator WaitAfterAttack()
+    {
+        yield return new WaitForSeconds(3f); // Wait for 2 seconds after attacking
+
+        // Re-evaluate after attacking (e.g., check if the unit can move or end the turn)
+        DecideAction();
     }
 
     private IEnumerator WaitAndEndTurn()
     {
         yield return new WaitForSeconds(2f);
+        // After waiting, explicitly set the end turn state
         EndTurn();
     }
 
     private void EndTurn()
     {
-        Debug.Log($"AI {unit.name} is ending its turn.");
+        if (turnStateManager.currentUnit != unit)
+        {
+            Debug.LogWarning($"{unit.name} tried to end turn but is not the current unit!");
+            return;
+        }
+
+        Debug.Log($"Ending turn for {unit.name}.");
+
+        unit.hasMoved = false;
+        unit.hasAttacked = false;
+
         turnStateManager.ChangeState(TurnState.EndTurn);
     }
+
     public void FindAllEnemies()
     {
         Debug.Log("Finding all enemies");
@@ -272,4 +267,65 @@ public class AIController : MonoBehaviour
             }
         }
     }
+    private OverlayTile FindClosestValidTile(OverlayTile targetTile, List<OverlayTile> movementRangeTiles)
+    {
+        Debug.Log($"[{unit.name}] Finding closest valid tile to {targetTile.gridLocation}.");
+
+        OverlayTile closestTile = null;
+        int closestDistance = int.MaxValue;
+
+        foreach (var tile in movementRangeTiles)
+        {
+            // Skip occupied or blocked tiles
+            if (tile.isBlocked || tile.unitOnTile != null)
+            {
+                Debug.Log($"Tile {tile.gridLocation} is occupied or blocked, skipping.");
+                continue;
+            }
+
+            // Calculate Manhattan distance to the target tile
+            int distance = Mathf.Abs(tile.gridLocation.x - targetTile.gridLocation.x) +
+                           Mathf.Abs(tile.gridLocation.y - targetTile.gridLocation.y);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTile = tile;
+            }
+        }
+
+        Debug.Log($"[{unit.name}] Closest valid tile: {closestTile?.gridLocation}");
+        return closestTile;
+    }
+    private Unit FindNearestEnemy()
+    {
+        Unit nearestEnemy = null;
+        int shortestDistance = int.MaxValue;
+
+        // Find the nearest enemy using tile-based distance
+        foreach (var enemy in allEnemies)
+        {
+            OverlayTile unitTile = unit.standingOnTile;
+            OverlayTile enemyTile = enemy.standingOnTile;
+
+            if (unitTile == null || enemyTile == null)
+            {
+                Debug.LogWarning("Unit or enemy tile is null!");
+                continue;
+            }
+
+            // Calculate the Manhattan distance between tiles
+            int distance = Mathf.Abs(unitTile.gridLocation.x - enemyTile.gridLocation.x) +
+                           Mathf.Abs(unitTile.gridLocation.y - enemyTile.gridLocation.y);
+
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                nearestEnemy = enemy;
+            }
+        }
+
+        return nearestEnemy;
+    }
+
 }
