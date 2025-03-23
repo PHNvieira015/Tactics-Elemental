@@ -7673,7 +7673,7 @@ GameObject:
   - component: {fileID: 635050844}
   - component: {fileID: 635050843}
   m_Layer: 5
-  m_Name: UI Spawning
+  m_Name: UI Spawning_Starter (Btn)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
