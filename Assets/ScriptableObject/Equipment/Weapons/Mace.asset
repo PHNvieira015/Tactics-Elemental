@@ -15,14 +15,14 @@ MonoBehaviour:
   itemName: Mace
   itemDescription: Simple Mace
   itemIcon: {fileID: 21300000, guid: 2b8b8dc1513cbc940b6c7011d2bf945d, type: 3}
-  strengthBonus: 0
+  strengthBonus: 1
   agilityBonus: 0
-  intellectBonus: 1
+  intellectBonus: 0
   WeightBonus: 1
   MovementBonus: 0
   itemClass: 0
   value: 0
-  requiredClass: 1
+  requiredClass: 0
   weapon: 0
   WeaponDamageModifier: 1
   WeaponRange: 1

@@ -1,0 +1,523 @@
+fileFormatVersion: 2
+guid: 361be4aafc15f5c4f9ab95dd6c7456da
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 18
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_0
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 56
+        width: 30
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f66f4d93f93f364ea6032a7404bb046
+      internalID: -2007322811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_1
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 56
+        width: 12
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a73a1f0a3751f4c428919f4f2957cb99
+      internalID: -326400239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_2
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 56
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43b89f2bb5849d046b005acd431e191e
+      internalID: -840855883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_3
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 56
+        width: 39
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 402758d25dcd2e440a06b3b2f12860c3
+      internalID: 980397430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_4
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 56
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85cad7ae2f44fd342ad00984c0527840
+      internalID: -1116687828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_5
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 56
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77a9bbbfe88b3c044a67d8a77f2ebd32
+      internalID: -987876010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_6
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 56
+        width: 15
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4863454238529746937798ab910a893
+      internalID: -1620542475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_7
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 56
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f58f2f2ec36ed24c87d93b3c810df14
+      internalID: 2037731034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_8
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 56
+        width: 12
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bd7d30d7a8c6674e9fdb0d584b20d9c
+      internalID: -1112271172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_9
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 11
+        width: 30
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6421eab583523048b6151824befe2bd
+      internalID: 2727392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_10
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 11
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2989ab6cf9e45b44bb0f2e84df051c16
+      internalID: -207542977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_11
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 11
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cbbe52f835a7a64393817760d310613
+      internalID: 1959694370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_12
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 11
+        width: 36
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e68150c56a61dd4a82cf3f421e74c0c
+      internalID: -1327378851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_13
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 11
+        width: 12
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e13ab17edfcc0f4fa6ccf0070e0c095
+      internalID: -844599503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_14
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 11
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1414f18175194434680b88b034d07459
+      internalID: -1130945273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_15
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 11
+        width: 24
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b369c340fbe1cae438d76ae41ce1f7f4
+      internalID: -357354970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_16
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 2
+        width: 27
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10eb75dca86bcc6478c175d8bcbecd83
+      internalID: 833594983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Elemental Knowledge (Logo) (Black) Sliced_17
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 11
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3f0ac15b7c27624c8bc2b2aa10ee0f7
+      internalID: 1227108523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Elemental Knowledge (Logo) (Black) Sliced_0: -2007322811
+      Elemental Knowledge (Logo) (Black) Sliced_1: -326400239
+      Elemental Knowledge (Logo) (Black) Sliced_10: -207542977
+      Elemental Knowledge (Logo) (Black) Sliced_11: 1959694370
+      Elemental Knowledge (Logo) (Black) Sliced_12: -1327378851
+      Elemental Knowledge (Logo) (Black) Sliced_13: -844599503
+      Elemental Knowledge (Logo) (Black) Sliced_14: -1130945273
+      Elemental Knowledge (Logo) (Black) Sliced_15: -357354970
+      Elemental Knowledge (Logo) (Black) Sliced_16: 833594983
+      Elemental Knowledge (Logo) (Black) Sliced_17: 1227108523
+      Elemental Knowledge (Logo) (Black) Sliced_2: -840855883
+      Elemental Knowledge (Logo) (Black) Sliced_3: 980397430
+      Elemental Knowledge (Logo) (Black) Sliced_4: -1116687828
+      Elemental Knowledge (Logo) (Black) Sliced_5: -987876010
+      Elemental Knowledge (Logo) (Black) Sliced_6: -1620542475
+      Elemental Knowledge (Logo) (Black) Sliced_7: 2037731034
+      Elemental Knowledge (Logo) (Black) Sliced_8: -1112271172
+      Elemental Knowledge (Logo) (Black) Sliced_9: 2727392
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

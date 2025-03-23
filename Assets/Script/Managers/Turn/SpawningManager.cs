@@ -165,6 +165,10 @@ public class SpawningManager : MonoBehaviour
 
     private void Update()
     {
+        if(playedUnits.Count>0)
+        {
+            spawningPhaseActive = true;
+        }
         RaycastHit2D? hit = GetFocusedOnTile();
 
         if (hit.HasValue)
