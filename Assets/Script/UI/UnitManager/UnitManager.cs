@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,6 +70,13 @@ public class UnitManager : MonoBehaviour
         mainCamera.transform.position = targetPosition;
         StartCoroutine(SmoothCameraMove(targetPosition));
     }
+
+    private void Update()
+    {
+        //HandleMouseOver();
+        HandleTileClick(); // Handle tile clicks
+    }
+
     private IEnumerator SmoothCameraMove(Vector3 targetPosition)
     {
         float duration = 0.5f;
@@ -143,7 +151,7 @@ public class UnitManager : MonoBehaviour
     #endregion
 
     #region UI
-    private void UpdateSelectedUnitUI(Unit unit)
+    public void UpdateSelectedUnitUI(Unit unit)
     {
         if (unit == null) return;
 
@@ -244,6 +252,7 @@ public class UnitManager : MonoBehaviour
             if (unitIndex < turnOrderList.Count)
             {
                 Unit unit = turnOrderList[unitIndex];
+                SetSelectedUnit(unit);
                 MoveCameraToUnit(unit);
             }
         }
@@ -280,5 +289,62 @@ public class UnitManager : MonoBehaviour
         }
         classIcon.gameObject.SetActive(false);
     }
+    private void HandleMouseOver()
+    {
+        RaycastHit2D? hit = GetFocusedOnTile();
+
+        if (hit.HasValue)
+        {
+            Unit unit = hit.Value.collider.GetComponent<Unit>();
+            if (unit != null)
+            {
+                SetSelectedUnit(unit); // Update the selected unit
+            }
+        }
+       
+    }
+
+    private static RaycastHit2D? GetFocusedOnTile()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
+
+        RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos2D, Vector2.zero);
+
+        if (hits.Length > 0)
+        {
+            return hits.OrderByDescending(i => i.collider.transform.position.z).First();
+        }
+
+        return null;
+    
+    }
+    private void HandleTileClick()
+    {
+        if (Input.GetMouseButtonDown(0)) // Check for left mouse button click
+        {
+            RaycastHit2D? hit = GetFocusedOnTile();
+
+            if (hit.HasValue)
+            {
+                Unit unit = hit.Value.collider.GetComponent<Unit>();
+                if (unit != null)
+                {
+                 SetSelectedUnit(unit); // Update the selected unit
+                }
+                OverlayTile tile = hit.Value.collider.GetComponent<OverlayTile>();
+                if (tile != null)
+                {
+                    Unit unitOnTile = tile.unitOnTile;
+                    if (unitOnTile != null)
+                    {
+                        Debug.Log($"Clicked on tile with unit: {unitOnTile.characterStats.CharacterName}");
+                        SetSelectedUnit(unitOnTile); // Update the selected unit
+                    }
+                }
+            }
+        }
+    }
     #endregion
+
 }

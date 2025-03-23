@@ -109,6 +109,8 @@ public class MouseController : MonoBehaviour
         // Check if a valid tile is hit
         if (hit.HasValue)
         {
+            //UnitManager.UpdateSelectedUnitUI(currentUnit); // Update the UI with the selected unit
+
             // Get the OverlayTile component
             OverlayTile tile = hit.Value.collider.gameObject.GetComponent<OverlayTile>();
             if (tile != null)
