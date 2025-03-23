@@ -148,7 +148,8 @@ public class UI_Manager : MonoBehaviour
         // Update the UI with skill details
         if (selectedSkillName != null) selectedSkillName.text = skill.Name;
         if (selectedSkillDescription != null) selectedSkillDescription.text = skill.Description;
-        if (selectedSkillDetails != null) selectedSkillDetails.text = $"Range: {skill.range} | Cost: {skill.cost} | Cooldown: {skill.cooldown}";
+        if (selectedSkillDetails != null) selectedSkillDetails.text = $"Range: {skill.range} | Cost: {skill.cost}";
+        //if (selectedSkillDetails != null) selectedSkillDetails.text = $"Range: {skill.range} | Cost: {skill.cost} | Cooldown: {skill.cooldown}";
     }
 
     private void OnSkillButtonExit()
