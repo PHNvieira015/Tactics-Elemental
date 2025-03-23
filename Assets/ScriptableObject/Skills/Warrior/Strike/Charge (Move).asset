@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01d3e05de9374f149a4a6633ae28e37e, type: 3}
   m_Name: Charge (Move)
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
-  abilityShape: {fileID: 0}
+  Name: Charge
+  Description: Charge at enemy to deal damage
+  abilityShape: {fileID: 4900000, guid: 9c6fe277bb6903645a5fcc027a1b4d4c, type: 3}
   effects: []
   range: 0
   cooldown: 0

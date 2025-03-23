@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01d3e05de9374f149a4a6633ae28e37e, type: 3}
   m_Name: Fearful Strike (Damage-)
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
+  Name: Fearful Strike
+  Description: Apply Fear effect on target
   abilityShape: {fileID: 0}
   effects: []
   range: 0

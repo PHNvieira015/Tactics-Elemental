@@ -52,6 +52,18 @@ PrefabInstance:
       propertyPath: abilities.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: skillslist.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: skillslist.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: beb2f60f8a699064ea596858d5159cb5, type: 2}
+    - target: {fileID: 1337989675174498596, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: skillslist.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 501e174c6edb8224dbf5b7f4658f7cc6, type: 2}
     - target: {fileID: 1801358683268259246, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

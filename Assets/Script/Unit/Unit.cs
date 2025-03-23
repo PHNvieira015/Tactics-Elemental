@@ -47,7 +47,7 @@ public class Unit : MonoBehaviour
     private int currentTurn = 0; //buff duration to do
 
     private UnitSkills unitSkills;
-    public List<Skill> skillslist;
+    public List<Skill> skillslist = new List<Skill>();
 
     public DirectionHandler directionHandler;
 
