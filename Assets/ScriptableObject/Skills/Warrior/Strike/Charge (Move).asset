@@ -16,10 +16,10 @@ MonoBehaviour:
   Description: Charge at enemy to deal damage
   abilityShape: {fileID: 4900000, guid: 9c6fe277bb6903645a5fcc027a1b4d4c, type: 3}
   effects: []
-  range: 0
+  range: 1
   cooldown: 0
   cost: 0
-  value: 0
+  value: 5
   attackType: 0
   elementType: 0
   targetType: 1

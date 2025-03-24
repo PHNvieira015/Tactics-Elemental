@@ -551,7 +551,7 @@ public class TurnStateManager : MonoBehaviour
         {
             gameMaster.HandleEndOfRound();
         }
-
+        currentUnit.ReduceSkillCooldowns();
         // Update turn order and start new turn
         unitManager.SetTurnOrderList();
         if (unitManager.turnOrderList.Count > 0)

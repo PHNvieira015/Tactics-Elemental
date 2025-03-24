@@ -46,8 +46,11 @@ public class Unit : MonoBehaviour
     public List<Debuff> debuffs = new List<Debuff>(); // List of debuffs currently affecting the unit
     private int currentTurn = 0; //buff duration to do
 
+    [Header("Skills")]
     private UnitSkills unitSkills;
     public List<Skill> skillslist = new List<Skill>();
+    public Dictionary<Skill, int> skillCooldowns = new Dictionary<Skill, int>(); // Cooldowns for skills
+
 
     public DirectionHandler directionHandler;
 
@@ -464,5 +467,19 @@ private void Awake()
         }
         flashRoutine=StartCoroutine(FlashRoutine(color));
     }
-        #endregion
+    #endregion
+    public void ReduceSkillCooldowns()
+    {
+        //SkillSystem.Instance.ReduceCooldowns(this);
     }
+    public void UseSkill(Skill skill, Unit target)
+    {
+        if (skill == null)
+        {
+            Debug.LogError("Skill is null!");
+            return;
+        }
+
+        SkillSystem.Instance.ExecuteSkill(this, target, skill);
+    }
+}

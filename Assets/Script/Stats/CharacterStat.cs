@@ -324,6 +324,26 @@ public class CharacterStat : MonoBehaviour
 
         Debug.Log($"Calculated Stats for {CharacterName}: Strength = {strength}, Agility = {agility}, Intellect = {intellect}, Health = {currentHealth}, Mana = {currentMana}");
     }
-
+    private CharacterStat.ElementType ConvertSkillElementToCharacterStatElement(Skill.ElementType skillElement)
+    {
+        switch (skillElement)
+        {
+            case Skill.ElementType.None:
+                return CharacterStat.ElementType.None;
+            case Skill.ElementType.Water:
+                return CharacterStat.ElementType.Water;
+            case Skill.ElementType.Fire:
+                return CharacterStat.ElementType.Fire;
+            case Skill.ElementType.Wind:
+                return CharacterStat.ElementType.Wind;
+            case Skill.ElementType.Earth:
+                return CharacterStat.ElementType.Earth;
+            case Skill.ElementType.Thunder:
+                return CharacterStat.ElementType.Thunder;
+            default:
+                Debug.LogWarning($"Unknown Skill.ElementType: {skillElement}");
+                return CharacterStat.ElementType.None;
+        }
+    }
 }
 #endregion

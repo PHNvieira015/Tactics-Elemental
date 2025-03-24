@@ -99,11 +99,6 @@ public class MouseController : MonoBehaviour
             GetAttackRangeTiles();
         }
 
-        if (turnStateManager.currentTurnState == TurnState.SkillTargeting)
-        {
-            ShowSkillRange(turnStateManager.selectedSkill);
-        }
-
         RaycastHit2D? hit = GetFocusedOnTile();
 
         // Check if a valid tile is hit
@@ -147,6 +142,11 @@ public class MouseController : MonoBehaviour
                 if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.Attacking && attackRangeTiles.Contains(tile))
                 {
                     HandleAttack(tile); // Call the refactored attack method
+                }
+                if (turnStateManager.currentTurnState == TurnState.SkillTargeting)
+                {
+                    ShowSkillRange(turnStateManager.selectedSkill);
+                    HandleSkill(tile); // Call the skill execution method
                 }
             }
         }
@@ -418,12 +418,16 @@ public class MouseController : MonoBehaviour
     }
     public void ShowSkillRange(Skill skill)
     {
-        ClearAttackRangeTiles();
+        ClearAttackRangeTiles(); // Clear previous skill range
+
         attackRangeTiles = rangeFinder.GetTilesInRange(
-            currentUnit.standingOnTile.grid2DLocation,
-            skill.range,  // Now using the parameter
+            new Vector2Int(
+                currentUnit.standingOnTile.gridLocation.x,
+                currentUnit.standingOnTile.gridLocation.y
+            ),
+            skill.range,
             currentUnit.teamID,
-            true
+            true // Ignore obstacles for skills
         );
 
         foreach (var tile in attackRangeTiles)
@@ -431,6 +435,47 @@ public class MouseController : MonoBehaviour
             tile.ShowTile(Color.cyan, TileType.DamageSkillColor);
         }
     }
+
+    private void HandleSkill(OverlayTile targetTile)
+    {
+        if (currentUnit == null)
+        {
+            Debug.LogError("HandleSkill Error: currentUnit is null!");
+            return;
+        }
+
+        if (turnStateManager.selectedSkill == null)
+        {
+            Debug.LogError("HandleSkill Error: No skill selected!");
+            return;
+        }
+
+
+        Unit targetUnit = targetTile.unitOnTile;
+        Skill skill = turnStateManager.selectedSkill;
+        Debug.Log($"Attempting to use skill {skill.Name} on {targetUnit?.unitName ?? "no target"}");
+
+        if (targetUnit == null)
+        {
+            Debug.Log("No target on selected tile. Applying skill effects.");
+        }
+        if (skill.targetType == Skill.TargetType.Enemy)
+        {
+            Debug.Log($"{currentUnit.unitName} is selecting a target for {skill.Name}.");
+            turnStateManager.ChangeState(TurnState.SkillTargeting); // Switch to targeting mode
+            ShowSkillRange(skill); // Highlight skill range
+            return; // Stop execution here until a target is chosen
+        }
+
+        // Execute the skill
+        currentUnit.UseSkill(skill, targetUnit);
+
+        // Transition back to Waiting state
+        turnStateManager.ChangeState(TurnState.Waiting);
+        ClearAttackRangeTiles();
+    }
+
+
     private void UseSkillOnTarget(OverlayTile targetTile)
     {
         Unit targetUnit = targetTile.unitOnTile;
