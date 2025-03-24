@@ -60,6 +60,9 @@ public class UI_ActionBar : MonoBehaviour
         GameObjectButton_move.gameObject.SetActive(true);
         GameObjectButton_attack.gameObject.SetActive(true);
         GameObjectButton_skill.gameObject.SetActive(true);
+        
+
+
     }
 
     private void OnMoveButtonClicked()
@@ -78,15 +81,17 @@ public class UI_ActionBar : MonoBehaviour
     private void OnSkillButtonClicked()
     {
         Debug.Log("Skill button clicked.");
+
         if (turnStateManager.currentTurnState == TurnStateManager.TurnState.UsingSkill)
         {
+            // If already in UsingSkill state, exit it
             turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
         }
-        else 
+        else
         {
+            // For all other states, enter UsingSkill state
             turnStateManager.ChangeState(TurnStateManager.TurnState.UsingSkill);
         }
-
     }
 
     private void OnConditionButtonClicked()

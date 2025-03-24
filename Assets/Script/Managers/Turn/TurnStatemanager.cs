@@ -245,6 +245,18 @@ public class TurnStateManager : MonoBehaviour
             case TurnState.SkillTargeting:
                 mouseController.ShowSkillRange(selectedSkill);
                 DisableUI_Action();
+                EnableActionBarforPlayerUnit();
+                if (uiActionBar != null && uiActionBar.GameObject_SkillUIGroup != null)
+                {
+                    uiActionBar.GameObject_SkillUIGroup.SetActive(true);
+                }
+                else
+                {
+                    Debug.LogError("Skill UI Group reference is missing!");
+                }
+                uiActionBar.GameObjectButton_return.SetActive(true);
+                uiActionBar.GameObjectButton_move.SetActive(false);
+                uiActionBar.GameObjectButton_attack.SetActive(false);
                 break;
             #endregion
 
@@ -552,6 +564,10 @@ public class TurnStateManager : MonoBehaviour
         yield return new WaitForSeconds(0.2f); // Wait for the full duration
         isEndTurnCoroutineRunning = false; // Reset the flag
     }
-
+    public void SelectSkill(Skill skill)
+    {
+        selectedSkill = skill;
+        ChangeState(TurnState.SkillTargeting); // Transition to SkillTargeting state
+    }
 
 }

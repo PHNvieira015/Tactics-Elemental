@@ -118,6 +118,7 @@ public class UI_Manager : MonoBehaviour
     {
         // Notify other systems that a skill button was clicked
         Debug.Log($"{currentUnit.unitName} clicked skill: {skill.Name}");
+        turnStateManager.SelectSkill(skill); // Notify TurnStateManager of the selected skill
         // You can trigger an event or call a method here to handle the skill logic elsewhere
     }
 
