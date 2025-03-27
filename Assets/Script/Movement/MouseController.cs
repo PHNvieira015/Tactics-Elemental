@@ -450,49 +450,74 @@ public class MouseController : MonoBehaviour
             return;
         }
 
-
-        Unit targetUnit = targetTile.unitOnTile;
         Skill skill = turnStateManager.selectedSkill;
-        Debug.Log($"Attempting to use skill {skill.Name} on {targetUnit?.unitName ?? "no target"}");
+        Unit targetUnit = targetTile?.unitOnTile;
 
-        if (targetUnit == null)
+        Debug.Log($"Attempting to use skill {skill.Name} on {targetUnit?.unitName ?? "ground"}");
+
+        // Only execute on click - no mouseover behavior
+        if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("No target on selected tile. Applying skill effects.");
-        }
-        if (skill.targetType == Skill.TargetType.Enemy)
-        {
-            Debug.Log($"{currentUnit.unitName} is selecting a target for {skill.Name}.");
-            turnStateManager.ChangeState(TurnState.SkillTargeting); // Switch to targeting mode
-            ShowSkillRange(skill); // Highlight skill range
-            return; // Stop execution here until a target is chosen
-        }
+            // Validate target based on skill type
+            switch (skill.targetType)
+            {
+                case Skill.TargetType.Enemy:
+                    if (targetUnit == null || targetUnit.playerOwner == currentUnit.playerOwner)
+                    {
+                        Debug.Log("Invalid enemy target");
+                        return;
+                    }
+                    break;
 
-        // Execute the skill
-        currentUnit.UseSkill(skill, targetUnit);
+                case Skill.TargetType.Ally:
+                    if (targetUnit == null || targetUnit.playerOwner != currentUnit.playerOwner)
+                    {
+                        Debug.Log("Invalid ally target");
+                        return;
+                    }
+                    break;
 
-        // Transition back to Waiting state
-        turnStateManager.ChangeState(TurnState.Waiting);
-        ClearAttackRangeTiles();
+                case Skill.TargetType.Self:
+                    if (targetUnit != currentUnit)
+                    {
+                        Debug.Log("Must target self");
+                        return;
+                    }
+                    break;
+            }
+
+            // Execute the skill
+            currentUnit.UseSkill(skill, targetUnit);
+
+            // Clean up
+            turnStateManager.selectedSkill = null;
+            ClearAttackRangeTiles();
+            turnStateManager.ChangeState(TurnState.Waiting);
+        }
     }
 
-
-    private void UseSkillOnTarget(OverlayTile targetTile)
+    private bool IsValidSkillTarget(OverlayTile tile)
     {
-        Unit targetUnit = targetTile.unitOnTile;
+        if (turnStateManager.selectedSkill == null) return false;
+
+        Unit targetUnit = tile?.unitOnTile;
         Skill skill = turnStateManager.selectedSkill;
 
-        // Apply skill effects
-        if (skill.targetType == Skill.TargetType.Enemy && targetUnit != null)
+        switch (skill.targetType)
         {
-            damageSystem.CalculateDamage(currentUnit, targetUnit);
+            case Skill.TargetType.Self:
+                return targetUnit == currentUnit;
+            case Skill.TargetType.Ally:
+                return targetUnit != null &&
+                       targetUnit.playerOwner == currentUnit.playerOwner;
+            case Skill.TargetType.Enemy:
+                return targetUnit != null &&
+                       targetUnit.playerOwner != currentUnit.playerOwner;
+            default:
+                return false;
         }
-        // Add other target types and effects as needed
-
-        // Consume resources
-        currentUnit.hasAttacked = true;
-        turnStateManager.ChangeState(TurnStateManager.TurnState.Waiting);
-        ClearAttackRangeTiles();
     }
+
     private IEnumerator WaitForAttackAndMovement(CharacterBattle attackerBattle)
     {
         // Wait for the attack animation to complete (adjust duration as needed)
@@ -595,6 +620,82 @@ public class MouseController : MonoBehaviour
         {
             Debug.Log("Cannot move to occupied tile");
         }
+    }
+    private void HandleSkillTargeting()
+    {
+        RaycastHit2D? hit = GetFocusedOnTile();
+        if (!hit.HasValue) return;
+
+        OverlayTile tile = hit.Value.collider.GetComponent<OverlayTile>();
+        if (tile == null) return;
+
+        // Only execute on click
+        if (Input.GetMouseButtonDown(0))
+        {
+            // Check if clicked tile is in skill range
+            if (attackRangeTiles.Contains(tile))
+            {
+                Unit targetUnit = tile.unitOnTile;
+                Skill skill = turnStateManager.selectedSkill;
+
+                // Validate target based on skill type
+                bool isValid = false;
+
+                switch (skill.targetType)
+                {
+                    case Skill.TargetType.Enemy:
+                        isValid = targetUnit != null &&
+                                 targetUnit.playerOwner != currentUnit.playerOwner;
+                        break;
+
+                    case Skill.TargetType.Ally:
+                        isValid = targetUnit != null &&
+                                 targetUnit.playerOwner == currentUnit.playerOwner;
+                        break;
+
+                    case Skill.TargetType.Self:
+                        isValid = targetUnit == currentUnit;
+                        break;
+
+                    case Skill.TargetType.Ground:
+                        isValid = true; // Any tile in range is valid
+                        break;
+                }
+
+                if (isValid)
+                {
+                    ExecuteSkill(tile);
+                }
+                else
+                {
+                    Debug.Log("Invalid target for this skill");
+                }
+            }
+            else
+            {
+                Debug.Log("Target out of skill range");
+            }
+        }
+
+    }
+    private void ExecuteSkill(OverlayTile targetTile)
+    {
+        Unit targetUnit = targetTile.unitOnTile;
+        Skill skill = turnStateManager.selectedSkill;
+
+        // Special handling for self-target skills
+        if (skill.targetType == Skill.TargetType.Self)
+        {
+            targetUnit = currentUnit;
+        }
+
+        // Execute the skill
+        SkillSystem.Instance.ExecuteSkill(currentUnit, targetUnit, skill);
+
+        // Clean up
+        ClearAttackRangeTiles();
+        turnStateManager.selectedSkill = null;
+        turnStateManager.ChangeState(TurnState.SkillAnimation);
     }
 
 }

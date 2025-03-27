@@ -5,6 +5,7 @@ using System.Linq;
 public class SkillSystem : MonoBehaviour
 {
     public static SkillSystem Instance { get; private set; }
+    public bool skillused=false;
 
     private void Awake()
     {
@@ -55,15 +56,35 @@ public class SkillSystem : MonoBehaviour
     // Execute a skill
     public void ExecuteSkill(Unit caster, Unit target, Skill skill)
     {
-        if (!CanUseSkill(caster, skill))
+        // Triple null check
+        if (caster == null)
         {
+            Debug.LogError("Caster is null in ExecuteSkill!");
             return;
         }
 
-        // Apply skill effects
+        if (skill == null)
+        {
+            Debug.LogError("Skill is null in ExecuteSkill!");
+            return;
+        }
+
+        // Target can be null for self-targeted skills
+        if (target == null)
+        {
+            Debug.LogError("Target is null for");
+            return;
+        }
+
+        if (!CanUseSkill(caster, skill))
+        {
+            Debug.Log($"{caster.unitName} cannot use {skill.Name}");
+            return;
+        }
+
         ApplySkillEffects(caster, target, skill);
 
-        // Consume mana
+        // Consume resources
         caster.characterStats.currentMana -= skill.cost;
 
         // Set cooldown
@@ -85,7 +106,7 @@ public class SkillSystem : MonoBehaviour
     // Apply skill effects (damage, buffs, debuffs, etc.)
     private void ApplySkillEffects(Unit caster, Unit target, Skill skill)
     {
-        if (skill.effects != null && skill.effects.Count > 0)
+        if (skill.effects != null)
         {
             foreach (var effect in skill.effects)
             {
@@ -99,7 +120,7 @@ public class SkillSystem : MonoBehaviour
         // Apply damage if applicable
         if (skill.value > 0 && skill.targetType == Skill.TargetType.Enemy && target != null)
         {
-            DamageSystem.Instance.CalculateSkillDamage(caster, target, skill);
+            DamageSystem.Instance?.CalculateSkillDamage(caster, target, skill);
         }
     }
 

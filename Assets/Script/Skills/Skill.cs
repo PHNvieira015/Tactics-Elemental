@@ -31,7 +31,7 @@ public class Skill : ScriptableObject
     public ElementType elementType;
 
     [Header("types")]
-    public TargetType targetType;
+    public TargetType targetType = TargetType.Enemy; // Default to enemy targeting
 
     public bool includeOrigin;
 
@@ -45,11 +45,15 @@ public class Skill : ScriptableObject
 
     public enum TargetType
     {
-        Ally,
-        Enemy,
-        All
+        None,       // No target required
+        Self,       // Can only target self
+        Ally,       // Can target allied units (not self)
+        Enemy,      // Can target enemy units
+        AnyUnit,    // Can target any unit (ally or enemy)
+        Ground,     // Can target ground locations
+        Area        // Targets an area (like AOE spells)
     }
-        public enum AttackType
+    public enum AttackType
     {
         None,
         Crush,

@@ -25,6 +25,8 @@ public class TurnStateManager : MonoBehaviour
         AttackingAnimation,
         UsingSkill,
         SkillTargeting,
+        SkillUsing,
+        SkillAnimation,
         Waiting,
         EndTurn
     }
@@ -259,7 +261,12 @@ public class TurnStateManager : MonoBehaviour
                 uiActionBar.GameObjectButton_attack.SetActive(false);
                 break;
             #endregion
-
+            #region SkillAnimation
+            case TurnState.SkillAnimation:
+                StartCoroutine(WaitForSkillAnimation(currentUnit.characterStats.faceDirection));  //WIP
+                //                ChangeState(TurnState.Waiting);
+                break;
+            #endregion
             #region Waiting
             case TurnState.Waiting:
  
@@ -456,6 +463,16 @@ public class TurnStateManager : MonoBehaviour
 
         // Ensure the state is updated after the animation
         if (currentTurnState == TurnState.AttackingAnimation)
+        {
+            ChangeState(TurnState.Waiting); // Transition to Waiting state
+        }
+    }
+    private IEnumerator WaitForSkillAnimation(CharacterStat.Direction attackDirection)
+    {
+        yield return new WaitForSeconds(1.0f); // Wait for the attack animation to complete
+
+        // Ensure the state is updated after the animation
+        if (currentTurnState == TurnState.SkillAnimation)
         {
             ChangeState(TurnState.Waiting); // Transition to Waiting state
         }
