@@ -20,10 +20,10 @@ MonoBehaviour:
   range: 1
   cooldown: 0
   cost: 0
-  value: 1
-  attackType: 0
+  value: 2
+  attackType: 1
   elementType: 0
-  targetType: 1
+  targetType: 3
   includeOrigin: 0
   requiresTarget: 0
   hasAttacked: 0

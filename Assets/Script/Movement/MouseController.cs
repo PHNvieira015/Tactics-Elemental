@@ -143,10 +143,9 @@ public class MouseController : MonoBehaviour
                 {
                     HandleAttack(tile); // Call the refactored attack method
                 }
-                if (turnStateManager.currentTurnState == TurnState.SkillTargeting)
+                if ((Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.SkillTargeting))
                 {
-                    ShowSkillRange(turnStateManager.selectedSkill);
-                    HandleSkill(tile); // Call the skill execution method
+                  HandleSkill(tile); // Call the skill execution method
                 }
             }
         }

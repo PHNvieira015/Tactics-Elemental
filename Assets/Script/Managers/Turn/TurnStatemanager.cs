@@ -396,6 +396,8 @@ public class TurnStateManager : MonoBehaviour
         // Update Attack button
         uiActionBar.GameObjectButton_attack.SetActive(!currentUnit.hasAttacked);
 
+        uiActionBar.GameObjectButton_skill.SetActive(!currentUnit.usedSkill);
+
         // Update Return button: Show if either:
         // 1. The unit has moved but hasn't attacked, OR
         // 2. The unit is in the Attacking state and hasn't attacked yet
@@ -561,6 +563,7 @@ public class TurnStateManager : MonoBehaviour
         // Reset flags
         currentUnit.hasMoved = false;
         currentUnit.hasAttacked = false;
+        currentUnit.usedSkill = false;
         currentUnit.characterStats.EndTurnRoundInitiative();
 
         // Handle end-of-round logic

@@ -102,7 +102,11 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: bb556ec3aeb453849ab6ef5d0b6d9054, type: 3}
     - target: {fileID: 7798603503965672777, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: m_WasSpriteAssigned
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8303509555120995322, guid: 626b73c273482804181fce84ca63c097, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -45.1
       objectReference: {fileID: 0}
     - target: {fileID: 8931217287400680452, guid: 626b73c273482804181fce84ca63c097, type: 3}
       propertyPath: agility
