@@ -15,12 +15,15 @@ MonoBehaviour:
   Name: Fearful Strike
   Description: Apply Fear effect on target
   abilityShape: {fileID: 4900000, guid: f30cbe7258a912d48a84b0dca1125752, type: 3}
-  effects:
-  - {fileID: 11400000, guid: bba5a59e875941640a1c9b70e071704a, type: 2}
   range: 1
   cooldown: 0
   cost: 0
-  value: 2
+  effects:
+  - {fileID: 11400000, guid: bba5a59e875941640a1c9b70e071704a, type: 2}
+  baseDamage: 5
+  statScalingPercentage: 1
+  scalingStat: 0
+  targetHPScalingPercentage: 0
   attackType: 1
   elementType: 0
   targetType: 3

@@ -139,7 +139,7 @@ public class SkillSystem : MonoBehaviour
         }
 
         // Apply direct damage if applicable
-        if (skill.value > 0 && skill.targetType == Skill.TargetType.Enemy && target != null)
+        if (skill.baseDamage > 0 && skill.targetType == Skill.TargetType.Enemy && target != null)
         {
             if (damageSystem != null) // Check the direct reference
             {

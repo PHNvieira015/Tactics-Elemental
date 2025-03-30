@@ -18,6 +18,13 @@ public class ScriptableEffect : ScriptableObject
         AttackRange
     }
 
+    public enum DamageCalculationType
+    {
+        FlatValue,
+        TargetPercentage,
+        CasterStatPercentage
+    }
+
     [Header("Visuals")]
     public string effectName;
     public Sprite icon;
@@ -27,10 +34,15 @@ public class ScriptableEffect : ScriptableObject
     public int duration = 1;
 
     [Header("Stat Modification")]
-    public StatType statToModify; // The actual field storing which stat to modify
+    public StatType statToModify;
     public float modifierValue;
 
     [Header("Damage Over Time")]
-    public int damagePerTurn;
+    public DamageCalculationType damageCalculationType = DamageCalculationType.FlatValue;
+    public int damagePerTurn; // Used for FlatValue
+    [Tooltip("Percentage (100 = 100%)")]
+    [Range(0, 300)]
+    public float percentageDamage; // Now shows as 0-300 in inspector (meaning 0%-300%)
+    public StatType casterStatToUse; // Used for CasterStatPercentage
     public CharacterStat.ElementType elementType;
 }

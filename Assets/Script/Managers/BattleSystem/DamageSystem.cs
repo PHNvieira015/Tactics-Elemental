@@ -63,7 +63,7 @@ public class DamageSystem : MonoBehaviour
         }
 
         // Start with the base damage from the skill
-        int damage = skill.value;
+        int damage = skill.baseDamage;
 
         // Add the base damage from the attacker's stats (reusing CalculateDamage)
         damage += CalculateDamage(attacker, target);
@@ -95,8 +95,7 @@ public class DamageSystem : MonoBehaviour
             damage = Mathf.RoundToInt(damage * 0.5f); // 50% reduced damage
         }
 
-        return Mathf.Max(damage, 0); // Ensure damage is not negative
-        Debug.Log($"Final damage calculated: {damage}");
+        return Mathf.Max(damage, 1); // Ensure damage is not negative
     }
     private CharacterStat.ElementType ConvertSkillElementToCharacterStatElement(Skill.ElementType skillElement)
     {
