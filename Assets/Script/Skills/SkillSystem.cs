@@ -49,6 +49,22 @@ public class SkillSystem : MonoBehaviour
             Debug.Log($"{caster.unitName} does not meet the class requirement for {skill.Name}!");
             return false;
         }
+        if (skill.hasAttacked == true)
+        {
+            if (caster.hasAttacked == true)
+            {
+                Debug.Log($"{caster.unitName} has already attacked this turn!");
+                return false;
+            }
+        }
+        if (skill.hasMoved == true)
+        {
+            if (caster.hasMoved == true)
+            {
+                Debug.Log($"{caster.unitName} has already moved this turn!");
+                return false;
+            }
+        }
 
         return true;
     }
@@ -81,6 +97,21 @@ public class SkillSystem : MonoBehaviour
             Debug.Log($"{caster.unitName} cannot use {skill.Name}");
             return;
         }
+        if (skill.hasAttacked == false)
+        {
+            if (skill.hasAttacked == true)
+            {
+                caster.hasAttacked = true;
+            }
+        }
+        if (skill.hasMoved == false)
+        {
+            if (skill.hasMoved == true)
+            {
+                caster.hasMoved = true;
+            }
+        }
+
 
         ApplySkillEffects(caster, target, skill);
 

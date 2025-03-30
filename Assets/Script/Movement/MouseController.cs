@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 using UnityEngine.EventSystems;
 using static TurnStateManager;
 using System;
+using UnityEditor.Experimental.GraphView;
 
 public class MouseController : MonoBehaviour
 {
@@ -98,6 +99,14 @@ public class MouseController : MonoBehaviour
         {
             GetAttackRangeTiles();
         }
+        if (turnStateManager.currentTurnState == TurnState.SkillTargeting)
+        {
+            // This ensures tiles stay visible even when moving mouse outside range
+            foreach (var tile in attackRangeTiles)
+            {
+                tile.ShowTile(Color.cyan, TileType.DamageSkillColor);
+            }
+        }
 
         RaycastHit2D? hit = GetFocusedOnTile();
 
@@ -143,9 +152,10 @@ public class MouseController : MonoBehaviour
                 {
                     HandleAttack(tile); // Call the refactored attack method
                 }
-                if ((Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.SkillTargeting))
+                if (Input.GetMouseButtonDown(0) && turnStateManager.currentTurnState == TurnState.SkillTargeting &&
+                    attackRangeTiles.Contains(tile) && IsValidSkillTarget(tile))
                 {
-                  HandleSkill(tile); // Call the skill execution method
+                    HandleSkill(tile); // Call the skill execution method
                 }
             }
         }
@@ -429,10 +439,13 @@ public class MouseController : MonoBehaviour
             true // Ignore obstacles for skills
         );
 
+        // Store the skill range tiles and keep them visible
         foreach (var tile in attackRangeTiles)
         {
             tile.ShowTile(Color.cyan, TileType.DamageSkillColor);
         }
+
+        // Make sure we don't clear these tiles until explicitly told to
     }
 
     private void HandleSkill(OverlayTile targetTile)
