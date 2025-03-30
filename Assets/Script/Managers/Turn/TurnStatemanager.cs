@@ -15,6 +15,9 @@ public class TurnStateManager : MonoBehaviour
     [SerializeField] private UnitManager unitManager;
     public Skill selectedSkill; // Track selected skill
     private bool isEndTurnCoroutineRunning = false; // Add this flag
+    [SerializeField] private float cameraMoveSpeed = 10f; // Faster camera movement
+    [SerializeField] private float aiCameraWaitTime = 5f; // Shorter wait for AI
+    private Coroutine cameraMoveCoroutine;
     public enum TurnState
     {
         None,
@@ -112,14 +115,6 @@ public class TurnStateManager : MonoBehaviour
                     TurnStartingPosition = currentUnit.transform.position;
                     currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
 
-                    if (currentUnit.isAI == true)
-                    {
-                        AIController aiController = currentUnit.GetComponent<AIController>();
-                        if (aiController != null)
-                        {
-                            aiController.StartTurn();
-                        }
-                    }
                     // Clear previous tile references
                     if (currentUnit.standingOnTile != null)
                     {
@@ -131,22 +126,25 @@ public class TurnStateManager : MonoBehaviour
                     Debug.LogWarning("MouseController reference missing - arrows not cleared");
                 }
 
-                //currentUnit.hasMoved = false;  // Reset movement status
-                EnableActionBarforPlayerUnit();
+                // Set camera to currentUnit's position
+                UpdateCameraPosition(currentUnit.transform.position);
 
-                currentUnit.GetTileUnderUnit();
+                // Initialize turn-specific logic
+                currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
+                mouseController.SetUnit(currentUnit);
+                turnStarted = true;
+
+                if (currentUnit.isAI)
                 {
-                    // Set camera to currentUnit's position
-                    UpdateCameraPosition(currentUnit.transform.position);
-
-                    //Debug.Log($"Camera set to {currentUnit.name} at {currentUnit.transform.position}");
-
-                    // Initialize turn-specific logic
-                    currentUnit.standingOnTile = currentUnit.GetTileUnderUnit();
-                    mouseController.SetUnit(currentUnit);
-                    turnStarted = true;
+                    // For AI units, wait briefly for camera then proceed
+                    StartCoroutine(AITurnStartSequence());
                 }
-                ChangeState(TurnState.Waiting);
+                else
+                {
+                    // For player units, proceed immediately
+                    EnableActionBarforPlayerUnit();
+                    ChangeState(TurnState.Waiting);
+                }
                 break;
             #endregion
 
@@ -518,13 +516,40 @@ public class TurnStateManager : MonoBehaviour
     //    // Transition to the player's turn
     //    ChangeState(TurnState.TurnStart);
     //}
+    #region Camera Movement
     private void UpdateCameraPosition(Vector3 targetPosition)
     {
-        Camera.main.transform.position = new Vector3(targetPosition.x, targetPosition.y, Camera.main.transform.position.z);
+        if (cameraMoveCoroutine != null)
+        {
+            StopCoroutine(cameraMoveCoroutine);
+        }
+        cameraMoveCoroutine = StartCoroutine(SmoothMoveCamera(targetPosition));
     }
 
+    private IEnumerator SmoothMoveCamera(Vector3 targetPosition)
+    {
+        Vector3 startPosition = Camera.main.transform.position;
+        Vector3 endPosition = new Vector3(targetPosition.x, targetPosition.y, startPosition.z);
+        float journeyLength = Vector3.Distance(startPosition, endPosition);
+        float startTime = Time.time;
 
+        while (Vector3.Distance(Camera.main.transform.position, endPosition) > 0.01f)
+        {
+            float distanceCovered = (Time.time - startTime) * cameraMoveSpeed;
+            float fractionOfJourney = Mathf.Clamp01(distanceCovered / journeyLength);
 
+            Camera.main.transform.position = Vector3.Lerp(
+                startPosition,
+                endPosition,
+                fractionOfJourney
+            );
+            yield return null;
+        }
+
+        // Ensure exact final position
+        Camera.main.transform.position = endPosition;
+    }
+    #endregion
     public void EnableActionBarforPlayerUnit()
     {
     if (currentUnit.isAI == false) //turn off UI if AI
@@ -589,5 +614,18 @@ public class TurnStateManager : MonoBehaviour
         selectedSkill = skill;
         ChangeState(TurnState.SkillTargeting); // Transition to SkillTargeting state
     }
+    private IEnumerator AITurnStartSequence()
+    {
+        // Wait for camera to reach AI unit
+        yield return new WaitForSeconds(aiCameraWaitTime);
 
+        // Start AI decision making
+        AIController aiController = currentUnit.GetComponent<AIController>();
+        if (aiController != null)
+        {
+            aiController.StartTurn();
+        }
+
+        ChangeState(TurnState.Waiting);
+    }
 }
