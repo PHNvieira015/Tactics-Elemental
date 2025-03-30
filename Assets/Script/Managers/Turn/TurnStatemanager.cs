@@ -15,8 +15,8 @@ public class TurnStateManager : MonoBehaviour
     [SerializeField] private UnitManager unitManager;
     public Skill selectedSkill; // Track selected skill
     private bool isEndTurnCoroutineRunning = false; // Add this flag
-    [SerializeField] private float cameraMoveSpeed = 10f; // Faster camera movement
-    [SerializeField] private float aiCameraWaitTime = 5f; // Shorter wait for AI
+    [SerializeField] private float cameraMoveSpeed = 50f; // Faster camera movement
+    [SerializeField] private float aiCameraWaitTime = 0.6f; // Shorter wait for AI
     private Coroutine cameraMoveCoroutine;
     public enum TurnState
     {
@@ -48,7 +48,7 @@ public class TurnStateManager : MonoBehaviour
     [SerializeField] public GameMaster gameMaster;  // Direct reference to GameMaster
     public OverlayTile previousTile; // Store the tile before movement
     #endregion
-   
+
     private void Awake()
     {
         // Optionally find GameMaster if not assigned in the inspector
@@ -169,7 +169,7 @@ public class TurnStateManager : MonoBehaviour
                 {
                     Debug.LogWarning("Current unit's standingOnTile is null!");
                 }
-                if(currentUnit.isAI==true)
+                if (currentUnit.isAI == true)
                 {
                     //currentUnit.aiController.DecideAction(); //Ai decision in Waiting
                 }
@@ -267,7 +267,7 @@ public class TurnStateManager : MonoBehaviour
             #endregion
             #region Waiting
             case TurnState.Waiting:
- 
+
 
                 uiActionBar.GameObject_SkillUIGroup.SetActive(false);
                 EnableActionBarforPlayerUnit();
@@ -552,9 +552,9 @@ public class TurnStateManager : MonoBehaviour
     #endregion
     public void EnableActionBarforPlayerUnit()
     {
-    if (currentUnit.isAI == false) //turn off UI if AI
+        if (currentUnit.isAI == false) //turn off UI if AI
         {
-        EnableUI_Action();
+            EnableUI_Action();
         }
     }
     public void AIWaitTime(TurnState nextState)
