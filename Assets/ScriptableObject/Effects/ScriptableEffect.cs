@@ -1,16 +1,36 @@
 using UnityEngine;
 
-// ScriptableEffects can be attached to both tiles and abilities.
-[CreateAssetMenu(fileName = "ScriptableEffect", menuName = "Tactical RPG/ScriptableEffect")]
+[CreateAssetMenu(menuName = "Effects/Effect")]
 public class ScriptableEffect : ScriptableObject
 {
-    public float Duration; // How long the effect lasts
-    public int Value; // The magnitude of the effect (e.g., damage amount, heal amount)
-
-    // Apply the effect to a target
-    public virtual void ApplyEffect(Unit caster, Unit target)
+    public enum StatType
     {
-        Debug.Log($"Applying effect {name} to {target?.unitName ?? "unknown target"}");
-        // Base implementation does nothing. Override this in derived classes.
+        maxBaseHealth,
+        currentHealth,
+        maxMana,
+        currentMana,
+        Strength,
+        Agility,
+        Intellect,
+        PhysicalDefense,
+        MagicalDefense,
+        MovementRange,
+        AttackRange
     }
+
+    [Header("Visuals")]
+    public string effectName;
+    public Sprite icon;
+    public GameObject vfxPrefab;
+
+    [Header("Duration")]
+    public int duration = 1;
+
+    [Header("Stat Modification")]
+    public StatType statToModify; // The actual field storing which stat to modify
+    public float modifierValue;
+
+    [Header("Damage Over Time")]
+    public int damagePerTurn;
+    public CharacterStat.ElementType elementType;
 }

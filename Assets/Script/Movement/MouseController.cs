@@ -504,6 +504,9 @@ public class MouseController : MonoBehaviour
             // Clean up
             turnStateManager.selectedSkill = null;
             ClearAttackRangeTiles();
+            
+            StartCoroutine(CompleteSkillUse());
+
             turnStateManager.ChangeState(TurnState.Waiting);
         }
     }
@@ -709,5 +712,8 @@ public class MouseController : MonoBehaviour
         turnStateManager.selectedSkill = null;
         turnStateManager.ChangeState(TurnState.SkillAnimation);
     }
-
+    private IEnumerator CompleteSkillUse()
+    {
+        yield return new WaitForSeconds(0.5f); // Wait for animations
+    }
 }

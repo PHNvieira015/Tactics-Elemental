@@ -96,6 +96,7 @@ public class DamageSystem : MonoBehaviour
         }
 
         return Mathf.Max(damage, 0); // Ensure damage is not negative
+        Debug.Log($"Final damage calculated: {damage}");
     }
     private CharacterStat.ElementType ConvertSkillElementToCharacterStatElement(Skill.ElementType skillElement)
     {

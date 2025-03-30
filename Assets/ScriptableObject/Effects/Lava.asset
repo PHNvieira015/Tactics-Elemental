@@ -12,5 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 930cfc194f7dda54c954c21d19a28590, type: 3}
   m_Name: Lava
   m_EditorClassIdentifier: 
-  Duration: 0
-  Value: 0
+  effectName: 
+  icon: {fileID: 0}
+  vfxPrefab: {fileID: 0}
+  duration: 1
+  statToModify: 0
+  modifierValue: 0
+  damagePerTurn: 0
+  elementType: 0

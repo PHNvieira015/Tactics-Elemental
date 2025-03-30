@@ -2,13 +2,20 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+
 public class SkillSystem : MonoBehaviour
 {
+    public DamageSystem damageSystem;  // Assign this in the Inspector
     public static SkillSystem Instance { get; private set; }
-    public bool skillused=false;
+    public bool skillused = false;
 
     private void Awake()
     {
+        damageSystem = FindObjectOfType<DamageSystem>();
+        if (damageSystem == null)
+        {
+            Debug.LogError("No DamageSystem found in the scene!");
+        }
         if (Instance == null)
         {
             Instance = this;
@@ -19,7 +26,6 @@ public class SkillSystem : MonoBehaviour
         }
     }
 
-    // Check if a skill can be used (cooldown, mana, range, etc.)
     public bool CanUseSkill(Unit caster, Skill skill)
     {
         if (caster == null || skill == null)
@@ -43,36 +49,30 @@ public class SkillSystem : MonoBehaviour
         }
 
         // Check class requirements
-        if (skill.classRequirement != Skill.Classrequirements.None &&
+        if (skill.classRequirement != Skill.ClassRequirements.None && 
             caster.characterStats.characterClass.ToString() != skill.classRequirement.ToString())
         {
             Debug.Log($"{caster.unitName} does not meet the class requirement for {skill.Name}!");
             return false;
         }
-        if (skill.hasAttacked == true)
+
+        if (skill.hasAttacked && caster.hasAttacked)
         {
-            if (caster.hasAttacked == true)
-            {
-                Debug.Log($"{caster.unitName} has already attacked this turn!");
-                return false;
-            }
+            Debug.Log($"{caster.unitName} has already attacked this turn!");
+            return false;
         }
-        if (skill.hasMoved == true)
+
+        if (skill.hasMoved && caster.hasMoved)
         {
-            if (caster.hasMoved == true)
-            {
-                Debug.Log($"{caster.unitName} has already moved this turn!");
-                return false;
-            }
+            Debug.Log($"{caster.unitName} has already moved this turn!");
+            return false;
         }
 
         return true;
     }
 
-    // Execute a skill
     public void ExecuteSkill(Unit caster, Unit target, Skill skill)
     {
-        // Triple null check
         if (caster == null)
         {
             Debug.LogError("Caster is null in ExecuteSkill!");
@@ -85,33 +85,15 @@ public class SkillSystem : MonoBehaviour
             return;
         }
 
-        // Target can be null for self-targeted skills
-        if (target == null)
-        {
-            Debug.LogError("Target is null for");
-            return;
-        }
-
         if (!CanUseSkill(caster, skill))
         {
             Debug.Log($"{caster.unitName} cannot use {skill.Name}");
             return;
         }
-        if (skill.hasAttacked == false)
-        {
-            if (skill.hasAttacked == true)
-            {
-                caster.hasAttacked = true;
-            }
-        }
-        if (skill.hasMoved == false)
-        {
-            if (skill.hasMoved == true)
-            {
-                caster.hasMoved = true;
-            }
-        }
 
+        // Update action flags
+        if (skill.hasAttacked) caster.hasAttacked = true;
+        if (skill.hasMoved) caster.hasMoved = true;
 
         ApplySkillEffects(caster, target, skill);
 
@@ -134,7 +116,6 @@ public class SkillSystem : MonoBehaviour
         Debug.Log($"{caster.unitName} used {skill.Name} on {target?.unitName ?? "themselves"}!");
     }
 
-    // Apply skill effects (damage, buffs, debuffs, etc.)
     private void ApplySkillEffects(Unit caster, Unit target, Skill skill)
     {
         if (skill.effects != null)
@@ -143,19 +124,36 @@ public class SkillSystem : MonoBehaviour
             {
                 if (effect != null)
                 {
-                    effect.ApplyEffect(caster, target);
+                    // Use the Unit's existing buff/debuff application methods
+                    if (skill.targetType == Skill.TargetType.Enemy)
+                    {
+                        target?.ApplyDebuff(effect);
+                    }
+                    else
+                    {
+                        target?.ApplyBuff(effect);
+                    }
+                    Debug.Log($"Applied effect: {effect.effectName}");
                 }
             }
         }
 
-        // Apply damage if applicable
+        // Apply direct damage if applicable
         if (skill.value > 0 && skill.targetType == Skill.TargetType.Enemy && target != null)
         {
-            DamageSystem.Instance?.CalculateSkillDamage(caster, target, skill);
+            if (damageSystem != null) // Check the direct reference
+            {
+                int damage = damageSystem.CalculateSkillDamage(caster, target, skill);
+                target.TakeDamage(damage, damageSystem);
+                Debug.Log($"Dealt {damage} damage to {target.unitName}");
+            }
+            else
+            {
+                Debug.LogError("damageSystem reference not assigned in SkillSystem!");
+            }
         }
     }
 
-    // Reduce cooldowns for a unit at the end of their turn
     public void ReduceCooldowns(Unit unit)
     {
         foreach (var skill in unit.skillCooldowns.Keys.ToList())
