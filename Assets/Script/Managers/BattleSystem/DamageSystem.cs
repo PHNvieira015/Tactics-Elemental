@@ -28,7 +28,7 @@ public class DamageSystem : MonoBehaviour
                 break;
         }
 
-        baseDamage += Mathf.RoundToInt(baseDamage * 2f);
+        baseDamage += Mathf.RoundToInt(baseDamage * 1f);
         baseDamage = Mathf.RoundToInt(baseDamage * 1 + attacker.characterStats.equippedWeapon.WeaponDamageModifier);
 
         float affinityDamageModifier = 1f;
@@ -65,20 +65,42 @@ public class DamageSystem : MonoBehaviour
         // Start with the base damage from the skill
         int damage = skill.baseDamage;
 
+        float statValue = 0f;
+        switch (skill.scalingStat)
+        {
+            case Skill.StatType.Strength:
+                statValue = attacker.characterStats.strength;
+                break;
+            case Skill.StatType.Agility:
+                statValue = attacker.characterStats.agility;
+                break;
+            case Skill.StatType.Intellect:
+                statValue = attacker.characterStats.intellect;
+                break;
+        }
+
         // Add the base damage from the attacker's stats (reusing CalculateDamage)
-        damage += CalculateDamage(attacker, target);
+        //damage += CalculateDamage(attacker, target);
+        // Apply stat scaling percentage
+        damage += Mathf.RoundToInt(statValue * skill.statScalingPercentage);
+
+        // Add target HP scaling if configured
+        if (skill.targetHPScalingPercentage > 0f)
+        {
+            damage += Mathf.RoundToInt(target.characterStats.maxBaseHealth * skill.targetHPScalingPercentage);
+        }
 
         // Apply attack type modifiers
         switch (skill.attackType)
         {
             case Skill.AttackType.Crush:
-                damage += Mathf.RoundToInt(attacker.characterStats.strength * 0.5f);
+                damage += Mathf.RoundToInt(attacker.characterStats.strength * 0.25f);
                 break;
             case Skill.AttackType.Slash:
-                damage += Mathf.RoundToInt(attacker.characterStats.agility * 0.5f);
+                damage += Mathf.RoundToInt(attacker.characterStats.agility * 0.25f);
                 break;
             case Skill.AttackType.Magic:
-                damage += Mathf.RoundToInt(attacker.characterStats.intellect * 0.5f);
+                damage += Mathf.RoundToInt(attacker.characterStats.intellect * 0.25f);
                 break;
         }
 

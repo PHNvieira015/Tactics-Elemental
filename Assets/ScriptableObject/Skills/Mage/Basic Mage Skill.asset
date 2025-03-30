@@ -15,11 +15,14 @@ MonoBehaviour:
   Name: 
   Description: 
   abilityShape: {fileID: 0}
-  effects: []
   range: 0
   cooldown: 0
   cost: 0
-  value: 0
+  effects: []
+  baseDamage: 0
+  statScalingPercentage: 3
+  scalingStat: 0
+  targetHPScalingPercentage: 0
   attackType: 0
   elementType: 0
   targetType: 2
