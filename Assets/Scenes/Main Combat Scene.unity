@@ -27061,6 +27061,8 @@ MonoBehaviour:
   TurnStartingPosition: {x: 0, y: 0, z: 0}
   unitManager: {fileID: 842386234}
   selectedSkill: {fileID: 0}
+  cameraMoveSpeed: 50
+  aiCameraWaitTime: 0.6
   currentUnit: {fileID: 0}
   currentUnitObject: {fileID: 0}
   currentTurnState: 0

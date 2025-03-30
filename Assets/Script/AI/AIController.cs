@@ -21,20 +21,21 @@ public class AIController : MonoBehaviour
 
     public void StartTurn()
     {
-        Debug.Log($"Starting turn for {unit.name}. Current unit: {turnStateManager.currentUnit.name}");
-        if (unit == turnStateManager.currentUnit)
+        // Only proceed if this is an AI unit AND it's the current unit
+        if (unit.isAI && unit == turnStateManager.currentUnit)
         {
+            Debug.Log($"Starting AI turn for {unit.name}");
             StartCoroutine(RunTurn());
         }
         else
         {
-            Debug.LogWarning($"{unit.name} is not the current unit. Current unit is {turnStateManager.currentUnit.name}");
+            Debug.LogWarning($"{unit.name} is not an AI unit or not the current unit. Current unit is {turnStateManager.currentUnit?.name}");
         }
     }
 
     private IEnumerator RunTurn()
     {
-        if (unit != turnStateManager.currentUnit && unit.isAI)
+        if (unit != turnStateManager.currentUnit && unit.isAI || !unit.isAI)
         {
             Debug.LogWarning($"{unit.name} tried to act but is not the current unit!");
             yield break;
@@ -63,7 +64,6 @@ public class AIController : MonoBehaviour
     {
         Debug.Log($"[{unit.name}] Deciding action. hasMoved: {unit.hasMoved}, hasAttacked: {unit.hasAttacked}");
 
-        // Skip action if unit already moved or attacked
         if (unit.hasMoved && unit.hasAttacked)
         {
             Debug.Log($"[{unit.name}] Already moved and attacked, ending turn.");
@@ -75,24 +75,27 @@ public class AIController : MonoBehaviour
         FindAllAllies();
         CheckForEnemiesInRange();
 
-        // If there are enemies in range and the unit hasn't attacked yet, prioritize attacking
+        // If enemies in range and hasn't attacked
         if (unit.enemiesInRange.Count > 0 && !unit.hasAttacked)
         {
-            AttackEnemy(unit.enemiesInRange[0]);
+            StartCoroutine(DelayedAttack(unit.enemiesInRange[0]));
         }
-        // If there are no enemies in range, move the unit towards the nearest enemy, but only if it hasn't moved yet
-        else if (!unit.hasMoved && unit.enemiesInRange.Count == 0)
+        // If no enemies in range and hasn't moved
+        else if (!unit.hasMoved)
         {
             MoveTowardNearestEnemy();
         }
         else
         {
-            // If no action is required, end the turn
             StartCoroutine(WaitAndEndTurn());
         }
     }
 
-
+    private IEnumerator DelayedAttack(Unit enemy)
+    {
+        yield return new WaitForSeconds(0.3f); // Small delay before attacking
+        AttackEnemy(enemy);
+    }
 
     public void MoveTowardNearestEnemy()
     {
@@ -170,6 +173,18 @@ public class AIController : MonoBehaviour
             Debug.LogWarning($"{unit.name} has already attacked this turn!");
             return;
         }
+
+        // Start the attack sequence with visualization
+        StartCoroutine(AttackWithVisualization(enemy));
+    }
+
+    private IEnumerator AttackAfterDelay(Unit enemy)
+    {
+        // Wait for 0.2 seconds to show the attack range
+        yield return new WaitForSeconds(0.2f);
+
+        // Clear the attack range tiles
+        mouseController.ClearAttackRangeTiles();
 
         // Simulate player input by calling HandleAttack
         mouseController.HandleAttack(enemy.standingOnTile);
@@ -342,6 +357,37 @@ public class AIController : MonoBehaviour
         }
 
         return nearestEnemy;
+    }
+    private IEnumerator AttackWithVisualization(Unit enemy)
+    {
+        // Verify again before each action
+        if (!unit.isAI || turnStateManager.currentUnit != unit)
+        {
+            yield break;
+        }
+        // 1. Set up attack state
+        turnStateManager.ChangeState(TurnState.Attacking);
+
+        // 2. This will automatically show attack range through MouseController's Update
+        yield return new WaitForSeconds(0.5f); // Let player see the range
+       
+        if (!unit.isAI || turnStateManager.currentUnit != unit)
+        {
+            turnStateManager.ChangeState(TurnState.Waiting);
+            yield break;
+        }
+        // 3. Execute attack
+        mouseController.HandleAttack(enemy.standingOnTile);
+        Debug.Log($"{unit.name} has attacked. hasAttacked: {unit.hasAttacked}");
+
+        // 4. Wait a moment after attacking
+        yield return new WaitForSeconds(0.3f);
+
+        // 5. Clear attack range through normal state change
+        turnStateManager.ChangeState(TurnState.Waiting);
+
+        // 6. Decide next action
+        DecideAction();
     }
 
 }
