@@ -5,6 +5,8 @@ using System.Drawing;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -17,6 +19,8 @@ public class DialogueManager : MonoBehaviour
     public static gender ProtagonistGender;
     public static gender SiblingGender;
 
+    public bool lastCutscene;
+    public PlayableDirector director;
     public static string ProtagonistName;
     public DialogueTrigger[] triggers;
     public int triggerIndex = 0;
@@ -31,22 +35,52 @@ public class DialogueManager : MonoBehaviour
     {
         if (instance == null)
             instance = this;
-        triggers[triggerIndex].TriggerDialogue();
+        if (director.playOnAwake && triggers.Length > 0)
+        {
+            director.stopped += TriggerDialogue;
+            director.paused += TriggerDialogue;
+        }
+        else if(!director.playOnAwake && triggers.Length > 0)
+        {
+            triggers[triggerIndex].TriggerDialogue();
+        }
+        if(triggers.Length == 0)
+        {
+            director.stopped += NextBattleFromCutscene;
+        }
     }
-    
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (lastCutscene)
+        {
+            if (director.time > 1.75)
+            {
+                director.Pause();
+                director.stopped -= TriggerDialogue;
+                director.paused -= TriggerDialogue;
+                lastCutscene = false;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Return) && isDialogueActive)
         {
             if (textComponent.text == currentMessage.message)
             {
-                if(currentMessage.waitTime != 0)
+                if (currentMessage.cutscene)
+                {
+                    director.Play();
+                    director.playOnAwake = true;
+                    director.stopped += DisplayNextDialogue;
+                    dialogueBox.SetActive(false);
+                    return;
+                }
+                if (currentMessage.waitTime != 0)
                 {
                     dialogueBox.SetActive(false);
                     StartCoroutine(WaitForNextDialogue(currentMessage.waitTime));
                     return;
                 }
-                DisplayNextDialogue();
+                DisplayNextDialogue(null);
             }
             else
             {
@@ -56,25 +90,69 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    public void TriggerDialogue(PlayableDirector director)
+    {
+        triggers[triggerIndex].TriggerDialogue();
+    }
+
     public void StartDialogue(Dialogues dialogue, Character[] characters)
     {
         textComponent.text = $"";
         isDialogueActive = true;
         dialogueBox.SetActive(true);
         charactersInDialogue = characters;
-        if(messages != null)
+        if (messages != null)
             messages.Clear();
-        foreach(Message message in dialogue.messages)
+        foreach (Message message in dialogue.messages)
         {
             messages.Enqueue(message);
         }
 
-        DisplayNextDialogue();
+        if (dialogue.lastCutscene)
+        {
+            isDialogueActive = false;
+            DisplayLastCutsceneDialogue();
+            return;
+        }
+
+        DisplayNextDialogue(null);
     }
 
-    public void DisplayNextDialogue()
+    public void StartTypeCutscene(PlayableDirector director)
     {
-        if(messages.Count == 0)
+        dialogueBox.SetActive(true);
+        characterName.text = charactersInDialogue[currentMessage.characterID].name;
+        currentMessage = messages.Dequeue();
+        StopAllCoroutines();
+        StartCoroutine(TypeCutsceneSentence());
+    }
+
+    public void DisplayLastCutsceneDialogue()
+    {
+        dialogueBox.SetActive(true);
+        if (messages.Count == 1)
+        {
+            dialogueBox.SetActive(false);
+            director.Play();
+            director.stopped += StartTypeCutscene;
+            return;
+        }
+        if (messages.Count == 0)
+        {
+            EndDialogue();
+            return;
+        }
+        characterName.text = charactersInDialogue[currentMessage.characterID].name;
+
+        currentMessage = messages.Dequeue();
+        StopAllCoroutines();
+        StartCoroutine(TypeCutsceneSentence());
+    }
+
+    public void DisplayNextDialogue(PlayableDirector director)
+    {
+        dialogueBox.SetActive(true);
+        if (messages.Count == 0)
         {
             EndDialogue();
             return;
@@ -88,6 +166,41 @@ public class DialogueManager : MonoBehaviour
 
         StopAllCoroutines();
         StartCoroutine(TypeSentence());
+    }
+
+    IEnumerator TypeCutsceneSentence()
+    {
+        textComponent.text = "";
+        bool isTag = false;
+        string currentTag = "";
+
+        foreach (char letter in currentMessage.message)
+        {
+            if (letter == '<')
+            {
+                isTag = true;
+                currentTag += letter;
+            }
+            else if (letter == '>')
+            {
+                isTag = false;
+                currentTag += letter;
+                textComponent.text += currentTag;
+                currentTag = "";
+                continue;
+            }
+            else if (isTag)
+            {
+                currentTag += letter;
+            }
+            else
+            {
+                textComponent.text += letter;
+                yield return new WaitForSeconds(typingSpeed);
+            }
+        }
+        yield return new WaitForSeconds(currentMessage.waitTime);
+        DisplayLastCutsceneDialogue();
     }
 
     IEnumerator TypeSentence()
@@ -136,8 +249,13 @@ public class DialogueManager : MonoBehaviour
     IEnumerator WaitForNextDialogue(float wait)
     {
         yield return new WaitForSeconds(wait);
+        if(triggerIndex + 1 >= triggers.Length)
+        {
+            EndDialogue();
+            yield break;
+        }
         dialogueBox.SetActive(true);
-        DisplayNextDialogue();
+        DisplayNextDialogue(null);
     }
 
     IEnumerator WaitForNextTrigger(float wait)
@@ -146,9 +264,46 @@ public class DialogueManager : MonoBehaviour
         triggers[triggerIndex].TriggerDialogue();
     }
 
+    void NextTriggerFromCutscene(PlayableDirector director)
+    {
+        triggers[triggerIndex].TriggerDialogue();
+    }
+    void NextSceneFromCutscene(PlayableDirector director)
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
+    void NextBattleFromCutscene(PlayableDirector director)
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
     void EndDialogue()
     {
-        triggerIndex++;
+        if (triggerIndex + 1 >= triggers.Length)
+        {
+            if (director.playOnAwake)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                return;
+            }
+            else
+            {
+                director.Play();
+                director.stopped += NextSceneFromCutscene;
+            }
+        }
+        else if(triggerIndex + 1 < triggers.Length && !director.playOnAwake)
+        {
+            director.Play();
+            triggerIndex++;
+            director.playOnAwake = true;
+            isDialogueActive = false;
+            dialogueBox.SetActive(false);
+            director.stopped += NextTriggerFromCutscene;
+            return;
+        }
+            triggerIndex++;
         isDialogueActive = false;
         dialogueBox.SetActive(false);
         StartCoroutine(WaitForNextTrigger(3f));

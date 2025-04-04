@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 [System.Serializable]
 public class Character
@@ -15,9 +16,7 @@ public class Message
     public int characterID;
     [TextArea(3, 10)]
     public string message;
-    public GameObject moveCharacter;
-    public Vector2 startPosition;
-    public Vector2 endPosition;
+    public bool cutscene = false;
     public float waitTime;
 }
 
@@ -25,6 +24,7 @@ public class Message
 public class Dialogues
 {
     public List<Message> messages = new List<Message>();
+    public bool lastCutscene;
 }
 
 public class DialogueTrigger : MonoBehaviour

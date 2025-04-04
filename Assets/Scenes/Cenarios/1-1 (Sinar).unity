@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -378,65 +377,45 @@ MonoBehaviour:
   dialogue:
     messages:
     - characterID: 0
-      message: "Bom dia, pai! Voc\xEA j\xE1 consertou minha arma?"
+      message: "ahhh, nada como tomar \xE1gua fresca."
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
       waitTime: 0
     - characterID: 1
-      message: "Bom dia, {G2} filh{G1}. A sua arma est\xE1 pronta."
+      message: "mas n\xE3o posso perder tempo! \xC9 um \xF3timo dia para treinar!"
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
       waitTime: 0
     - characterID: 0
-      message: "Obrigado! J\xE1 estava ficando nervos{G1} por n\xE3o poder treinar."
+      message: "Ver meu reflexo nessa \xE1gua s\xF3 me faz lembrar de o quanto \xE9
+        longo o caminho para aprender a controlar os elementos.."
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
       waitTime: 0
     - characterID: 1
-      message: "Se voc\xEA est\xE1 t\xE3o entusiasmad{G1}, deveria ter mais cuidado
-        com suas ferramentas no seu treinamento."
+      message: "Mas n\xE3o tenho motivos para ser pessimista! Ainda mais agora que
+        consegui consertar minha arma."
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
       waitTime: 0
     - characterID: 0
-      message: "Sinto muito, pai\u2026 Mais que elas quebram significa que eu estou
-        me esfor\xE7ando!"
+      message: "Quanto mais eu me esfor\xE7ar agora, mais r\xE1pida ser\xE1 minha
+        evolu\xE7\xE3o!"
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
       waitTime: 0
     - characterID: 1
-      message: "Bom, eu n\xE3o posso discutir contra isso! ha, ha, ha!"
+      message: "Tenho que encontrar o mestre o mais cedo poss\xEDvel para treinarmos
+        juntos!"
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
       waitTime: 1
-    - characterID: 1
-      message: "Sinceramente n\xE3o entendo esse seu entusiasmo. Aprender um elemento
-        n\xE3o \xE9 uma coisa t\xE3o especial assim\u2026 Agora, aprender a ser um
-        ferreiro como eu! Isso sim \xE9 um trabalho especial."
-      moveCharacter: {fileID: 0}
-      startPosition: {x: 0, y: 0}
-      endPosition: {x: 0, y: 0}
-      waitTime: 0
-    - characterID: 0
-      message: Eu estou indo treinar agora, Pai! Tchau!
-      moveCharacter: {fileID: 0}
-      startPosition: {x: 0, y: 0}
-      endPosition: {x: 0, y: 0}
-      waitTime: 3
-    - characterID: 1
-      message: "Ai, ai... Esses meus filhos est\xE3o mais interessados em aprender
-        sobre elementos do que aprender sobre meu trabalho... Eu s\xF3 espero que
-        n\xE3o aconte\xE7a a mesma coisa do que com a m\xE3e deles..."
-      moveCharacter: {fileID: 0}
-      startPosition: {x: 0, y: 0}
-      endPosition: {x: 0, y: 0}
-      waitTime: 3
   TriggerOrder: 1
 --- !u!1 &629150877
 GameObject:
@@ -1350,9 +1329,9 @@ MonoBehaviour:
   dialogue:
     messages:
     - characterID: 0
-      message: "Bom dia, irm{G3}! Pelo que eu estou vendo sua arma j\xE1 foi consertada,
-        ein? Voc\xEA deveria ter cuidado com ela, j\xE1 sabe que cada vez que voc\xEA
-        quebra voc\xEA fica ainda mais pra tr\xE1s de mim.\r"
+      message: "Bom dia, irm{G3}! Pelo que eu estou vendo, j\xE1 est\xE1 indo treinar
+        ein?  j\xE1 sabe que cada vez que voc\xEA quebra sua arma no treinamento,
+        voc\xEA fica ainda mais pra tr\xE1s de mim.\r"
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
@@ -1364,8 +1343,8 @@ MonoBehaviour:
       endPosition: {x: 0, y: 0}
       waitTime: 0
     - characterID: 0
-      message: "Se voc\xEA pelo menos j\xE1 tivesse come\xE7ado seu treinamento elementar
-        como eu.\r"
+      message: "Se voc\xEA pelo menos j\xE1 tivesse come\xE7ado seu treinamento elemental
+        como eu...\r"
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
@@ -1376,23 +1355,21 @@ MonoBehaviour:
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
       waitTime: 0
-    - characterID: 2
-      message: "Bom dia, {ProtagonistName}. Voc\xEA realmente n\xE3o chega tarde
-        nunca.\r\n"
+    - characterID: 0
+      message: "Inclusive, o que voc\xEA acha de realizarmos uma pequena batalha
+        agora? Como forma de treino, l\xF3gico."
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
       waitTime: 0
-    - characterID: 1
-      message: "Claro que n\xE3o, mestre! Eu quero realmente aprender a dominar um
-        elemento! Voc\xEA j\xE1 decidiu qual vai me ensinar?\r\n"
+    - characterID: 0
+      message: "Ou t\xE1 com medinho?"
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}
       waitTime: 0
     - characterID: 2
-      message: "N\xE3o, ainda n\xE3o. Voc\xEA continuar\xE1 treinando somente com
-        a sua arma pelo momento.\r\n"
+      message: hahaha
       moveCharacter: {fileID: 0}
       startPosition: {x: 0, y: 0}
       endPosition: {x: 0, y: 0}

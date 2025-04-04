@@ -6,15 +6,39 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Screens/0-StartScreen.unity
+    path: Assets/Scenes/Telas/Tela de Inicio.unity
     guid: 5f99b81c90e73d94389bf236d6ce66f9
   - enabled: 1
     path: Assets/Scenes/Cutscene.unity
     guid: 72a008fa1ead43145b29bb7e576d792c
   - enabled: 1
-    path: Assets/Scenes/Cenarios/1-1 (Sinar).unity
-    guid: 6623941820c31bf4f8569706478a7130
+    path: "Assets/Scenes/Cutscenes/Cen\xE1rio 1 (encontrando zappi).unity"
+    guid: d75596bac7e992d469828fa5c5e4a8f9
   - enabled: 1
-    path: Assets/Scenes/Main Combat Scene.unity
-    guid: 7685643bf916d484d90561ec153c10c4
+    path: Assets/Scenes/Combat Scenes/Combat Scene1.unity
+    guid: c4092a804ba96684d82e0a9cd8e260c9
+  - enabled: 1
+    path: "Assets/Scenes/Cutscenes/Cen\xE1rio 2 (encontrando o mestre).unity"
+    guid: cb6bcceaba322fc48b93d1f44973080b
+  - enabled: 1
+    path: "Assets/Scenes/Cutscenes/Cen\xE1rio 3 (voltando para investigar a entrada).unity"
+    guid: 7c134e67cfee20f48b014bae9464bec5
+  - enabled: 1
+    path: Assets/Scenes/Combat Scenes/Combat Scene2.unity
+    guid: 8f8deedee9f6e1547bcb63c1511cdd91
+  - enabled: 1
+    path: "Assets/Scenes/Cutscenes/Cen\xE1rio 4 (pr\xE9-batalha contra capangas).unity"
+    guid: 0d59991f5d85aad408b02fcb3c82dcdc
+  - enabled: 1
+    path: "Assets/Scenes/Cutscenes/Cen\xE1rio 5 (Indo at\xE9 o mago da bolha).unity"
+    guid: 19bead23d32ddae45b96844a5ba98963
+  - enabled: 1
+    path: Assets/Scenes/Combat Scenes/Combat Scene3.unity
+    guid: a4584e2173d44f34986a5487ea2a9542
+  - enabled: 1
+    path: "Assets/Scenes/Cutscenes/Cen\xE1rio 6 - A grande batalha.unity"
+    guid: 94dcc87a16c7ff046a2de003ac3c37d0
+  - enabled: 1
+    path: "Assets/Scenes/Cutscenes/Cen\xE1rio 7 - A batalha final1.unity"
+    guid: 03abefdfb26219942827a2701e51e97a
   m_configObjects: {}
