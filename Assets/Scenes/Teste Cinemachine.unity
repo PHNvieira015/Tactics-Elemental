@@ -38,6 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3738,10 +3739,7 @@ MonoBehaviour:
   UI_Health: {fileID: 726597619}
   ActionMenu: {fileID: 0}
   SkillListHUD: {fileID: 0}
-  SkillList: []
   SkillButtons: []
-  skillButtonPrefab: {fileID: 0}
-  skillButtonsParent: {fileID: 0}
   selectedSkillName: {fileID: 0}
   selectedSkillDescription: {fileID: 0}
   selectedSkillDetails: {fileID: 0}
@@ -7720,6 +7718,7 @@ MonoBehaviour:
   cursor: {fileID: 1307614554086083607, guid: ba17e771593cc3f46b7462c61213d2ea, type: 3}
   speed: 10
   currentUnit: {fileID: 0}
+  path: []
   rangeFinderTiles: []
   isMoving: 0
   turnStateManager: {fileID: 1538757723}
@@ -7820,7 +7819,7 @@ SpriteRenderer:
   m_Size: {x: 0.9444444, y: 1.5555556}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &621435413
@@ -23709,10 +23708,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45f22ad3e39ded1439ac0d3571fc6d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnStarted: 0
   mouseController: {fileID: 583550734}
   TurnStartingPosition: {x: 0, y: 0, z: 0}
   unitManager: {fileID: 842386234}
   selectedSkill: {fileID: 0}
+  cameraMoveSpeed: 50
+  aiCameraWaitTime: 0.6
   currentUnit: {fileID: 0}
   currentUnitObject: {fileID: 0}
   currentTurnState: 0
@@ -25529,10 +25531,7 @@ MonoBehaviour:
   UI_Health: {fileID: 726597619}
   ActionMenu: {fileID: 636211415}
   SkillListHUD: {fileID: 2081880584}
-  SkillList: []
   SkillButtons: []
-  skillButtonPrefab: {fileID: 657956905}
-  skillButtonsParent: {fileID: 0}
   selectedSkillName: {fileID: 0}
   selectedSkillDescription: {fileID: 0}
   selectedSkillDetails: {fileID: 0}

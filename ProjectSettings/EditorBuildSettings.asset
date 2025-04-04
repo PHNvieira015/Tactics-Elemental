@@ -41,4 +41,10 @@ EditorBuildSettings:
   - enabled: 1
     path: "Assets/Scenes/Cutscenes/Cen\xE1rio 7 - A batalha final1.unity"
     guid: 03abefdfb26219942827a2701e51e97a
+  - enabled: 1
+    path: Assets/Scenes/Victory.unity
+    guid: 6550032a3edfbb640b704750132cabc7
+  - enabled: 1
+    path: Assets/Scenes/Defeat.unity
+    guid: 22e87d88c34b99d48a7c30b8e6bf8b51
   m_configObjects: {}
