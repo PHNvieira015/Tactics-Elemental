@@ -49,7 +49,7 @@ public class SkillSystem : MonoBehaviour
         }
 
         // Check class requirements
-        if (skill.classRequirement != Skill.ClassRequirements.None && 
+        if (skill.classRequirement != Skill.ClassRequirements.None &&
             caster.characterStats.characterClass.ToString() != skill.classRequirement.ToString())
         {
             Debug.Log($"{caster.unitName} does not meet the class requirement for {skill.Name}!");
@@ -124,7 +124,6 @@ public class SkillSystem : MonoBehaviour
             {
                 if (effect != null)
                 {
-                    // Use the Unit's existing buff/debuff application methods
                     if (skill.targetType == Skill.TargetType.Enemy)
                     {
                         target?.ApplyDebuff(effect);
@@ -141,11 +140,36 @@ public class SkillSystem : MonoBehaviour
         // Apply direct damage if applicable
         if (skill.baseDamage > 0 && skill.targetType == Skill.TargetType.Enemy && target != null)
         {
-            if (damageSystem != null) // Check the direct reference
+            if (damageSystem != null)
             {
                 int damage = damageSystem.CalculateSkillDamage(caster, target, skill);
                 target.TakeDamage(damage, damageSystem);
                 Debug.Log($"Dealt {damage} damage to {target.unitName}");
+
+                // Update the health bar
+                CharacterBattle targetBattle = target.GetComponent<CharacterBattle>();
+                if (targetBattle != null)
+                {
+                    targetBattle.HealthSystem_OnHealthChanged(targetBattle, EventArgs.Empty);
+                }
+
+                // Handle death
+                if (!target.IsAlive())
+                {
+                    Debug.Log($"{target.unitName} has been defeated by {skill.Name}!");
+
+                    // Clear tile and destroy object
+                    target.standingOnTile?.ClearUnit();
+                    Destroy(target.gameObject);
+
+                    // Remove from turn order
+                    var unitManager = FindObjectOfType<UnitManager>();
+                    if (unitManager != null)
+                    {
+                        unitManager.RemoveUnitFromTurnOrder(target);
+                        GameMaster.RemoveUnit(target);
+                    }
+                }
             }
             else
             {

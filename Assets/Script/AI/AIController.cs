@@ -81,9 +81,11 @@ public class AIController : MonoBehaviour
             StartCoroutine(DelayedAttack(unit.enemiesInRange[0]));
         }
         // If no enemies in range and hasn't moved
-        else if (!unit.hasMoved)
+         if (!unit.hasMoved)
         {
-            MoveTowardNearestEnemy();
+
+            StartCoroutine(MoveTowardNearestEnemy());
+            mouseController.ClearAttackRangeTiles();
         }
         else
         {
@@ -97,19 +99,19 @@ public class AIController : MonoBehaviour
         AttackEnemy(enemy);
     }
 
-    public void MoveTowardNearestEnemy()
+    private IEnumerator MoveTowardNearestEnemy()
     {
         // Ensure this unit is the current unit
         if (turnStateManager.currentUnit != unit)
         {
             Debug.LogWarning($"{unit.name} is not the current unit. Skipping movement.");
-            return;
+            yield break;
         }
 
         if (unit.hasMoved)
         {
             Debug.LogWarning($"{unit.name} has already moved this turn!");
-            return; // Avoid moving again if the unit has already moved
+            yield break;
         }
 
         Unit nearestEnemy = FindNearestEnemy();
@@ -117,7 +119,7 @@ public class AIController : MonoBehaviour
         {
             Debug.LogWarning($"{unit.name} found no enemies!");
             StartCoroutine(WaitAndEndTurn());
-            return;
+            yield break;
         }
 
         // Set the AI unit as the current unit in MouseController
@@ -132,8 +134,8 @@ public class AIController : MonoBehaviour
         if (closestTile == null)
         {
             Debug.LogWarning($"No valid tile found for {unit.name} to move toward {nearestEnemy.name}!");
-            EndTurn(); // End turn if no valid tile is found
-            return;
+            EndTurn();
+            yield break;
         }
 
         // Notify TurnStateManager of state change
@@ -146,6 +148,9 @@ public class AIController : MonoBehaviour
 
     private IEnumerator MoveAndReevaluate(OverlayTile targetTile)
     {
+        // Clear any existing path before moving
+        mouseController.path.Clear();
+
         // Simulate player input by calling HandleMovement
         mouseController.HandleMovement(targetTile);
 
@@ -159,11 +164,21 @@ public class AIController : MonoBehaviour
         unit.hasMoved = true;
         Debug.Log($"{unit.name} has moved. hasMoved: {unit.hasMoved}");
 
-        // Wait for 2 seconds before re-evaluating
-        yield return new WaitForSeconds(2f);
+        // Clear the path after movement is complete
+        mouseController.path.Clear();
+
+        // Clear any movement range highlights
+        foreach (var tile in mouseController.rangeFinderTiles)
+        {
+            tile.HideTile();
+        }
+        mouseController.rangeFinderTiles.Clear();
+
+        // Wait before re-evaluating
+        yield return new WaitForSeconds(0.5f);
 
         // Re-evaluate after moving
-        DecideAction(); // Re-decide action after moving
+        DecideAction();
     }
 
     public void AttackEnemy(Unit enemy)

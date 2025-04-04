@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -21,6 +22,8 @@ public class GameMaster : MonoBehaviour
     public TurnStateManager turnStateManager;
     public SpawningManager spawningManager;
     public UnitManager unitManager;
+    public GameObject victoryCanvas;
+    public GameObject defeatCanvas;
 
     public static event Action<GameState> OnGameStateChanged;
 
@@ -93,6 +96,8 @@ public class GameMaster : MonoBehaviour
             case GameState.Victory:
                 Debug.Log("Victory! You have defeated all enemies.");
                 // Handle victory logic here (e.g., show victory screen)
+                victoryCanvas.SetActive(true);
+                StartCoroutine(WaitAndLoadNextScene(10f));
                 StartNextScene();
 
                 break;
@@ -100,6 +105,8 @@ public class GameMaster : MonoBehaviour
             case GameState.Defeat:
                 Debug.Log("Defeat! All your units have been defeated.");
                 // Handle defeat logic here (e.g., show defeat screen)
+                defeatCanvas.SetActive(true);
+                StartCoroutine(WaitAndReloadScene(15f));
                 SceneLoader.Instance.ReloadScene();
                 break;
 
@@ -470,5 +477,16 @@ public class GameMaster : MonoBehaviour
     void StartNextScene()
     {
         SceneLoader.Instance.LoadNextScene();
+    }
+    private IEnumerator WaitAndLoadNextScene(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        StartNextScene();
+    }
+
+    private IEnumerator WaitAndReloadScene(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneLoader.Instance.ReloadScene();
     }
 }
