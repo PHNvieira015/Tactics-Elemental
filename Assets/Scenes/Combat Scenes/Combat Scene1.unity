@@ -35406,6 +35406,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SaveTest
       objectReference: {fileID: 0}
+    - target: {fileID: 5510424502758667549, guid: 5a2d707699d241f49ac97a8ce02ca679, type: 3}
+      propertyPath: units.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 6109310314237970921, guid: 5a2d707699d241f49ac97a8ce02ca679, type: 3}

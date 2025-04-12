@@ -74,7 +74,11 @@ public class TurnStateManager : MonoBehaviour
     #region SetCurrentUnit
     public void SetCurrentUnit(Unit unit)
     {
-
+        if (unit == null)
+        {
+            Debug.LogError("Attempted to set a null unit as the current unit.");
+            return;
+        }
         currentUnit = unit;
         currentUnitObject = unit.gameObject;
         currentTurnState = TurnState.Waiting; // Default state at waiting
@@ -259,10 +263,14 @@ public class TurnStateManager : MonoBehaviour
                 uiActionBar.GameObjectButton_attack.SetActive(false);
                 break;
             #endregion
+
+
+
             #region SkillAnimation
             case TurnState.SkillAnimation:
+                Debug.Log($"{currentUnit.name} is using a skill animation...");
                 StartCoroutine(WaitForSkillAnimation(currentUnit.characterStats.faceDirection));  //WIP
-                //                ChangeState(TurnState.Waiting);
+                ChangeState(TurnState.Waiting);
                 break;
             #endregion
             #region Waiting

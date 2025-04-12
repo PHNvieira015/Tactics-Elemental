@@ -180,6 +180,7 @@ public class AnimatorScript : MonoBehaviour
             TurnStateManager.TurnState.AttackingAnimation => AnimationState.Attacking,
             TurnStateManager.TurnState.UsingSkill => AnimationState.Walking,
             TurnStateManager.TurnState.SkillTargeting => AnimationState.Casting,
+            TurnStateManager.TurnState.SkillAnimation => AnimationState.Attacking,
             TurnStateManager.TurnState.Waiting => AnimationState.Walking,
             TurnStateManager.TurnState.EndTurn => AnimationState.Walking,
 

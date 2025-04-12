@@ -5508,7 +5508,7 @@ Animator:
   m_GameObject: {fileID: 425755682}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 383393004ee21804ea60998a29825251, type: 2}
+  m_Controller: {fileID: 9100000, guid: aede15447532d35499b680c1f5111dee, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -22372,7 +22372,7 @@ Transform:
   m_GameObject: {fileID: 1697291327}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.9997474, z: 0, w: 0.02247415}
-  m_LocalPosition: {x: -1.35, y: 22.35, z: 10}
+  m_LocalPosition: {x: -1.78, y: 16.54, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -24521,6 +24521,8 @@ MonoBehaviour:
   turnStateManager: {fileID: 1538757723}
   spawningManager: {fileID: 1190875574}
   unitManager: {fileID: 842386234}
+  victoryCanvas: {fileID: 0}
+  defeatCanvas: {fileID: 0}
   State: 0
 --- !u!1 &1840977562
 GameObject:
@@ -30376,7 +30378,7 @@ Animator:
   m_GameObject: {fileID: 1856436248080964375}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3278fc951b767a5468c33b8ec7fc285a, type: 2}
+  m_Controller: {fileID: 9100000, guid: 2ad22c4477928004983ef488e928f008, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

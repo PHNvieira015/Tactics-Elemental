@@ -8,7 +8,6 @@ using UnityEngine.UIElements;
 using UnityEngine.EventSystems;
 using static TurnStateManager;
 using System;
-using UnityEditor.Experimental.GraphView;
 
 public class MouseController : MonoBehaviour
 {
@@ -697,20 +696,17 @@ public class MouseController : MonoBehaviour
     {
         Unit targetUnit = targetTile.unitOnTile;
         Skill skill = turnStateManager.selectedSkill;
-
         // Special handling for self-target skills
         if (skill.targetType == Skill.TargetType.Self)
         {
             targetUnit = currentUnit;
         }
-
+        turnStateManager.ChangeState(TurnState.SkillAnimation);
         // Execute the skill
-        SkillSystem.Instance.ExecuteSkill(currentUnit, targetUnit, skill);
-
+        SkillSystem.Instance.ExecuteSkill(currentUnit, targetUnit, skill);       
         // Clean up
         ClearAttackRangeTiles();
         turnStateManager.selectedSkill = null;
-        turnStateManager.ChangeState(TurnState.SkillAnimation);
     }
     private IEnumerator CompleteSkillUse()
     {

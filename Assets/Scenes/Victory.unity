@@ -1004,6 +1004,8 @@ MonoBehaviour:
   turnStateManager: {fileID: 1538757723}
   spawningManager: {fileID: 0}
   unitManager: {fileID: 0}
+  victoryCanvas: {fileID: 0}
+  defeatCanvas: {fileID: 0}
   State: 0
 --- !u!1 &1878649294
 GameObject:
@@ -1093,6 +1095,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 246115679432641519, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_RenderMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 246115679432641519, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_PixelPerfect
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 502147438067592182, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401254484004181449, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401254484004181449, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 1401254484004181449, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
+      objectReference: {fileID: 0}
     - target: {fileID: 2491080440154779722, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
       propertyPath: m_Name
       value: Canvas
@@ -1177,8 +1203,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3220856444966713644, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5096309316113352886, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -272
+      objectReference: {fileID: 0}
+    - target: {fileID: 5627412028414631136, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 282
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176088126666823759, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6176088126666823759, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 086e1cf604642254a9b1a84a452c1480, type: 3}

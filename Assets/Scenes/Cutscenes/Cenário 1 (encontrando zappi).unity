@@ -23956,6 +23956,8 @@ MonoBehaviour:
   turnStateManager: {fileID: 1538757723}
   spawningManager: {fileID: 1190875574}
   unitManager: {fileID: 842386234}
+  victoryCanvas: {fileID: 0}
+  defeatCanvas: {fileID: 0}
   State: 0
 --- !u!1 &1853304692
 GameObject:
@@ -29461,7 +29463,7 @@ Animator:
   m_GameObject: {fileID: 3820730175192165383}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a114dc6b7648d1744af11d68f591d3d5, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7f107b555b45e0448ba2b3328a760986, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -29733,7 +29735,7 @@ Animator:
   m_GameObject: {fileID: 8477736710959376812}
   m_Enabled: 0
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a114dc6b7648d1744af11d68f591d3d5, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7f107b555b45e0448ba2b3328a760986, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

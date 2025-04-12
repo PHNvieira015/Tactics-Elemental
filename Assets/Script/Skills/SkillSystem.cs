@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using static TurnStateManager;
 
 public class SkillSystem : MonoBehaviour
 {
@@ -112,7 +113,6 @@ public class SkillSystem : MonoBehaviour
                 caster.skillCooldowns[skill] = skill.cooldown;
             }
         }
-
         Debug.Log($"{caster.unitName} used {skill.Name} on {target?.unitName ?? "themselves"}!");
     }
 

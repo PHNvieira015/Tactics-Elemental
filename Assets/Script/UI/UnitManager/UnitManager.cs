@@ -346,5 +346,19 @@ public class UnitManager : MonoBehaviour
         }
     }
     #endregion
+    public void CleanTurnOrderList()
+    {
+        // Remove null or dead units
+        turnOrderList.RemoveAll(unit => unit == null || !unit.IsAlive());
+
+        // Additional validation if needed
+        foreach (var unit in turnOrderList.ToList())
+        {
+            if (unit == null || unit.gameObject == null || !unit.IsAlive())
+            {
+                turnOrderList.Remove(unit);
+            }
+        }
+    }
 
 }

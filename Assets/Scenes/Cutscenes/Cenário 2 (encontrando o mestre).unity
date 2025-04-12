@@ -12009,7 +12009,7 @@ Animator:
   m_GameObject: {fileID: 826934652}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: feeab49c226a26f4d80d05ad80fd71c8, type: 2}
+  m_Controller: {fileID: 9100000, guid: a5493b75018824d40a2f379eba7f2c54, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -12027,7 +12027,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 826934652}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -24689,6 +24689,8 @@ MonoBehaviour:
   turnStateManager: {fileID: 1538757723}
   spawningManager: {fileID: 1190875574}
   unitManager: {fileID: 842386234}
+  victoryCanvas: {fileID: 0}
+  defeatCanvas: {fileID: 0}
   State: 0
 --- !u!1 &1853304692
 GameObject:
@@ -30471,7 +30473,7 @@ Animator:
   m_GameObject: {fileID: 6715455610395356257}
   m_Enabled: 0
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a114dc6b7648d1744af11d68f591d3d5, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7f107b555b45e0448ba2b3328a760986, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
